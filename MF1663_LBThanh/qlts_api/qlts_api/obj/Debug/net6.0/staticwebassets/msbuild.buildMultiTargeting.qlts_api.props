@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\qlts_api.props" />
+</Project>

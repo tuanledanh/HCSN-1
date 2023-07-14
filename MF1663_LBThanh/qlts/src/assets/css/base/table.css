@@ -1,0 +1,131 @@
+.page-table-body{
+    height: 624px;
+    max-height: 584px;
+    overflow-y: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead{
+    width: 100%;
+}
+
+.table th{
+    position: sticky;
+    top: 0;
+    font-size: 14px;
+    background-color: var(--white-color);
+}
+
+.table td{
+    font-size: 13px;
+    font-weight: 200;
+}
+
+.table input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.table tr {
+    border-bottom: 1px solid #d9d8d9;
+}
+
+.table tr:hover {
+    background-color: var(--active-gray);
+    cursor: pointer;
+}
+
+.table td:first-child,
+.table th:first-child {
+    padding-left: 12px;
+}
+
+.table td,
+.table th {
+    height: 39px;
+    padding-left: 8px;
+}
+
+.table th {
+    font-weight: 700;
+    text-align: left;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2){
+    width: 30px;
+    text-align: center;
+    padding-left: 16px;
+    padding-right: 10px;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3),
+.table th:nth-child(4),
+.table td:nth-child(4),
+.table th:nth-child(5),
+.table td:nth-child(5){
+    width: 240px;
+    padding-left: 16px;
+}
+
+.table th:nth-child(6),
+.table td:nth-child(6){
+    width: 290px;
+    padding-left: 30px;
+}
+
+.table th:nth-child(7),
+.table td:nth-child(7),
+.table th:nth-child(8),
+.table td:nth-child(8),
+.table th:nth-child(9),
+.table td:nth-child(9),
+.table th:nth-child(10),
+.table td:nth-child(10) {
+    width: 180px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.table th:nth-child(11){
+    width: 180px;
+    text-align: center;
+    padding: 0 20px;
+}
+
+::-webkit-scrollbar {
+    width: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #9d9d9d;
+    height: 100px;
+}
+
+
+.feature-icons{
+    column-gap: 16px;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.table tr:hover > td > .feature-icons{
+    display: flex;
+}
+
+.table tr:hover {
+    background-color: rgba(26, 164, 200, .2);
+}
+
+.background-color-hover{
+    background-color: rgba(26, 164, 200, .2);
+}
+

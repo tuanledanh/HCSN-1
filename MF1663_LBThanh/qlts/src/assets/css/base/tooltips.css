@@ -1,0 +1,35 @@
+.icon-container{
+    position: relative;
+    cursor: pointer;
+}
+
+.tooltips-text{
+    min-width: 80px;
+    background-color: white;
+    color: #000;
+    text-align: center;
+    border: 1px solid #bbbbbb;
+    border-radius: 4px;
+    padding: 5px 2px;
+    
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    margin-top: 4px;
+    right: 8%;
+    font-size: 12px;
+    visibility: hidden;
+}
+
+.icon-container:hover .tooltips-text {
+    visibility: visible;
+}
+
+.tooltip-container{
+    position: relative;
+}
+
+.tooltip-container:hover .tooltips-text{
+    visibility: visible;
+    width: 120px;
+}

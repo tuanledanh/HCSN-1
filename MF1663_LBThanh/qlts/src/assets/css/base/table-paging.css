@@ -1,0 +1,62 @@
+.page-table-paging {
+  height: 42px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--border-color-default);
+}
+
+.table-footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
+
+}
+
+.table-footer-left {
+  display: flex;
+  column-gap: 40px;
+  align-items: center;
+  width: 600px;
+}
+
+.chev-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 15px;
+  background-color: var(--white-color);
+  border-radius: 2.625px;
+  border: 1px solid var(--border-color-default);
+  width: 59px;
+  height: 25px;
+  overflow: hidden;
+}
+
+.table-paging {
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
+}
+
+.left-arrow-icon-container,
+.right-arrow-icon-container {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.align-top{
+    vertical-align: top;
+}
+
+.total-amount, .total-prices, .total-accumulation, 
+.total-left-prices {
+    width: 180px;
+    text-align: right;
+    font-weight: 700;
+}

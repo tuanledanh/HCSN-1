@@ -1,0 +1,126 @@
+.home-icon{
+    height: 36px;
+    width: 36px;
+    background: url('../../icon/qlts-icon.svg');
+    background-position: -20px -680px;
+    background-repeat: no-repeat;
+    margin: 11px 15px 19px 15px;
+}
+
+.left-arrow-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -29px -246px;
+	width: 7px;
+	height: 12px;
+}
+
+.right-arrow-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -73px -246px;
+	width: 7px;
+	height: 11px;
+}
+
+.cross-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -287px -111px;
+	width: 18px;
+	height: 17px;
+}
+
+.trash-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -463px -111px;
+	width: 18px;
+	height: 18px;
+}
+
+.filter-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -243px -69px;
+	width: 17px;
+	height: 16px;
+}
+
+.search-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -243px -23px;
+	width: 18px;
+	height: 18px;
+}
+
+.plus-icon{
+	background: url('../../icon/qlts-icon.svg') no-repeat -204px -424px;
+	width: 8px;
+	height: 8px;
+    transform: scale(1.1);
+}
+
+.year-option-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -204px -332px;
+	width: 8px;
+	height: 16px;
+    transform: scale(0.9);
+}
+
+.bell-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -332px -109px;
+	width: 16px;
+	height: 20px;
+}
+
+.window-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -199px -23px;
+	width: 18px;
+	height: 18px;
+}
+
+.question-mark-icon{
+	background: url('../../icon/qlts-icon.svg') no-repeat -67px -67px;
+	width: 18px;
+	height: 18px;
+}
+
+
+.user-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -23px -23px;
+	width: 18px;
+	height: 18px;
+}
+
+.chevd-icon{
+    background: url('../../icon/qlts-icon.svg') no-repeat -72px -338px;
+	width: 7px;
+	height: 5px;
+    transform: scale(0.9);
+}
+
+.edit-icon{
+	background: url('../../icon/qlts-icon.svg') no-repeat -156px -68px;
+	width: 16px;
+	height: 16px;
+}
+
+.copy-icon{
+	background: url('../../icon/qlts-icon.svg') no-repeat -244px -112px;
+	width: 16px;
+	height: 16px;
+}
+
+.close-icon{
+	background: url('../../icon/qlts-icon.svg') no-repeat -375px -287px;
+	width: 18px;
+	height: 18px;
+}
+
+.calendar-icon{
+	background: url('../../icon/qlts-icon.svg') no-repeat -287px -67px;
+	width: 18px;
+	height: 18px;
+}
+
+.left-arrow-block-icon{
+	background: url('../../icon/qlts-icon.svg') no-repeat -285px -417px;
+	width: 22px;
+	height: 22px;
+}
+
+.alert-icon{
+	background: url('../../icon/qlts-icon.svg') no-repeat -416px -66px;
+	width: 24px;
+	height: 20px;
+}
