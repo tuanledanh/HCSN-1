@@ -1,0 +1,28 @@
+:root{
+    --border-color-default: #afafaf;
+    --border-color-primary: #0078d7;
+    --color-primary: #1aa4c8;
+    --main-content-background-color: #EEEFF1;
+    --white-color: #fff;
+    --sidebar-item-color: #36435d ;
+    --sidebar-text-color: #7c8fad;
+    --place-holder-color: #aeaeae;
+    --table-header-background-color: #F5F5F5;
+    --text-color: #616161;
+    
+    --sidebar-background-color: #1c3048;
+    --sidebar-top-item-hover-color: #A7C4FF;
+
+}
+
+.border-radius{
+    border-radius: 4px;
+}
+
+.text-align-right{
+    text-align: right;
+}
+
+.collapsed-width{
+    width: calc(100% - 66px) !important;
+}

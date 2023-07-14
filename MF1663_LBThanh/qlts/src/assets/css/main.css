@@ -1,0 +1,36 @@
+@import url("./base/button.css");
+@import url("./base/table.css");
+@import url("./base/input.css");
+@import url("../css/variable.css");
+@import url("./layout/header.css");
+@import url("./layout/sidebar.css");
+@import url("./layout/main-content.css");
+@import url("./layout/page.css");
+@import url("./base/icon.css");
+@import url("./animation/loading.css");
+@import url("./layout/assetForm.css");
+@import url('./base/tooltips.css');
+@import url('./base/table-paging.css');
+
+body{
+    margin: 0;
+    font-family: font_Roboto;
+}
+
+*{
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+@font-face {
+    font-family: font_Roboto;
+    src: url("../font/Roboto-Regular.ttf");
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: font_Roboto;
+    src: url("../font/Roboto-Bold.ttf");
+    font-weight: 700;
+}
+

@@ -1,0 +1,53 @@
+.header{
+    display: flex;
+    width: calc(100% - 200px);
+    float: left;
+    height: 44px;
+    padding: 0 20px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left{
+    font-weight: 700;
+}
+
+.header-right{
+    display: flex;
+    align-items: center;
+    padding-right: 6px;
+}
+
+.header-right-text{
+    padding-right: 26px;
+}
+
+
+.header-right-year-option{
+    display: flex;
+    column-gap: 14px;
+    margin-right: 31px;
+    align-items: center;
+    justify-content: center;
+    background-color: #d1edf4;
+    height: 30px;
+    width: 112px;
+    padding: 0 6px 0 8px;
+}
+
+.year-option{
+    font-weight: 700;
+}
+
+.header-right-icons{
+    display: flex;
+    align-items: center;
+    column-gap: 20px;
+}
+
+.user-chevd-container{
+    display: flex;
+    column-gap: 8px;
+    align-items: center;
+}
+

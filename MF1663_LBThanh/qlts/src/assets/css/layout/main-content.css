@@ -1,0 +1,9 @@
+.main-content{
+    width: calc(100% - 200px);
+    height: calc(100vh - 44px);
+    padding: 0 20px 18px 20px;
+    background-color: #f4f7ff;
+    box-sizing: border-box;
+    float: left;
+    transition: all 0.3s ease;
+}

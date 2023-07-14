@@ -1,0 +1,151 @@
+.asset-form {
+  position: fixed;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.484);
+  z-index: 99999;
+  top: 0;
+  left: 0;
+}
+
+.asset-form {
+  opacity: 0; 
+  transition: opacity 0.3s ease; 
+}
+
+.asset-form.visible {
+  opacity: 1; 
+}
+
+.asset-form-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: #fff;
+  width: 860px;
+  height: 578px;
+  transform: translate(-50%, -50%);
+}
+
+.asset-form-content {
+  padding: 20px;
+}
+
+.input-lable {
+  padding-bottom: 10px;
+}
+
+.required-star {
+  color: red;
+}
+
+.asset-form-top {
+  display: flex;
+  justify-content: space-between;
+}
+
+.close-icon-container{
+  cursor: pointer;
+}
+
+.asset-form-name {
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.asset-form-row {
+  display: flex;
+  column-gap: 16px;
+  margin-top: 15px;
+  width: 263px;
+}
+
+.asset-row-left input {
+  width: 263px;
+}
+
+.asset-row-right input {
+  width: 542px;
+}
+
+.asset-row-right input::placeholder {
+  font-style: italic;
+  padding: 4px 0 4px 10px;
+}
+
+.asset-form-combobox-container {
+  display: flex;
+  width: 263px;
+  align-items: center;
+  border: 1px solid var(--border-color-default);
+  border-radius: 4px;
+}
+
+.asset-form-combobox-container:hover {
+  border-color: var(--color-primary);
+}
+
+.asset-form-combobox-container input::placeholder {
+  font-style: italic;
+}
+
+#asset-form-combobox {
+  width: 250px;
+  height: 32px;
+  border: none;
+  padding-left: 10px;
+}
+
+.combobox-chevd-icon-container {
+  padding-right: 8px;
+}
+
+.asset-form-number-input {
+  display: flex;
+  width: 263px;
+  align-items: center;
+  border: 1px solid var(--border-color-default);
+  border-radius: 4px;
+}
+
+.asset-form-number-input:hover {
+  border-color: var(--color-primary);
+}
+
+.asset-form-number-input input {
+  text-align: right;
+}
+
+.quantity-icon-container{
+  margin-left: 16px;
+  margin-right: 8px;
+}
+
+.asset-form-year-input{
+  display: flex;
+  width: 263px;
+  align-items: center;
+  border: 1px solid var(--border-color-default);
+  border-radius: 4px;
+}
+
+.asset-form-year-input input::placeholder{
+  text-align: left;
+
+}
+
+.asset-form-button{
+  display: flex;
+  justify-content: flex-end;
+  column-gap: 16px;
+  padding-right: 20px;
+  margin-top: 14px;
+}
+
+.asset-form-button button{
+  width: 96px;
+}
+
+.asset-form-button button:nth-child(1):hover{
+  background-color: #e2e2e2;
+}
