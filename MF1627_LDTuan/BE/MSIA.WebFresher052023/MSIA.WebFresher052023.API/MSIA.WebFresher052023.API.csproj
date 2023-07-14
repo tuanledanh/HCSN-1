@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MSIA.WebFresher052023.BL_Services\MSIA.WebFresher052023.BL_Services.csproj" />
+    <ProjectReference Include="..\MSIA.WebFresher052023.DL_Repositories\MSIA.WebFresher052023.DL_Repositories.csproj" />
+  </ItemGroup>
+
+</Project>
