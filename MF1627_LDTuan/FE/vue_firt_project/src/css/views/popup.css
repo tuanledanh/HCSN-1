@@ -1,0 +1,73 @@
+.popup{
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #0000005d;
+    z-index: 2;
+}
+
+.popup-container{
+    width: 860px;
+    height: 580px;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border-radius: 4px;
+}
+
+/*=================================== Popup head ===================================*/
+.popup-head{
+    padding: 20px 16px;
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/*=================================== Popup body ===================================*/
+.popup-body{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    padding-left: 16px;
+    box-sizing: border-box;
+}
+
+.popup-body__row{
+    box-sizing: border-box;
+    display: flex;
+    column-gap: 16px;
+}
+
+.popup__column{
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+}
+
+/*=================================== Popup foot ===================================*/
+.popup-foot{
+    background-color: #f5f5f5;
+    height: 52px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row-reverse;
+    column-gap: 10px;
+    align-items: center;
+    padding-right: 16px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
