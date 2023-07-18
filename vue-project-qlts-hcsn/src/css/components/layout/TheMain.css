@@ -1,0 +1,4 @@
+.main__layout {
+    background-color: var(--background-main-layout);
+    flex: 1;
+}
