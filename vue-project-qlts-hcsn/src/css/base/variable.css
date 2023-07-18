@@ -1,0 +1,65 @@
+:root {
+    /* Font color */
+    /* Background Light */
+    --text-light-title: #000000;
+    --text-light-primary: #212121;
+    --text-light-secondary: #666666;
+
+    /* Background Dark */
+    --text-dark-title: #ffffff;
+    --text-dark-primary: #dbdee3;
+    --text-dark-secondary: #7b8798;
+
+    --background-active: rgba(26, 164, 200, 0.2);
+    --background-active-icon: #1aa4c8;
+    --background-header-table: #f5f5f5;
+
+    /* Button Main */
+    --background-button-main-default: #1aa4c8;
+    --background-button-main-hover: #0582a2;
+    --background-button-main-active: #28b7dc;
+    --background-button-main-focus: #1aa4c8;
+    --background-button-main-disable: #8cd1e3;
+    --color-button-main: #ffffff;
+
+    /* Button Sub */
+    --border-button-sub: #1aa4c8;
+    --color-button-sub: #1aa4c8;
+    --background-button-sub-default: #ffffff;
+    --background-button-sub-hover: #d1edf4;
+    --background-button-sub-active: #ffffff;
+    --background-button-sub-focus: #ffffff;
+    --background-button-sub-disable: #ffffff;
+    --color-button-sub-disable: #8cd1e3;
+    --border-button-sub-disable: #8bd1e3;
+
+    /* Button Outline */
+    --background-button-outline-default: #ffffff;
+    --background-button-outline-hover: #1aa4c8;
+    --background-button-outline-active: #1aa4c8;
+    --background-button-outline-focus: #1aa4c8;
+    --background-button-outline-disable: #f5f5f5;
+    --color-button-outline-default: #000000;
+    --color-button-outline: #ffffff;
+    --color-button-outline-disable: #7a7a7a;
+    --border-button-outline-default: #afafaf;
+    --border-button-outline-disable: #d2d2d2;
+
+    /* Button Icon */
+    --background-button-icon-default: #ffffff;
+
+    /* Box shadow button hover */
+    --box-shadow-button-hover: #d1edf4;
+
+    /*  */
+    --background-sidebar: #1c3048;
+    --background-main-layout: #f4f7ff;
+    --background-main: #ffffff;
+    --border: #afafaf;
+    --background-number-page-active: #f5f5f5;
+    --recycle-bin: #ff3131;
+    --white: #ffffff;
+    --primary: #1aa4c8;
+    --border-active: #1aa4c8;
+    --border-table-row: #e0e0e0;
+}
