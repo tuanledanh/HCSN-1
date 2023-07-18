@@ -1,0 +1,30 @@
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Application.deps.json
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Application.dll
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Application.pdb
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.csproj.AssemblyReference.cache
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.AssemblyInfoInputs.cache
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.AssemblyInfo.cs
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.csproj.CoreCompileInputs.cache
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.dll
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\refint\Application.dll
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.pdb
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\ref\Application.dll
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Domain.dll
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Domain.pdb
+D:\MisaCode\BE-HCSN\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.csproj.CopyComplete
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Application.deps.json
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Application.dll
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Application.pdb
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Domain.dll
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\bin\Debug\net6.0\Domain.pdb
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.csproj.AssemblyReference.cache
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.GeneratedMSBuildEditorConfig.editorconfig
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.AssemblyInfoInputs.cache
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.AssemblyInfo.cs
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.csproj.CoreCompileInputs.cache
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.csproj.CopyComplete
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.dll
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\refint\Application.dll
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\Application.pdb
+D:\MisaCode\git nhóm\HCSN-1\MF1627_LDTuan\BE\MSIA.WebFresher052023.CleanArchitecture\Application\obj\Debug\net6.0\ref\Application.dll
