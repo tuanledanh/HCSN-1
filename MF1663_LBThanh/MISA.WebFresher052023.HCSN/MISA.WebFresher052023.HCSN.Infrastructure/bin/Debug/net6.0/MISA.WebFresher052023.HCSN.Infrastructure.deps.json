@@ -1,0 +1,68 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "MISA.WebFresher052023.HCSN.Infrastructure/1.0.0": {
+        "dependencies": {
+          "Dapper": "2.0.143",
+          "MISA.WebFresher052023.HCSN.Domain": "1.0.0",
+          "MySqlConnector": "2.2.6"
+        },
+        "runtime": {
+          "MISA.WebFresher052023.HCSN.Infrastructure.dll": {}
+        }
+      },
+      "Dapper/2.0.143": {
+        "runtime": {
+          "lib/net5.0/Dapper.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.143.55328"
+          }
+        }
+      },
+      "MySqlConnector/2.2.6": {
+        "runtime": {
+          "lib/net6.0/MySqlConnector.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.2.6.0"
+          }
+        }
+      },
+      "MISA.WebFresher052023.HCSN.Domain/1.0.0": {
+        "runtime": {
+          "MISA.WebFresher052023.HCSN.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MISA.WebFresher052023.HCSN.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Dapper/2.0.143": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Vh0U+Fins3IpS7APUlrzga3+1mswWngB5fZ0xj4w+FQR5JhJzA5uHV5rSepkahvmshNZUA0YcHtae9vFQpiVTw==",
+      "path": "dapper/2.0.143",
+      "hashPath": "dapper.2.0.143.nupkg.sha512"
+    },
+    "MySqlConnector/2.2.6": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-oYHl9TNhJXBEqfuiaEsOdBPkdULOcCCbqZJzYhy0rtREnMVoluG73GM8+gwBCMb1vbjv9K1ehQnhe0cxdxfOCA==",
+      "path": "mysqlconnector/2.2.6",
+      "hashPath": "mysqlconnector.2.2.6.nupkg.sha512"
+    },
+    "MISA.WebFresher052023.HCSN.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
