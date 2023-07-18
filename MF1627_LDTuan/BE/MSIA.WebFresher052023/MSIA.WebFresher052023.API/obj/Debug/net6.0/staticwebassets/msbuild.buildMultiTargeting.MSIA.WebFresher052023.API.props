@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\MSIA.WebFresher052023.API.props" />
-</Project>

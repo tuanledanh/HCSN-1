@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\buildMultiTargeting\MSIA.WebFresher052023.API.props" />
-</Project>
