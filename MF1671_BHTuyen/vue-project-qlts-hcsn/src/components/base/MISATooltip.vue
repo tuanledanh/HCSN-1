@@ -1,6 +1,6 @@
 <template>
     <section class="absolute t-tooltip br-4" :class="classTooltip">
-        <section class="t-tooltip__wrapper relative br-4">
+        <section class="t-tooltip__wrapper relative br-4 center">
             <h1 class="t-tooltip__content">{{ content }}</h1>
         </section>
     </section>
@@ -14,10 +14,12 @@ export default {
      * Định nghĩa props cho component
      */
     props: {
+        // Nội dung tooltip
         content: {
             type: String,
             default: 'hehhhf'
         },
+        // Loại tooltip
         type: {
             type: String,
             default: 'bottom'

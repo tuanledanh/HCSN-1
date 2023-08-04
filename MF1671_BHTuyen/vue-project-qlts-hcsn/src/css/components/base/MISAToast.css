@@ -6,14 +6,21 @@
     row-gap: 30px;
 }
 
+.t-toast_success {
+    width: 300px;
+}
+
 .t-toast__footer {
-    height: 50px;
     text-align: right;
     justify-content: right;
     column-gap: 16px;
 }
 .t-toast__content {
     column-gap: 30px;
+}
+
+.t-toast__content_success {
+    height: 15px;
 }
 
 .t-toast--icon-warning {
@@ -40,6 +47,20 @@
     background-position: -71px -512px;
     width: 11px;
     height: 8px;
+}
+
+.error {
+    background-position: -71px -512px;
+    width: 11px;
+    height: 8px;
+}
+
+.t-toast--icon-error {
+    background-color: #ff0000;
+    border-radius: 50%;
+    height: 30px;
+    aspect-ratio: 1;
+    box-shadow: 0 0 0 5px #f5b8b8;
 }
 
 .t-toast--title {

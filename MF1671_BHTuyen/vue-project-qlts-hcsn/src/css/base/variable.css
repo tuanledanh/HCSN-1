@@ -62,4 +62,8 @@
     --primary: #1aa4c8;
     --border-active: #1aa4c8;
     --border-table-row: #e0e0e0;
+
+    --grid-template-columns: 50px 50px 100px minmax(150px, 3fr) minmax(150px, 3fr)
+        minmax(150px, 3fr) minmax(50px, 1fr) repeat(3, minmax(100px, 2fr)) 140px;
+    --grid-template-columns-footer-right: minmax(50px, 1fr) repeat(3, minmax(100px, 2fr)) 140px;
 }

@@ -1,9 +1,12 @@
 <template>
     <header class="main__header h-44 center-y bg-white justify-between px-20 w-100">
+        <!-- Tiêu đề -->
         <section class="main__header__left fw-700 center-y">Danh sách tài sản</section>
         <section class="main__header__right center-y">
+            <!-- Organization -->
             <section class="header__right__title">Sở tài chính</section>
 
+            <!-- Năm hiện tại -->
             <section class="header__right__year center-y br-4">
                 <span class="year__title">Năm</span>
                 <span class="year fw-700 center-y">{{ yearFollow }}</span>
@@ -14,6 +17,7 @@
                 </section>
             </section>
 
+            <!--  -->
             <section class="header__right__icon center-y col-gap-20">
                 <section class="wrapper-icon relative">
                     <section class="notification icon"></section>
@@ -40,7 +44,7 @@
 </template>
 
 <script>
-import { useYearFollow } from '/src/stores/yearFollow.js'
+import { useYearOfTrack } from '/src/stores/yearOfTrack.js'
 
 export default {
     name: 'TheHeader',
@@ -51,26 +55,26 @@ export default {
          * Author: Bùi Huy Tuyền (11/07/2023)
          * Lấy dữ liệu từ trong store
          */
-        yearFollowStore() {
-            return useYearFollow()
+        yearOfTrackStore() {
+            return useYearOfTrack()
         },
         /**
          * Lấy năm hiện tại
          */
         yearFollow() {
-            return this.yearFollowStore.yearFollow
+            return this.yearOfTrackStore.yearOfTrack
         },
         /**
          * Hàm tăng năm
          */
         increase() {
-            return this.yearFollowStore.increase
+            return this.yearOfTrackStore.increase
         },
         /**
          * Hàm giảm năm
          */
         decrease() {
-            return this.yearFollowStore.decrease
+            return this.yearOfTrackStore.decrease
         }
     }
 }

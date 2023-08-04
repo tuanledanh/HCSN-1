@@ -1,0 +1,79 @@
+.table__row {
+    grid-template-columns:
+        50px 50px 100px minmax(150px, 3fr) minmax(150px, 3fr) minmax(150px, 3fr) minmax(50px, 1fr)
+        repeat(3, minmax(100px, 2fr))
+        140px;
+    animation: table__row cubic-bezier(0.895, 0.03, 0.685, 0.22) ease-in-out;
+    cursor: pointer;
+    overflow: hidden;
+}
+.table__row > .row__code,
+.table__row > .row__name,
+.table__row > .row__category,
+.table__row > .row_department,
+.table__row > .row_cost {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table__row > .row__option {
+    justify-content: center;
+    column-gap: 12px;
+}
+
+.table__row > .row__option > .wrapper-icon {
+    visibility: hidden;
+}
+
+.table__row:hover {
+    background-color: var(--background-active);
+}
+
+.table__row > .row__option:hover > .wrapper-icon {
+    visibility: visible;
+}
+
+.row-active > .row__option > .wrapper-icon {
+    visibility: visible;
+}
+
+.row__option > .wrapper-icon:active {
+    background-color: #e0e0e0;
+    border-radius: 50%;
+}
+
+.table__row > .row_quantity {
+    text-align: right;
+}
+
+.row-active {
+    background-color: var(--background-active);
+}
+
+.table__row {
+    border-bottom: 1px solid var(--border-table-row);
+}
+
+.edit {
+    background-position: -156px -68px;
+    width: 16px;
+    height: 16px;
+}
+
+.copy {
+    background-position: -244px -112px;
+    width: 16px;
+    height: 16px;
+}
+
+@keyframes table__row {
+    0% {
+        opacity: 0;
+        transform: translateX(-5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}

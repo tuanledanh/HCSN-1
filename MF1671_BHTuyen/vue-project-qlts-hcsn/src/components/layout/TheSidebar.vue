@@ -4,6 +4,7 @@
         :style="styleSidebar"
         :class="{ sidebar__grow: isSidebarGrow }"
     >
+        <!-- Sidebar Header -->
         <header class="sidebar__header px-15 pt-10 pb-4 center-y col-gap-16">
             <section class="wh-36 center pointer">
                 <section class="sidebar__header__icon icon"></section>
@@ -12,6 +13,7 @@
             <h1 class="sidebar__header__title">MISA QLTS</h1>
         </header>
 
+        <!-- Sidebar body -->
         <main
             class="sidebar__body flex-column px-11 pt-15"
             :class="{ sidebar__shrink: !isSidebarGrow }"
@@ -20,12 +22,12 @@
                 <m-sidebarItem>Tổng quan</m-sidebarItem>
                 <m-tooltip content="Tổng quan" type="right" />
             </router-link>
-            <router-link to="/estate" class="relative">
+            <router-link to="/fixed_asset" class="relative">
                 <m-sidebarItem iconDown order="2">Tài sản</m-sidebarItem>
                 <m-tooltip content="Tài sản" type="right" />
             </router-link>
 
-            <router-link to="/estatehtdb" class="relative">
+            <router-link to="/fixed_asset_htdb" class="relative">
                 <m-sidebarItem iconDown order="3">Tài sản HT-ĐB</m-sidebarItem>
                 <m-tooltip content="Tài sản HT-ĐB" type="right" />
             </router-link>
@@ -47,9 +49,13 @@
             </router-link>
         </main>
 
+        <!-- Sidebar Footer -->
         <footer class="sidebar__footer h-40 w-100 center-y">
             <section class="wrapper-icon" @click="toggleIconSidebar">
-                <section class="icon sidebar__footer-icon"></section>
+                <section
+                    class="icon sidebar__footer-icon"
+                    :title="isSidebarGrow ? 'Thu hẹp' : 'Bung rộng'"
+                ></section>
             </section>
         </footer>
     </aside>

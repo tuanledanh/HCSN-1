@@ -2,7 +2,7 @@
     opacity: 0.6;
 }
 
-.sidebar__body-item:hover,
+/* .sidebar__body-item:hover, */
 .sidebar__body-item--active {
     opacity: 1;
     background-color: var(--background-active-icon);

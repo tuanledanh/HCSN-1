@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "uPLtytMQrzwvpMvM8JTTCMcEn2IdhJuTAkydaDuwlTYFREroxihVVns7zbfZkuGOny9cD/KTB3Qo7CuKcM8KqQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\BuiHuyTuyen\\Desktop\\web202305\\mf1671-bhtuyen\\aspnetcore\\MISA.WebFresher052023\\MISA.WebFresher052023.Infrastructure\\MISA.WebFresher052023.Infrastructure.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\BuiHuyTuyen\\.nuget\\packages\\dapper\\2.0.143\\dapper.2.0.143.nupkg.sha512",
+    "C:\\Users\\BuiHuyTuyen\\.nuget\\packages\\mysqlconnector\\2.2.7\\mysqlconnector.2.2.7.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -101,3 +101,7 @@
     padding-right: 16px;
     column-gap: 4px;
 }
+
+.buttonIcon:active {
+    background-color: #e0e0e0;
+}

@@ -9,9 +9,9 @@ const router = createRouter({
             component: () => import('/src/views/home/ViewHome.vue')
         },
         {
-            path: '/estate',
-            name: 'estate',
-            component: () => import('/src/views/estate/EstateTable.vue')
+            path: '/fixed_asset',
+            name: 'fixed_asset',
+            component: () => import('/src/views/fixed_asset/FixedAssetTable.vue')
         },
         {
             path: '/report',
@@ -39,9 +39,9 @@ const router = createRouter({
             component: () => import('/src/views/category/ViewCategory.vue')
         },
         {
-            path: '/estatehtdb',
-            name: 'estatehtdb',
-            component: () => import('/src/views/estatehtdb/ViewEstateHtdb.vue')
+            path: '/fixed_asset_htdb',
+            name: 'fixed_asset_htdb',
+            component: () => import('/src/views/fixed_asset_htdb/ViewFixedAssetHTDB.vue')
         }
     ]
 })

@@ -1,13 +1,13 @@
 <template>
-    <label class="flex-column row-gap-10" :class="classLabel">
+    <label class="flex-column row-gap-10 t-input-misa" :class="classLabel">
         <p v-if="!!label">{{ label }} <span class="require">*</span></p>
         <section class="relative center-y">
-            <section class="wrapper-icon absolute l-7" v-if="!!$slots.iconLeft">
+            <section class="wrapper-icon absolute l-7 icon-left" v-if="!!$slots.iconLeft">
                 <slot name="iconLeft"></slot>
             </section>
 
             <input
-                type="text"
+                :type="type"
                 class="t-input w-100"
                 :class="[
                     classInput,
@@ -15,7 +15,9 @@
                         't-input-placeholder': placeholderItalics,
                         't-input__icon--left': !!$slots.iconLeft,
                         't-input__icon--right': !!$slots.iconRight
-                    }
+                    },
+                    { invalid: invalid },
+                    { readonly: readonly }
                 ]"
                 :placeholder="placeholder"
                 ref="input"
@@ -25,6 +27,9 @@
                 v-model="inputValue"
                 @input="(event) => changeInput(event.target.value)"
                 :style="styleInput"
+                @focus.stop="$emit('focus')"
+                @blur="blur"
+                :maxlength="maxlength"
             />
 
             <section class="wrapper-icon absolute r-6" v-if="!!$slots.iconRight">
@@ -42,56 +47,74 @@ export default {
      * ĐỊnh nghĩa props cho component
      */
     props: {
+        // Class của label
         classLabel: {
             type: String,
             default: ''
         },
+        // không được để trống
         required: {
             type: Boolean,
             default: false
         },
+        // tiêu đề
         label: {
             type: String,
             default: ''
         },
+        // tiêu đề placeholder
         placeholder: {
             type: String,
             default: ''
         },
-        focus: {
-            type: Boolean,
-            default: false
-        },
+        // Chữ nghiêng placeholder
         placeholderItalics: {
             type: Boolean,
             default: false
         },
+        // chỉ đọc
         readonly: {
             type: Boolean,
             default: false
         },
+        // thứ tự tab
         tabindex: {
             type: String,
             default: '0'
         },
+        // Chiều rộng của input
         width: {
             type: String,
             default: 'auto'
         },
+        // Class của input
         classInput: {
             type: String,
             default: ''
         },
+        // Giá trị của input
         modelValue: {
             type: String
         },
+        // Content right
         textRight: {
             type: Boolean,
             default: false
         },
+        // Loại input (text, number, date, ...)
+        typeOfInput: {
+            type: String,
+            default: 'text'
+        },
+        // loại input
         type: {
             type: String,
             default: 'text'
+        },
+        // Số ký tự tối đa
+        maxlength: {
+            type: String,
+            default: '255'
         }
     },
     /**
@@ -100,7 +123,8 @@ export default {
      */
     data() {
         return {
-            inputValue: ''
+            inputValue: '',
+            invalid: false
         }
     },
     /**
@@ -118,7 +142,7 @@ export default {
          * @param
          * @description: Hàm focus vào input
          */
-        focusInput() {
+        focus() {
             this.$refs.input.focus()
         },
         /**
@@ -127,7 +151,10 @@ export default {
          * @description: Hàm thay đổi giá trị input
          */
         changeInput(value) {
-            if (this.type === 'number') {
+            if (this.invalid && value !== '') this.invalid = false
+
+            // Nếu là input kiểu số
+            if (this.typeOfInput === 'number') {
                 value = value
                     .replace(/^0/g, '')
                     .replace(/([^0-9])/g, '')
@@ -138,7 +165,8 @@ export default {
                 this.inputValue = value
                 this.$emit('update:modelValue', value)
             }
-            if (this.type == 'percent') {
+            // Nếu là input kiểu tỷ lệ
+            if (this.typeOfInput == 'percent') {
                 value = value.replace(/^0/g, '').replace(/([^0-9,])/g, '')
                 if (value.includes(',') && value.indexOf(',') !== value.length - 1) {
                     value = value.replace(/,$/g, '')
@@ -148,12 +176,30 @@ export default {
                 this.inputValue = value
                 this.$emit('update:modelValue', value)
             }
-            if (this.type === 'text') {
+            // Nếu là input kiểu text
+            if (this.typeOfInput === 'text') {
                 this.inputValue = value
                 this.$emit('update:modelValue', value)
             }
+        },
+        /**
+         * Author: Bùi Huy Tuyền (04/07/2023)
+         * @description: Hàm blur input
+         */
+        blur() {
+            if (this.required) {
+                if (this.inputValue === '') {
+                    this.invalid = true
+                } else {
+                    this.invalid = false
+                }
+            }
         }
     },
+    /**
+     * Author: Bùi Huy Tuyền (04/07/2023)
+     * @description: Hàm khởi tạo giá trị cho component
+     */
     created() {
         this.inputValue = this.modelValue
     },
@@ -161,11 +207,6 @@ export default {
      * Author: Bùi Huy Tuyền (04/07/2023)
      * @description:  focus vào input khi component được mounted
      */
-    mounted() {
-        if (this.focus) {
-            this.$refs.input.focus()
-        }
-    },
     computed: {
         /**
          * Author: Bùi Huy Tuyền (04/07/2023)

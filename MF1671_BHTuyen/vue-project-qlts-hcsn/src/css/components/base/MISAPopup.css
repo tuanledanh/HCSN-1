@@ -13,15 +13,24 @@
     height: 18px;
 }
 
+.t-popup > .t-popup__header > .wrapper-icon:hover {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+}
+
 .t-popup__footer {
-    height: 50px;
+    height: 60px;
     background-color: #f5f5f5;
     text-align: right;
     justify-content: right;
     column-gap: 16px;
     margin-left: -16px;
     margin-right: -16px;
-    padding: 0 16px;
+    padding-right: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
 }
 
 .blur {
@@ -31,9 +40,10 @@
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 99;
 }
 
-.success__message {
+.toast__message {
     position: absolute;
     right: 30px;
     bottom: 80px;
@@ -44,7 +54,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 578px;
+    height: 588px;
     width: 860px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
 }
@@ -57,27 +67,27 @@
     column-gap: 16px;
 }
 
-.edit__code {
+.fixedAssetCode {
     grid-area: 1/1/2/2;
 }
 
-.edit__name {
+.fixedAssetName {
     grid-area: 1/2/2/4;
 }
 
-.edit__code-part {
+.departmentCode {
     grid-area: 2/1/3/2;
 }
 
-.edit__name-part {
+.departmentName {
     grid-area: 2/2/3/4;
 }
 
-.edit__code-assets {
+.fixedAssetCategoryCode {
     grid-area: 3/1/4/2;
 }
 
-.edit__name-assets {
+.fixedAssetCategoryName {
     grid-area: 3/2/4/4;
 }
 
@@ -85,16 +95,16 @@
     color: red;
 }
 
-.edit__count input,
-.edit__ratio-atrophy input {
+.quantity input,
+.depreciationRate input {
     text-align: right;
     padding-right: 30px;
 }
 
-.edit__price input,
-.edit__year-number input,
-.edit_value-atrophy input,
-.edit__year-follow input {
+.cost input,
+.lifeTime input,
+.yearDepreciation input,
+.trackedYear input {
     text-align: right;
     padding-right: 12px;
 }

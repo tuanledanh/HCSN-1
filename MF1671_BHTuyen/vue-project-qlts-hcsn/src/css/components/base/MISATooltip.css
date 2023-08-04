@@ -1,9 +1,11 @@
 .t-tooltip {
     display: none;
-    background-color: var(--background-active);
+    background-color: var(--background-sidebar);
     width: auto;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-    z-index: 999;
+    z-index: 99999;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .t-tooltip--bottom {
@@ -12,25 +14,27 @@
     transform: translate(-50%, 0);
     min-width: 70px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-    z-index: 999;
+    z-index: 99999;
 }
 
 .t-tooltip--right {
     min-width: 100px;
-    right: 0;
+    right: -6px;
     top: 50%;
     transform: translate(calc(100% + 5px), -50%);
 }
 .t-tooltip--top {
-    min-width: 150px;
+    white-space: nowrap;
+    padding-left: 4px;
+    padding-right: 4px;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -150%);
+    transform: translate(-40%, -150%);
 }
 
 .t-tooltip__content {
     font-size: 1.2rem;
-    color: black;
+    color: #fff;
 }
 
 .t-tooltip__wrapper {
@@ -46,20 +50,31 @@
 .t-tooltip--bottom .t-tooltip__wrapper::before {
     content: '';
     position: absolute;
-    top: -10px;
+    top: -17px;
     left: 50%;
     transform: translateX(-50%);
-    border-color: transparent transparent var(--background-active) transparent;
+    border-color: transparent transparent var(--background-sidebar) transparent;
     border-style: solid;
     border-width: 5px 5px;
 }
 .t-tooltip--right .t-tooltip__wrapper::before {
     content: '';
     position: absolute;
-    left: -10px;
+    left: -9px;
     top: 50%;
     transform: translateY(-50%);
-    border-color: transparent var(--background-active) transparent transparent;
+    border-color: transparent var(--background-sidebar) transparent transparent;
+    border-style: solid;
+    border-width: 5px 5px;
+}
+
+.t-tooltip--top .t-tooltip__wrapper::before {
+    content: '';
+    position: absolute;
+    bottom: calc(-100% + 8px);
+    left: 50%;
+    transform: translate(50%, 50%);
+    border-color: var(--background-sidebar) transparent transparent transparent;
     border-style: solid;
     border-width: 5px 5px;
 }

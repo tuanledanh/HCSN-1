@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MISA.WebFresher052023.API</name>
+    </assembly>
+    <members>
+        <member name="F:MISA.WebFresher052023.API.Controllers.Base.BaseController`3._baseService">
+            <summary>
+            </summary>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseController`3.#ctor(MISA.WebFresher052023.Application.Interface.IBaseService{`0,`1,`2})">
+            <summary>
+            Hàm khởi tạo
+            </summary>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseController`3.CreateAsync(`1)">
+            <summary>
+            Tạo mới một bản ghi
+            </summary>
+            <param name="createDto">Thông tin đối tượng cần thêm (khóa chính sẽ được cấp tự động - không cần gửi thông tin khóa chính)</param>
+            <returns>IActionResult</returns>
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseController`3.UpdateAsync(System.String,`2)">
+            <summary>
+            Cập nhật một bản ghi
+            </summary>
+            <param name="id">Id (Khóa chính) của đối tượng</param>
+            <param name="updateDto">Đối tượng đã được chỉnh sửa</param>
+            <returns>IActionResult</returns>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseController`3.DeleteAsync(System.String)">
+            <summary>
+            Xóa một bản ghi
+            </summary>
+            <param name="id">Id (Khóa chính) của đối tượng</param>
+            <returns>IActionResult</returns>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="F:MISA.WebFresher052023.API.Controllers.Base.BaseReadOnlyController`1._baseReadOnlyService">
+            <summary>
+            
+            </summary>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseReadOnlyController`1.#ctor(MISA.WebFresher052023.Application.Interface.IBaseReadOnlyService{`0})">
+            <summary>
+            Hàm khởi tạo
+            </summary>
+            <param name="baseReadOnlyService"></param>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseReadOnlyController`1.GetAllAsync">
+            <summary>
+            Lấy tất cả các bản ghi
+            </summary>
+            <returns>Tất cả bản ghi</returns>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseReadOnlyController`1.GetAsync(System.String)">
+            <summary>
+            Lấy bản ghi theo Id
+            </summary>
+            <param name="id">Id (Khóa chính) của đối tượng</param>
+            <returns>Một bản ghi với Id truyền vào</returns>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.DepartmentController.#ctor(MISA.WebFresher052023.Application.Interface.IDepartmentService)">
+            <summary>
+            Hàm khởi tạo
+            </summary>
+            <param name="departmentService"></param>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetCategoryController.#ctor(MISA.WebFresher052023.Application.Interface.IFixedAssetCategoryService)">
+            <summary>
+            Hàm khởi tạo
+            </summary>
+            <param name="fixedAssetCategoryService"></param>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="F:MISA.WebFresher052023.API.Controllers.FixedAssetController._fixedAssetService">
+            <summary>
+            
+            </summary>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.#ctor(MISA.WebFresher052023.Application.Interface.IFixedAssetService)">
+            <summary>
+            Hàm khởi tạo
+            </summary>
+            <param name="fixedAssetService"></param>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.DeleteManyAsync(System.Collections.Generic.List{System.String})">
+            <summary>
+            Xóa nhiều bản ghi
+            </summary>
+            <param name="fixedAssetIds">Danh sách các mã ID của các tài sản cần xóa</param>
+            <returns></returns>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.GetEstateCodeAsync">
+            <summary>
+            Lấy mã tài sản mới gợi ý
+            </summary>
+            <returns>Mã tài sản</returns>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.GetFixedAssetPagingAsync(MISA.WebFresher052023.Application.Dto.FixedAsset.FixedAssetFilterDto)">
+            <summary>
+            Lấy ra danh sách tài sản theo trang và bộ lọc
+            </summary>
+            <param name="fixedAssetFilterDto">Các biến lọc</param>
+            <returns>Danh sách tài sản và tổng số trang</returns>
+            Created By: Bùi Huy Tuyền (27/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.ExportFixedAssetAsync(System.Collections.Generic.List{System.String})">
+            <summary>
+            Xuất danh sách tài sản ra file excel
+            </summary>
+            <param name="fixedAssetIds">Danh sách Id của tài sản</param>
+            <returns>File Excel trả về</returns>
+            Created By: Bùi Huy Tuyền (27/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.ExcelHelper.ExportToExcelHelper.UpdateDataIntoExcelTemplate(System.Collections.Generic.IEnumerable{MISA.WebFresher052023.Application.Dto.FixedAsset.FixedAssetExcel},System.String)">
+            <summary>
+            Truyền dữ liệu vào file excel mẫu
+            </summary>
+            <param name="fixedAssetExcels">Danh sách tài sản cần xuất</param>
+            <param name="filePath">Đường dẫn đến file mẫu</param>
+            <returns>Stream</returns>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="F:MISA.WebFresher052023.API.Middleware.ExceptionMiddleware._next">
+            <summary>
+            
+            </summary>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Middleware.ExceptionMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate)">
+            <summary>
+            
+            </summary>
+            <param name="next"></param>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Middleware.ExceptionMiddleware.Invoke(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            
+            </summary>
+            <param name="httpContext"></param>
+            <returns></returns>
+            Created By: Bùi Huy Tuyền (19/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Middleware.ExceptionMiddleware.HandleExceptionAsync(Microsoft.AspNetCore.Http.HttpContext,System.Exception)">
+            <summary>
+            
+            </summary>
+            <param name="httpContext"></param>
+            <param name="exception"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

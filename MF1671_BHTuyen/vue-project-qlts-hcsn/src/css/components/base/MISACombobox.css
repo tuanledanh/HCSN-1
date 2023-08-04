@@ -1,6 +1,6 @@
 .combobox__select--list {
     background-color: var(--white);
-    top: 36px;
+    top: 40px;
     padding: 8px;
     overflow-y: auto;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
@@ -33,6 +33,18 @@
     scroll-snap-align: start;
 }
 
+.combobox__select--item .title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.combobox__select--item .check {
+    background-position: -160px -424px;
+    width: 10px;
+    height: 8px;
+}
+
 .combobox__select--item:focus {
     background-color: var(--background-active);
 }
@@ -49,4 +61,9 @@
 }
 .t-combobox__icon--left {
     padding-right: 40px;
+}
+
+.t-combobox .left:hover {
+    background-color: #e0e0e0;
+    border-radius: 4px;
 }
