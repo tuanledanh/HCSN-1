@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "dgSpecHash": "uDDZ+4hX6rzEv/vlmi6CSZH4SzU1+NVESEnrKncmcgJJe48+tdZ56LfvOyWHko8fnkPN191D263yP9NgAe+3fA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Nguyen Hai Trieu\\source\\repos\\MISA.FresherWeb202305.Demo\\MISA.FresherWeb202305.Demo.Domain\\MISA.FresherWeb202305.Demo.Domain.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Nguyen Hai Trieu\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
+    "C:\\Users\\Nguyen Hai Trieu\\.nuget\\packages\\microsoft.netcore.platforms\\2.0.0\\microsoft.netcore.platforms.2.0.0.nupkg.sha512",
+    "C:\\Users\\Nguyen Hai Trieu\\.nuget\\packages\\system.configuration.configurationmanager\\4.5.0\\system.configuration.configurationmanager.4.5.0.nupkg.sha512",
+    "C:\\Users\\Nguyen Hai Trieu\\.nuget\\packages\\system.security.accesscontrol\\4.5.0\\system.security.accesscontrol.4.5.0.nupkg.sha512",
+    "C:\\Users\\Nguyen Hai Trieu\\.nuget\\packages\\system.security.cryptography.protecteddata\\4.5.0\\system.security.cryptography.protecteddata.4.5.0.nupkg.sha512",
+    "C:\\Users\\Nguyen Hai Trieu\\.nuget\\packages\\system.security.permissions\\4.5.0\\system.security.permissions.4.5.0.nupkg.sha512",
+    "C:\\Users\\Nguyen Hai Trieu\\.nuget\\packages\\system.security.principal.windows\\4.5.0\\system.security.principal.windows.4.5.0.nupkg.sha512",
+    "C:\\Users\\Nguyen Hai Trieu\\.nuget\\packages\\z.dapper.plus\\6.0.1\\z.dapper.plus.6.0.1.nupkg.sha512"
+  ],
+  "logs": []
+}

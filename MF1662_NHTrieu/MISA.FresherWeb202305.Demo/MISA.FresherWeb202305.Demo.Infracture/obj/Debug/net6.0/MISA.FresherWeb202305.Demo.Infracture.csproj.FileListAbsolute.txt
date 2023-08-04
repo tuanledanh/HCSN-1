@@ -1,0 +1,17 @@
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.csproj.AssemblyReference.cache
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.AssemblyInfoInputs.cache
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.AssemblyInfo.cs
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.csproj.CoreCompileInputs.cache
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\bin\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.deps.json
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\bin\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.dll
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\bin\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.pdb
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\bin\Debug\net6.0\MISA.FresherWeb202305.Demo.Domain.dll
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\bin\Debug\net6.0\MISA.FresherWeb202305.Demo.Domain.pdb
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.csproj.CopyComplete
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.dll
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\refint\MISA.FresherWeb202305.Demo.Infracture.dll
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\MISA.FresherWeb202305.Demo.Infracture.pdb
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\obj\Debug\net6.0\ref\MISA.FresherWeb202305.Demo.Infracture.dll
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\bin\Debug\net6.0\MISA.FresherWeb202305.Demo.Application.dll
+C:\Users\Nguyen Hai Trieu\source\repos\MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.Infracture\bin\Debug\net6.0\MISA.FresherWeb202305.Demo.Application.pdb
