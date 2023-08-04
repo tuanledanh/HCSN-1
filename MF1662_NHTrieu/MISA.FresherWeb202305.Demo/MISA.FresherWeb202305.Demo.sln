@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32804.467
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MISA.FresherWeb202305.Demo", "MISA.FresherWeb202305.Demo\MISA.FresherWeb202305.Demo.csproj", "{2CA0AEF3-61FD-4829-BF16-943A047AA93F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MISA.FresherWeb202305.Demo.Domain", "MISA.FresherWeb202305.Demo.Domain\MISA.FresherWeb202305.Demo.Domain.csproj", "{806C8000-CD03-4631-BEE2-E3F80FFBE8E5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MISA.FresherWeb202305.Demo.Application", "MISA.FresherWeb202305.Demo.Application\MISA.FresherWeb202305.Demo.Application.csproj", "{0DE07482-5533-4618-B3B2-61BC9317F951}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MISA.FresherWeb202305.Demo.Infracture", "MISA.FresherWeb202305.Demo.Infracture\MISA.FresherWeb202305.Demo.Infracture.csproj", "{5F76C980-5B34-4349-A3AE-1E1D691F97E1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MISA.FresherWeb202305.Demo.Domain.Tests", "MISA.FresherWeb202305.Demo.Domains\MISA.FresherWeb202305.Demo.Domain.Tests.csproj", "{3FC0C577-86AA-46F6-9653-BE0AB9FC6CE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MISA.FresherWeb202305.Demo.Application.Tests", "MISA.FresherWeb202305.Demo.Applications\MISA.FresherWeb202305.Demo.Application.Tests.csproj", "{E98DA5FD-3D98-4098-A4D9-64E8C7D68548}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2CA0AEF3-61FD-4829-BF16-943A047AA93F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CA0AEF3-61FD-4829-BF16-943A047AA93F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CA0AEF3-61FD-4829-BF16-943A047AA93F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CA0AEF3-61FD-4829-BF16-943A047AA93F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{806C8000-CD03-4631-BEE2-E3F80FFBE8E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{806C8000-CD03-4631-BEE2-E3F80FFBE8E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{806C8000-CD03-4631-BEE2-E3F80FFBE8E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{806C8000-CD03-4631-BEE2-E3F80FFBE8E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DE07482-5533-4618-B3B2-61BC9317F951}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DE07482-5533-4618-B3B2-61BC9317F951}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DE07482-5533-4618-B3B2-61BC9317F951}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DE07482-5533-4618-B3B2-61BC9317F951}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F76C980-5B34-4349-A3AE-1E1D691F97E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F76C980-5B34-4349-A3AE-1E1D691F97E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F76C980-5B34-4349-A3AE-1E1D691F97E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F76C980-5B34-4349-A3AE-1E1D691F97E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FC0C577-86AA-46F6-9653-BE0AB9FC6CE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FC0C577-86AA-46F6-9653-BE0AB9FC6CE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FC0C577-86AA-46F6-9653-BE0AB9FC6CE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FC0C577-86AA-46F6-9653-BE0AB9FC6CE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E98DA5FD-3D98-4098-A4D9-64E8C7D68548}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E98DA5FD-3D98-4098-A4D9-64E8C7D68548}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E98DA5FD-3D98-4098-A4D9-64E8C7D68548}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E98DA5FD-3D98-4098-A4D9-64E8C7D68548}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {77C22F1A-CBBB-4B60-A610-7BF90452B400}
+	EndGlobalSection
+EndGlobal
