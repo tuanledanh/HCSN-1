@@ -1,0 +1,60 @@
+.main-content {
+    background-color: #f4f7ff;
+    width: calc(100% - 200px);
+    height: calc(100vh - 44px);
+    float: right;
+    box-sizing: border-box;
+    padding: 13px 20px 26px 19px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 14px;
+    transition: all ease-in-out 0.1s;
+}
+
+.main-content--expand{
+    width: calc(100% - 66px);
+}
+
+.main-content--expand .depreciation{
+    width: 125px !important;
+}
+
+.main-content--expand .price{
+    width: 125px !important;
+}
+
+.main-content--expand .residualValue{
+    width: 125px !important;
+}
+
+/*============================= Main content top =============================*/
+.content-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content-top--left {
+    display: flex;
+    flex-direction: row;
+    column-gap: 11px;
+}
+
+.content-top--right {
+    display: flex;
+    align-items: center;
+    column-gap: 10px;
+}
+
+
+/*============================= Main content body =============================*/
+.content-body {
+    width: 100%;
+    height: calc(100% - 36px);
+    display: flex;
+    flex-direction: column;
+    border-radius: 3.5px;
+    border: 1px solid  #afafaf;
+    box-sizing: border-box;
+}
