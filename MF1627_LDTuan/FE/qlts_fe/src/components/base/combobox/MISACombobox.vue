@@ -1,0 +1,308 @@
+<template>
+  <div @dblclick="isShowData = true">
+    <!-- Xem lại video combox để biết cách truyền dữ liệu từ form sang -->
+    <MISALabel v-if="label" :label="label" :required="required"></MISALabel>
+    <div class="selectOption" @mouseleave="handleMouseLeave">
+      <MISAInput
+        combobox
+        :placeholder="placeholder"
+        v-model="inputText"
+        @indexHover="onIndexHover"
+        @focus="$emit('focus')"
+        ref="input"
+        maxlength="100"
+      ></MISAInput>
+      <div v-if="isShowData" class="selectOption__data">
+        <div
+          class="selectOption-item"
+          :class="[
+            { 'selectOption-item--selected': item == itemSelected },
+            {
+              'selectOption-item--hover':
+                itemFilter.indexOf(item) == indexHover,
+            },
+          ]"
+          v-for="item in itemFilter"
+          :key="item[propValue]"
+          @click="onSelectItem(item)"
+        >
+          <MISAIcon tick_true></MISAIcon>
+          <span>{{ item[propText] }}</span>
+        </div>
+      </div>
+      <MISAIcon filter tooltip content="Lọc" position="bot"></MISAIcon>
+      <MISAIcon drop_down combobox @click="onShowData"></MISAIcon>
+    </div>
+  </div>
+</template>
+<script>
+import axios from "axios";
+
+export default {
+  name: "MISACombobox",
+  props: {
+    // Nội dung của placeholder, truyền về cho input
+    placeholder: {
+      type: String,
+      default: "",
+    },
+
+    // Api nhận từ component cha, để thực hiện lấy dữ liệu
+    api: {
+      type: String,
+      default: null,
+    },
+
+    // Id, mã code của bản ghi khi thực hiện cập nhật
+    existCode: {
+      type: String,
+      default: null,
+    },
+
+    // Value của object hiển thị trên combobox
+    propValue: {
+      type: String,
+      default: "",
+    },
+
+    // Giá trị hiển thị trên combobox
+    propText: {
+      type: String,
+      default: "",
+    },
+
+    // Tên nhãn dán
+    label: {
+      type: String,
+      default: "",
+    },
+
+    // Kiểm tra coi có cần xài icon required không
+    required: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Giá trị nhận từ component cha, truyền về để search
+    inputChange: {
+      type: String,
+      default: "",
+    },
+  },
+  data() {
+    return {
+      // Data đầy đủ nhận được từ api
+      ComboboxItems: [],
+      
+      // Data dùng để search
+      itemFilter: [],
+      
+      // Hiển thị danh sách dữ liệu hay không
+      isShowData: false,
+      
+      // Item được chọn
+      itemSelected: {},
+      
+      // Item được chọn bằng click chuột
+      itemSelectedByClick: {},
+      
+      // Giá trị hiển thị trên ô input
+      inputText: "",
+      
+      // Giá trị hover khi sử dụng bàn phím
+      indexHover: -1,
+      
+      // Xem người dùng nhấn phím gì trên bàn phím
+      keyCode: null,
+    };
+  },
+  watch: {
+    /**
+     * Theo dõi sự thay đổi của input text và gán lại giá trị
+     * @param {string} value giá trị mới của input
+     * Author: LDTUAN (02/08/2023)
+     */
+    inputChange(value) {
+      this.inputText = value;
+    },
+
+    /**
+     * Kiểm tra nếu item trong combobox có chứa inputText thì gán các giá trị đó vào itemFilter để hiển thị
+     * @param {string} value giá trị mới của input text
+     * Author: LDTUAN (02/08/2023)
+     */
+    inputText(value) {
+      if (value == null || value == "") {
+        this.indexHover = -1;
+        this.isShowData = true;
+      }
+      this.itemFilter = [];
+      let itemFilter = this.ComboboxItems.filter((i) => {
+        if (i[this.propText] != null) {
+          return i[this.propText].toLowerCase().includes(value.toLowerCase());
+        }
+      });
+      if (itemFilter != null && itemFilter.length > 0) {
+        this.itemFilter = itemFilter;
+      }
+      // else {
+      //   this.$emit("filter", "");
+      // }
+      if (this.keyCode != "Enter" && this.inputChange == null) {
+        this.isShowData = true;
+      } else {
+        this.keyCode = null;
+        this.indexHover = -1;
+        this.itemFilter = this.ComboboxItems;
+        if (this.inputChange != null) {
+          const matchedItem = this.itemFilter.find((item) =>
+            item[this.propText].toLowerCase().includes(value.toLowerCase())
+          );
+          this.itemSelected = matchedItem;
+          this.itemSelectedByClick = matchedItem;
+        }
+      }
+    },
+
+    /**
+     * Khi item được chọn thì đóng drop down lại, do khi chọn item thì inputText vẫn thay đổi
+     * và nó sẽ cập nhật isShowData bằng true, nên cần chuyển thành false để đóng lại
+     * Author: LDTUAN (02/08/2023)
+     */
+    itemSelected() {
+      this.isShowData = false;
+      this.itemFilter = this.ComboboxItems;
+      if (this.itemSelectedByClick) {
+        this.itemSelected = this.itemSelectedByClick;
+      }
+    },
+
+    /**
+     * Khi update thì hiển thị giá trị code đã tồn tại của bản ghi đó lên input
+     * @param {string} value giá trị của code đã tồn tài khi update
+     * Author: LDTUAN (02/08/2023)
+     */
+    existCode(value) {
+      const matchedItem = this.itemFilter.find((item) =>
+        item[this.propText].toLowerCase().includes(value.toLowerCase())
+      );
+      this.itemSelected = matchedItem;
+      this.itemSelectedByClick = matchedItem;
+      this.$emit("filter", matchedItem);
+      this.inputText = value;
+    },
+  },
+  mounted() {},
+  created() {
+    this.loadData();
+  },
+  methods: {
+    /**
+     * Di chuột ra ngoài thì ẩn data
+     */
+    handleMouseLeave() {
+      this.isShowData = false;
+    },
+
+    /**
+     * Focus vào ô nhập liệu
+     * Author: LDTUAN (02/08/2023)
+     */
+    focusInput() {
+      this.$refs.input.focusInput();
+    },
+
+    /***
+     * Tải dữ liệu từ api
+     * Author: LDTUAN (02/08/2023)
+     */
+    loadData() {
+      axios.get(this.api).then((res) => {
+        // Lưu vào data gốc
+        this.ComboboxItems = res.data;
+        // Lưu vào data sẽ hiển thị lên combobox, ở đây nghiệp vụ đơn giản nên thấy trùng với data gốc
+        // Nhưng nếu sau này data nhiều, kiểu muốn mỗi lần hiển thị 10 bản ghi thì dùng filter để giới hạn ngay từ đầu sẽ dễ hơn
+        this.itemFilter = res.data;
+      });
+    },
+
+    /**
+     * Click để ẩn hiện combobox và focus vào dòng đầu tiên
+     * Author: LDTUAN (02/08/2023)
+     */
+    onShowData() {
+      this.isShowData = !this.isShowData;
+      this.$refs.input.focusInput();
+    },
+
+    /**
+     * Gửi đối tượng được chọn về cho component cha để load dữ liệu tương ứng
+     * @param {object} item 1 đối tượng được chọn
+     * Author: LDTUAN (02/08/2023)
+     */
+    onSelectItem(item) {
+      this.inputText = item[this.propText];
+      this.itemSelected = {};
+      this.itemSelectedByClick = item;
+      this.indexHover = this.itemFilter.indexOf(this.itemSelectedByClick);
+      this.$emit("filter", item);
+      this.isShowData = false;
+    },
+
+    /**
+     * Sử dụng bàn phím để thực hiện thao tác chọn item
+     * @param {int} keyCode giá trị tương ứng với các phím trên bàn phím
+     * Author: LDTUAN (02/08/2023)
+     */
+    onIndexHover(keyCode) {
+      //if (this.isShowData) {
+      if (
+        this.indexHover == -1 &&
+        this.itemSelected != null &&
+        this.inputText != ""
+      ) {
+        this.indexHover = this.itemFilter.indexOf(this.itemSelected);
+      }
+      switch (keyCode) {
+        case this.$_MISAEnum.KEYCODE.DOWN:
+          if (this.indexHover < this.itemFilter.length - 1) {
+            this.indexHover++;
+          }
+          break;
+        case this.$_MISAEnum.KEYCODE.UP:
+          if (this.indexHover > -1) {
+            this.indexHover--;
+          }
+          break;
+        case this.$_MISAEnum.KEYCODE.ENTER:
+          if (this.inputText) {
+            const matchedItem = this.itemFilter.find((item) =>
+              item[this.propText]
+                .toLowerCase()
+                .includes(this.inputText.toLowerCase())
+            );
+            if (!matchedItem) {
+              return;
+            }
+          }
+          this.itemSelected = this.itemFilter[this.indexHover];
+          this.itemSelectedByClick = this.itemFilter[this.indexHover];
+          if (this.indexHover > -1) {
+            this.inputText = this.itemFilter[this.indexHover][this.propText];
+            this.$emit("filter", this.itemFilter[this.indexHover]);
+          } else {
+            this.$emit("filter", "");
+          }
+          this.keyCode = "Enter";
+          this.isShowData = false;
+          this.itemFilter = this.ComboboxItems;
+          break;
+      }
+      //}
+    },
+  },
+};
+</script>
+<style>
+@import url(../../../css/base/selectOption.css);
+</style>
