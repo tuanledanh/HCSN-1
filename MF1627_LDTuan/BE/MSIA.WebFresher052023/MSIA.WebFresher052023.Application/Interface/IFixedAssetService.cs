@@ -2,8 +2,8 @@
 using Domain.Entity;
 using Domain.Model;
 using MSIA.WebFresher052023.Application.Interface.Base;
-using MSIA.WebFresher052023.Application.Response;
 using MSIA.WebFresher052023.Application.Response.Base;
+using System.Data;
 
 namespace Application.Interface
 {
@@ -21,5 +21,12 @@ namespace Application.Interface
         /// Created by: ldtuan (23/07/2023)
         Task<BaseFilterResponse<FixedAssetDto>> GetAllCustomAsync(int? pageNumber, int? pageLimit, string filterName, string? departmentId, string? assetTypeId);
 
+        /// <summary>
+        /// Lấy dữ liệu tài sản dưới dạng dataTable
+        /// </summary>
+        /// <param name="idsQuery">Danh sách id các bản ghi</param>
+        /// <returns>DataTable</returns>
+        /// Created by: ldtuan (06/08/2023)
+        Task<DataTable> ExportExcel(string idsQuery);
     }
 }

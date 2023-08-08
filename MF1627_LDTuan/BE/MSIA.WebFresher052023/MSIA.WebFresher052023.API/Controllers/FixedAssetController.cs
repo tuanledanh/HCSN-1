@@ -2,6 +2,7 @@
 using Application.Interface;
 using AutoMapper;
 using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
 using DocumentFormat.OpenXml.Vml.Office;
 using Domain.Entity;
 using Domain.Exceptions;
@@ -40,86 +41,30 @@ namespace API.Controllers
             return StatusCode(StatusCodes.Status200OK, assetList);
         }
 
+        /// <summary>
+        /// Xuất thông tin ra file excel
+        /// </summary>
+        /// <param name="idsQuery">Danh sách id các bản ghi</param>
+        /// <returns>File</returns>
+        /// Created by: ldtuan (06/08/2023)
         [HttpGet("export")]
         public async Task<ActionResult> ExportExcel([FromQuery] string idsQuery)
         {
-
-            List<Guid> ids = idsQuery.Split(",").Select(x => Guid.Parse(x)).ToList();
-
-            List<FixedAsset> fixedAssets = await _fixedAssetService.GetListByIdsAsync(ids);
-
-            List<FixedAssetDto> fixedAssetDtos = fixedAssets.Select(fa => _mapper.Map<FixedAssetDto>(fa)).ToList();
-
-            //List<FixedAssetDto> fixedAssetDtos = new List<FixedAssetDto>();
-            //fixedAssetDtos.Add(new FixedAssetDto
-            //{
-            //    FixedAssetId= Guid.Parse("aab92299-30f0-11ee-b14c-f875a4da458a"),
-            //      FixedAssetCode= "FA00052",
-            //      FixedAssetName= "oijiohjpoij[ ouig iuhphouh oph 09 i90u 98 ",
-            //     DepartmentId= Guid.Parse("4e272fc4-7875-78d6-7d32-6a1673ffca7c"),
-            //      DepartmentCode= "DP0002",
-            //      DepartmentName= "Phòng ban Nghiên cứu và phát triển",
-            //      FixedAssetCategoryId= Guid.Parse("697be7ba-1738-6adf-298f-4d82f3a13455"),
-            //      FixedAssetCategoryCode= "FAC0007",
-            //      FixedAssetCategoryName= "Công cụ và dụng cụ thủ công",
-            //      PurchaseDate= DateTime.Now,
-            //      StartUsingDate= DateTime.Now,
-            //      Cost= 9098,
-            //      Quantity= 890809,
-            //      TrackedYear= 2023,
-            //      LifeTime= 13,
-            //      ProductionYear= 0
-            //});
-            if (fixedAssetDtos != null && fixedAssetDtos.Count > 0)
+            var assetData = await _fixedAssetService.ExportExcel(idsQuery);
+            using (XLWorkbook workBook = new XLWorkbook())
             {
-                var assetData = GetFixedAssetData(fixedAssetDtos);
-                using (XLWorkbook workBook = new XLWorkbook())
+                var workSheet = workBook.AddWorksheet(assetData, "Tài sản");
+                workSheet.Columns().AdjustToContents();
+                workSheet.Columns(7, 8).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.CenterContinuous;
+                workSheet.Columns(9, 13).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+                using (var memoryStream = new MemoryStream())
                 {
-                    var workSheet = workBook.AddWorksheet(assetData, "Tài sản");
-                    workSheet.Columns().AdjustToContents();
-                    using (MemoryStream memoryStream = new MemoryStream())
-                    {
-                        workBook.SaveAs(memoryStream);
-                        memoryStream.Position = 0;
-                        var result = File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Asset.xlsx");
-                        return result;
-                    }
+                    workBook.SaveAs(memoryStream);
+                    memoryStream.Position = 0;
+                    var result = File(memoryStream.ToArray(), "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Asset.xlsx");
+                    return result;
                 }
             }
-            else
-            {
-                throw new NotFoundException();
-            }
         }
-
-        [NonAction]
-        private DataTable GetFixedAssetData(List<FixedAssetDto> assetList)
-        {
-            var data = new DataTable();
-            data.TableName = "Báo cáo tài sản";
-            var properties = typeof(FixedAssetDto).GetProperties();
-            foreach (var property in properties)
-            {
-                data.Columns.Add(property.Name, property.PropertyType);
-            }
-
-            if (assetList != null && assetList.Count > 0)
-            {
-                var accessor = TypeAccessor.Create(typeof(FixedAssetDto));
-                foreach (var item in assetList)
-                {
-                    var row = data.NewRow();
-                    foreach (var property in properties)
-                    {
-                        var value = accessor[item, property.Name];
-                        row[property.Name] = value;
-                    }
-                    data.Rows.Add(row);
-                }
-            }
-
-            return data;
-        }
-
     }
 }

@@ -41,7 +41,7 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         public virtual async Task<IActionResult> GetAsync([FromRoute] string code)
         {
             var asset = await _baseService.GetAsync(code);
-            return StatusCode(StatusCodes.Status200OK, asset);
+            return StatusCode(StatusCodes.Status201Created, asset);
 
         }        
         /// <summary>

@@ -25,20 +25,20 @@ namespace Application.DTO.FixedAssett
         [StringLength(255, ErrorMessage = "Tên tài sản không được vượt quá 255 ký tự")]
         public string FixedAssetName { get; set; }
         /// <summary>
-        /// Id tài sản
+        /// Id phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         [Required(ErrorMessage = "Phải nhập id phòng ban")]
         public Guid DepartmentId { get; set; }
         /// <summary>
-        /// Mã tài sản
+        /// Mã phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         [Required(ErrorMessage = "Phải nhập mã phòng ban")]
         [StringLength(50, ErrorMessage = "Mã phòng ban không được vượt quá 50 ký tự")]
         public string DepartmentCode { get; set; }
         /// <summary>
-        /// Tên tài sản
+        /// Tên phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         [Required(ErrorMessage = "Phải nhập tên phòng ban")]

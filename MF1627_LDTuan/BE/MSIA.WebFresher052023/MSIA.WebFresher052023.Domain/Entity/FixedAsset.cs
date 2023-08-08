@@ -148,6 +148,11 @@ namespace Domain.Entity
         {
             return FixedAssetId;
         }
+
+        public Guid SetKey(Guid id)
+        {
+            return FixedAssetId = id;
+        }
         #endregion
     }
 }

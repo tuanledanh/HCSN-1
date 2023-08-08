@@ -47,10 +47,10 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         public virtual async Task<TEntity> GetAsync(Guid id)
         {
             var entity = await FindAsync(id);
-            if (entity == null)
-            {
-                throw new NotFoundException("Repository: Can not found " + typeof(TEntity).Name + " by this id");
-            }
+            //if (entity == null)
+            //{
+            //    throw new NotFoundException("Repository: Can not found " + typeof(TEntity).Name + " by this id");
+            //}
             return entity;
         }
 

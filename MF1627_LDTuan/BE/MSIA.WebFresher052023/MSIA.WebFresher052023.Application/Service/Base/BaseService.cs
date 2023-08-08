@@ -13,7 +13,7 @@ namespace MSIA.WebFresher052023.Application.Service.Base
 {
     public abstract class BaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> : BaseReadOnlyService<TEntity, TModel, TEntityDto,
         TEntityCreateDto, TEntityUpdateDto>,
-        IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> where TModel : IHasKeyModel
+        IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> where TModel : IHasKeyModel where TEntity : IHasKey
     {
         #region Fields
         protected readonly IBaseRepository<TEntity, TModel> _baseRepository;

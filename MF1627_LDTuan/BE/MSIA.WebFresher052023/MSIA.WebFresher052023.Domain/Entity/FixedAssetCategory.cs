@@ -60,6 +60,11 @@ namespace Domain.Entity
         {
             return FixedAssetCategoryId;
         }
+
+        public Guid SetKey(Guid id)
+        {
+            return FixedAssetCategoryId = id;
+        }
         #endregion
     }
 }
