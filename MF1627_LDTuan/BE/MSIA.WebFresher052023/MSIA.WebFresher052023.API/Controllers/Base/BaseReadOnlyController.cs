@@ -3,6 +3,8 @@ using Domain.Entity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MSIA.WebFresher052023.Application.Interface.Base;
+using MSIA.WebFresher052023.Domain.Resource;
+using MSIA.WebFresher052023.Domain.Result;
 using MySqlX.XDevAPI.Common;
 
 namespace MSIA.WebFresher052023.API.Controllers.Base
@@ -41,9 +43,16 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         public virtual async Task<IActionResult> GetAsync([FromRoute] string code)
         {
             var asset = await _baseService.GetAsync(code);
-            return StatusCode(StatusCodes.Status201Created, asset);
-
-        }        
+            if (asset == null)
+            {
+                var error = new OperationResult { UserMessage = ErrorMessages.Conflict, ErrorCode=10000 };
+                return StatusCode(StatusCodes.Status400BadRequest, error);
+            }
+            else
+            {
+                return StatusCode(StatusCodes.Status201Created, asset);
+            }
+        }
         /// <summary>
         /// Api thêm mới 1 bản ghi
         /// </summary>
@@ -54,7 +63,15 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         public async Task<IActionResult> PostAsync([FromBody] TEntityCreateDto entityCreateDto)
         {
             var result = await _baseService.InsertAsync(entityCreateDto);
-            return StatusCode(StatusCodes.Status201Created, result);
+            if (result)
+            {
+                return StatusCode(StatusCodes.Status200OK);
+            }
+            else
+            {
+                var error = new OperationResult { UserMessage = ErrorMessages.Other };
+                return StatusCode(StatusCodes.Status400BadRequest, error);
+            }
         }
 
         /// <summary>
@@ -68,7 +85,15 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         public async Task<IActionResult> PutAsync([FromRoute] Guid id, [FromBody] TEntityUpdateDto entityUpdateDto)
         {
             var result = await _baseService.UpdateAsync(id, entityUpdateDto);
-            return StatusCode(StatusCodes.Status200OK, result);
+            if (result)
+            {
+                return StatusCode(StatusCodes.Status200OK);
+            }
+            else
+            {
+                var error = new OperationResult { UserMessage = ErrorMessages.Other };
+                return StatusCode(StatusCodes.Status400BadRequest, error);
+            }
         }
 
         /// <summary>
@@ -82,7 +107,15 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         {
             var result = await _baseService.DeleteAsync(id);
 
-            return StatusCode(StatusCodes.Status200OK, result);
+            if (result)
+            {
+                return StatusCode(StatusCodes.Status200OK);
+            }
+            else
+            {
+                var error = new OperationResult { UserMessage = ErrorMessages.Other };
+                return StatusCode(StatusCodes.Status400BadRequest, error);
+            }
         }
 
         /// <summary>
@@ -92,9 +125,18 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         /// <returns>True hoặc false tương ứng với xóa thành công hay thất bại</returns>
         /// Created by: ldtuan (18/07/2023)
         [HttpDelete]
-        public async Task DeleteManyByIdAsync([FromBody] List<Guid> ids)
+        public async Task<IActionResult> DeleteManyByIdAsync([FromBody] List<Guid> ids)
         {
-            await _baseService.DeleteManyAsync(ids);
+            var result = await _baseService.DeleteManyAsync(ids);
+            if (result)
+            {
+                return StatusCode(StatusCodes.Status200OK);
+            }
+            else
+            {
+                var error = new OperationResult { UserMessage = ErrorMessages.Other };
+                return StatusCode(StatusCodes.Status400BadRequest, error);
+            }
         }
 
         /// <summary>

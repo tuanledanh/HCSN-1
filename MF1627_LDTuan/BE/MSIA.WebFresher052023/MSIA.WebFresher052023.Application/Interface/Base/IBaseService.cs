@@ -40,7 +40,7 @@ namespace MSIA.WebFresher052023.Application.Interface.Base
         /// <param name="ids">Danh sách id của các bản ghi cần xóa</param>
         /// <returns>True hoặc false tương ứng với xóa thành công hay thất bại</returns>
         /// Created by: ldtuan (17/07/2023)
-        Task DeleteManyAsync(List<Guid> ids);
+        Task<bool> DeleteManyAsync(List<Guid> ids);
         #endregion
     }
 }

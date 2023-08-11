@@ -41,14 +41,7 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             await _manager.CheckDuplicateCode(model.GetKey());
             var entity = _mapper.Map<TEntity>(entityCreateDto);
             bool result = await _baseRepository.InsertAsync(entity);
-            if (!result)
-            {
-                throw new Exception("Service: Không thể thêm mới " + typeof(TEntity).Name);
-            }
-            else
-            {
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
@@ -65,14 +58,7 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             await _manager.CheckDuplicateCode(model.GetKey(), oldModel.GetKey());
             var entity = _mapper.Map(entityUpdateDto, oldEntity);
             bool result = await _baseRepository.UpdateAsync(entity);
-            if (!result)
-            {
-                throw new Exception("Service: Không thể cập nhật " + typeof(TEntity).Name);
-            }
-            else
-            {
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
@@ -95,29 +81,41 @@ namespace MSIA.WebFresher052023.Application.Service.Base
         /// <param name="id">Id của bản ghi</param>
         /// <returns>True nếu thêm mới thành công, false nếu thêm mới thất bại</returns>
         /// Created by: ldtuan (17/07/2023)
-        public virtual async Task DeleteManyAsync(List<Guid> ids)
+        public virtual async Task<bool> DeleteManyAsync(List<Guid> ids)
         {
-            await _unitOfWork.BeginTransactionAsync();
-            try
+            var entities = await _baseRepository.GetListByIdsAsync(ids);
+            var result = await _baseRepository.DeleteManyAsync(entities);
+            if (ids.Count == 0 || entities.Count < ids.Count)
             {
-                var entities = await _baseRepository.GetListByIdsAsync(ids);
-                await _baseRepository.DeleteManyAsync(entities);
-                if (ids.Count == 0)
-                {
-                    throw new Exception("Không được truyền danh sách rỗng");
-                }
-                if (entities.Count < ids.Count)
-                {
-                    throw new Exception("Không thể xóa");
-                }
-                await _unitOfWork.CommitAsync();
+                throw new DataException();
             }
-            catch (Exception)
-            {
-                await _unitOfWork.RollbackAsync();
-                throw;
-            }
+            return result;
         }
-        #endregion
     }
+
+    //public virtual async Task<bool> DeleteManyAsync(List<Guid> ids)
+    //{
+    //    await _unitOfWork.BeginTransactionAsync();
+    //    try
+    //    {
+    //        var entities = await _baseRepository.GetListByIdsAsync(ids);
+    //        await _baseRepository.DeleteManyAsync(entities);
+    //        if (ids.Count == 0)
+    //        {
+    //            throw new Exception("Không được truyền danh sách rỗng");
+    //        }
+    //        if (entities.Count < ids.Count)
+    //        {
+    //            throw new Exception("Không thể xóa");
+    //        }
+    //        await _unitOfWork.CommitAsync();
+    //    }
+    //    catch (Exception)
+    //    {
+    //        await _unitOfWork.RollbackAsync();
+    //        throw;
+    //    }
+    //}
+    #endregion
 }
+

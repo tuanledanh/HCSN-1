@@ -76,6 +76,20 @@ namespace API.Middleware
                         }.ToString() ?? "");
                     break;
 
+                // Xử lý ngoại lệ ConflictException
+                case DataException:
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsync(
+                        new BaseException()
+                        {
+                            ErrorCode = StatusCodes.Status409Conflict,
+                            UserMessage = ErrorMessages.Data,
+                            DevMessage = exception.Message,
+                            TraceId = context.TraceIdentifier,
+                            MoreInfo = exception.HelpLink
+                        }.ToString() ?? "");
+                    break;
+
                 // Xử lý các ngoại lệ khác
                 default:
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;

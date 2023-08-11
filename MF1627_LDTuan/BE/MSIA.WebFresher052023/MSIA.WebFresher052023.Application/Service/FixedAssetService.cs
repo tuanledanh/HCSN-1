@@ -85,7 +85,7 @@ namespace Application.Service
             if (existDepartment == null || existAssetType == null)
             {
                 // Để hàm check exist sang 1 class khác để tái sử dụng
-                throw new NotFoundException("Không tìm thấy phòng ban hoặc tài sản");
+                throw new NotFoundException();
             }
             var entity = _mapper.Map<FixedAsset>(fixedAssetCreateDto);
             entity.CreatedDate = DateTime.Now;
@@ -93,14 +93,7 @@ namespace Application.Service
             var id = Guid.NewGuid();
             entity.SetKey(id);
             bool result = await _baseRepository.InsertAsync(entity);
-            if (!result)
-            {
-                throw new Exception("Service: Không thể thêm mới tài sản");
-            }
-            else
-            {
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
@@ -112,26 +105,20 @@ namespace Application.Service
         public override async Task<bool> UpdateAsync(Guid id, FixedAssetUpdateDto fixedAssetUpdateDto)
         {
             var oldAsset = await _baseRepository.GetAsync(id);
+            if (oldAsset == null) return false;
             await _fixedAssetManager.CheckDuplicateCode(fixedAssetUpdateDto.FixedAssetCode, oldAsset.FixedAssetCode);
             var existDepartment = await _departmentRepository.GetAsync(fixedAssetUpdateDto.DepartmentId);
             var existAssetType = await _fixedAssetCategoryRepository.GetAsync(fixedAssetUpdateDto.FixedAssetCategoryId);
             if (existDepartment == null || existAssetType == null)
             {
                 // Để hàm check exist sang 1 class khác để tái sử dụng
-                throw new NotFoundException("Không tìm thấy phòng ban hoặc tài sản");
+                throw new NotFoundException();
             }
             var entity = _mapper.Map<FixedAsset>(fixedAssetUpdateDto);
             entity.FixedAssetId = id;
             entity.ModifiedDate = DateTime.Now;
             bool result = await _baseRepository.UpdateAsync(entity);
-            if (!result)
-            {
-                throw new Exception("Service: Không thể cập nhật tài sản");
-            }
-            else
-            {
-                return result;
-            }
+            return result;
         }
 
         /// <summary>
