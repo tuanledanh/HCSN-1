@@ -27,6 +27,9 @@ export default {
         isLoading() {
             return useIsLoading().isLoading
         }
+    },
+    updated() {
+        console.log('Update Main')
     }
 }
 </script>

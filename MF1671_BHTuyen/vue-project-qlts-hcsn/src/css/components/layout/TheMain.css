@@ -2,6 +2,7 @@
     background-color: var(--background-main-layout);
     flex: 1;
     position: relative;
+    overflow: hidden;
 }
 
 .loader {

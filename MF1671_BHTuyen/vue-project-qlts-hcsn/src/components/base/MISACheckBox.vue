@@ -5,6 +5,7 @@
         :checked="checked"
         @dblclick.stop
         @change="$emit('change', !checked)"
+        :title="title"
     />
 </template>
 
@@ -23,6 +24,10 @@ export default {
         checked: {
             type: Boolean,
             default: false
+        },
+        title: {
+            type: String,
+            default: ''
         }
     },
     emits: ['change']

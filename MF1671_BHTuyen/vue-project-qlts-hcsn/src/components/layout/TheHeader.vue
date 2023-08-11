@@ -76,6 +76,9 @@ export default {
         decrease() {
             return this.yearOfTrackStore.decrease
         }
+    },
+    updated() {
+        console.log('Update Header')
     }
 }
 </script>

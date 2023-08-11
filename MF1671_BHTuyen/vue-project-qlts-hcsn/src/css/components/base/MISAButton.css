@@ -103,5 +103,12 @@
 }
 
 .buttonIcon:active {
+    background-color: #e0e0e029;
+}
+
+.buttonIcon:hover {
+    background-color: #e0e0e04d;
+}
+.buttonIcon:focus {
     background-color: #e0e0e0;
 }

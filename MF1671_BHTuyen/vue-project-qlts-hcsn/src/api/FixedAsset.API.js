@@ -37,6 +37,15 @@ const FixedAssetAPI = {
         return http.get(`${URL}/Paging`, { params: fixedAssetFilter })
     },
     /**
+     * @description Lấy số lượng tài sản cố định theo điều kiện lọc
+     * @param {*} fixedAssetFilter
+     * @returns Lấy số lượng tài sản cố định theo điều kiện lọc
+     * @author @buihuytuyen
+     */
+    getFixedAssetFilter(fixedAssetFilter) {
+        return http.get(`${URL}/Filter`, { params: fixedAssetFilter })
+    },
+    /**
      * @description Tạo mới một tài sản cố định
      * @param {*} createFixedAsset
      * @returns

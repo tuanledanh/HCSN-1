@@ -24,14 +24,17 @@
 
 .sidebar__footer {
     flex: 0 0 40px;
-    /* background-color: aqua; */
     border-top: 1px solid var(--border);
     justify-content: right;
     padding-right: 18px;
     opacity: 0.6;
 }
 
-.sidebar__grow > .sidebar__footer > .wrapper-icon {
+.sidebar__footer:not(.t-tooltip) {
+    opacity: unset;
+}
+
+.sidebar__grow > .sidebar__footer > .wrapper-icon > .sidebar__footer-icon {
     animation: iconSidebarFooter 0.1s both;
 }
 
