@@ -51,11 +51,9 @@
 
         <!-- Sidebar Footer -->
         <footer class="sidebar__footer h-40 w-100 center-y">
-            <section class="wrapper-icon" @click="toggleIconSidebar">
-                <section
-                    class="icon sidebar__footer-icon"
-                    :title="isSidebarGrow ? 'Thu hẹp' : 'Bung rộng'"
-                ></section>
+            <section class="wrapper-icon relative" @click="toggleIconSidebar">
+                <section class="icon sidebar__footer-icon"></section>
+                <m-tooltip :content="isSidebarGrow ? 'Thu hẹp' : 'Bung rộng'" type="right" />
             </section>
         </footer>
     </aside>

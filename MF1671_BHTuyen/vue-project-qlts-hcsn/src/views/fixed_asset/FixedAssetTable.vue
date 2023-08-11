@@ -11,11 +11,9 @@
                 v-model="FixedAssetCodeOrName"
             >
                 <template #iconLeft>
-                    <section
-                        class="icon search"
-                        @click="filterListFixedAsset"
-                        title="Tìm kiếm"
-                    ></section>
+                    <section class="icon search" @click="filterListFixedAsset">
+                        <m-tooltip content="Tìm kiếm" type="bottom" />
+                    </section>
                 </template>
             </m-input>
             <!--  -->
@@ -29,11 +27,9 @@
                 v-model="FixedAssetCategoryName"
             >
                 <template #iconLeft>
-                    <section
-                        class="icon filter"
-                        @click="filterListFixedAsset"
-                        title="Lọc tài sản"
-                    ></section>
+                    <section class="icon filter" @click="filterListFixedAsset">
+                        <m-tooltip content="Lọc" type="bottom" />
+                    </section>
                 </template>
                 <template #iconRight>
                     <section class="icon down"></section>
@@ -50,11 +46,9 @@
                 v-model="DepartmentName"
             >
                 <template #iconLeft>
-                    <section
-                        class="icon filter"
-                        @click="filterListFixedAsset"
-                        title="Lọc tài sản"
-                    ></section>
+                    <section class="icon filter" @click="filterListFixedAsset">
+                        <m-tooltip content="Lọc" type="bottom" />
+                    </section>
                 </template>
                 <template #iconRight>
                     <section class="icon down"></section>
@@ -77,7 +71,7 @@
             <!-- Button export -->
             <m-button typeButton="icon" @clickButton="showWarning('export')">
                 <section class="icon store"></section>
-                <m-tooltip content="Export" />
+                <m-tooltip content="Xuất" />
             </m-button>
             <!--     -->
 
@@ -93,11 +87,11 @@
     <!--  -->
 
     <!-- Table -->
-    <section class="layout__table flex-column">
+    <section class="layout__table flex-column" tabindex="0">
         <!-- Header -->
         <header class="table__header h-40 grid center-y">
-            <section class="table__checkbox center">
-                <m-checkbox :checked="chooseAll" @change="changeChooseAll" />
+            <section class="table__checkbox center relative">
+                <m-checkbox :checked="chooseAll" @change="changeChooseAll" title="Chọn tất cả" />
             </section>
             <section class="table__stt relative show-tooltip">
                 STT
@@ -214,12 +208,12 @@
         <section class="blur" v-if="isShowFormAdd">
             <section class="assets__edit flex-column px-16 br-4 bg-white pt-16">
                 <m-popup
-                    title="Thêm tài sản"
+                    :title="formTitle.create"
                     @closePopup="isShowFormAdd = false"
                     @updateListFixedAsset="updateListFixedAsset"
                     :listDepartment="listDepartment"
                     :listFixedAssetCategory="listFixedAssetCategory"
-                    contentBtnSubmit="Thêm"
+                    :contentBtnSubmit="btnTitleForm.create"
                 />
             </section>
         </section>
@@ -233,9 +227,11 @@
                 :messageLeft="messageLeft"
             >
                 <m-button
+                    ref="btnCancel"
                     typeButton="outline"
-                    v-if="isDelete || isExport"
+                    v-if="action === 'export' ? true : isDelete"
                     @clickButton="cancelDeleteOrExport"
+                    focus
                     >Không</m-button
                 >
                 <m-button
@@ -243,6 +239,7 @@
                         action === 'delete' ? deleteFixedAssetChoose() : exportExcelFixedAsset()
                     "
                     focus
+                    ref="btnSubmit"
                     >{{ labelButtonWarning }}</m-button
                 >
             </m-toast>
@@ -264,6 +261,7 @@ import DepartmentAPI from '/src/api/Department.API'
 import FixedAssetAPI from '/src/api/FixedAsset.API'
 import FixedAssetRow from './FixedAssetRow.vue'
 import LoadingSkeleton from './LoadingSkeleton.vue'
+import { useIsLoading } from '/src/stores/isLoading.js'
 
 export default {
     name: 'FixedAssetTable',
@@ -314,11 +312,12 @@ export default {
             // Các biến dùng để phân trang
             pageNumber: 1,
             pageNumberEnd: 0,
-            pageLimit: 14,
+            pageLimit: 20,
             // Tổng số tài sản
             FixedAssetTotal: 0,
             // Check xem là xóa hay là xuất excel
-            action: ''
+            action: '',
+            focusElementToastWarning: 'submit'
         }
     },
     /**
@@ -379,12 +378,15 @@ export default {
         async deleteFixedAssetChoose() {
             try {
                 if (this.isDelete) {
-                    this.isLoadingDataTable = true
+                    this.setIsLoading(true)
                     if (this.listFixedAssetChoose.length === 1) {
                         await FixedAssetAPI.deleteFixedAssetById(this.listFixedAssetChoose[0])
                     } else {
                         await FixedAssetAPI.deleteManyFixedAsset(this.listFixedAssetChoose)
                     }
+                    setTimeout(() => {
+                        this.setIsLoading(false)
+                    }, 1000)
                     this.listFixedAssetChoose = []
                     this.messageLeft = ''
                     this.messageRight = ''
@@ -408,8 +410,22 @@ export default {
          */
         async exportExcelFixedAsset() {
             try {
-                if (this.isExport) {
-                    const res = await FixedAssetAPI.exportExcelFixedAsset(this.listFixedAssetChoose)
+                this.setIsLoading(true)
+                let res
+                if (this.listFixedAssetChoose.length > 0) {
+                    res = await FixedAssetAPI.exportExcelFixedAsset(this.listFixedAssetChoose)
+                } else {
+                    const fixedAssetFilter = {
+                        FixedAssetCodeOrName: this.FixedAssetCodeOrName,
+                        DepartmentName: this.DepartmentName,
+                        FixedAssetCategoryName: this.FixedAssetCategoryName
+                    }
+                    const list = await FixedAssetAPI.getFixedAssetFilter(fixedAssetFilter)
+                    const listId = list.data.map((item) => item.FixedAssetId)
+                    res = await FixedAssetAPI.exportExcelFixedAsset(listId)
+                }
+                setTimeout(() => {
+                    this.setIsLoading(false)
                     let blob = new Blob([res.data], {
                         type: res.headers['content-type'],
                         headers: res.headers
@@ -425,10 +441,7 @@ export default {
                     this.isShowToastMessageWarning = false
                     this.toastMessageWarningContent = ''
                     this.chooseAll = false
-                } else {
-                    this.isShowToastMessageWarning = false
-                    this.toastMessageWarningContent = ''
-                }
+                }, 1000)
             } catch (error) {
                 console.log(error)
             }
@@ -440,9 +453,10 @@ export default {
         updateListFixedAsset(action) {
             // Cập nhật lại trang
             this.getAllFixedAsset(this.fixedAssetFilter)
+            this.pageNumber = 1
             setTimeout(() => {
                 this.showToastMessage(true, this.$_MISAResource.VN.success[action], 'success')
-            }, 1000)
+            }, 1100)
         },
 
         /**
@@ -502,7 +516,6 @@ export default {
                     ...this.listFixedAsset.map((item) => item.FixedAssetId)
                 ]
                 this.isDelete = true
-                this.isExport = true
             } else {
                 // bỏ chọn tất cả
                 this.listFixedAssetChoose = this.listFixedAssetChoose.filter(
@@ -510,7 +523,6 @@ export default {
                 )
                 if (this.listFixedAssetChoose.length === 0) {
                     this.isDelete = false
-                    this.isExport = true
                 }
             }
         },
@@ -523,7 +535,7 @@ export default {
             this.action = action
             this.isShowToastMessageWarning = true
             // Nếu có thể xóa được hoặc xuất file Excel
-            if (this.isDelete || this.isExport) {
+            if (this.isDelete) {
                 // Nếu chỉ có 1 tài sản được chọn
                 if (this.listFixedAssetChoose.length === 1) {
                     this.toastMessageWarningContent =
@@ -551,11 +563,24 @@ export default {
             } else {
                 // Nếu không thể xóa được do chưa chọn tài sản nào
                 if (this.listFixedAssetChoose.length == 0) {
-                    this.toastMessageWarningContent =
-                        this.$_MISAResource.VN[`${this.action}Warning`][`${this.action}Block`]
+                    if (this.action === 'export') {
+                        this.toastMessageWarningContent =
+                            this.$_MISAResource.VN[`${this.action}Warning`][
+                                `${this.action}AllLeft`
+                            ] +
+                            this.FixedAssetTotal +
+                            this.$_MISAResource.VN[`${this.action}Warning`][
+                                `${this.action}AllRight`
+                            ]
+                        this.labelButtonWarning = 'Xuất'
+                    } else {
+                        this.toastMessageWarningContent =
+                            this.$_MISAResource.VN[`${this.action}Warning`][`${this.action}Block`]
+                        this.labelButtonWarning = 'Đóng'
+                    }
                 }
-                this.labelButtonWarning = 'Đóng'
             }
+            console.log(this.listFixedAssetChoose)
         },
         /**
          * @author Bùi Huy Tuyền (11/07/2023)
@@ -579,7 +604,7 @@ export default {
             this.toastMessageType = type
             this.saveTimer = setTimeout(() => {
                 this.isShowToastMessage = false
-            }, 1000)
+            }, 3000)
         },
         /**
          * @author Bùi Huy Tuyền (11/07/2023)
@@ -608,6 +633,8 @@ export default {
         await this.getAllDepartment()
         // Lấy dữ liệu danh sách tài sản
         await this.getAllFixedAsset(this.fixedAssetFilter)
+
+        console.log('')
     },
     /**
      * @author Bùi Huy Tuyền (11/07/2023)
@@ -687,6 +714,35 @@ export default {
         remainingTotal() {
             console.log(this.depreciationTotal)
             return this.costTotal - this.depreciationTotal
+        },
+        /**
+         * @description Kiểm tra xem có đang load dữ liệu hay không
+         * @author Bùi Huy Tuyền (27-07-2023)
+         */
+        isLoading() {
+            return useIsLoading().isLoading
+        },
+        /**
+         * @description Thay đổi trạng thái load dữ liệu
+         * @author Bùi Huy Tuyền (27-07-2023)
+         */
+        setIsLoading() {
+            return useIsLoading().setIsLoading
+        },
+        formTitle() {
+            return this.$_MISAResource.VN.formTitle
+        },
+        btnTitleForm() {
+            return this.$_MISAResource.VN.btnTitleForm
+        },
+        btnTitleToast() {
+            return this.$_MISAResource.VN.btnTitleToast
+        },
+        tableHeaderTitle() {
+            return this.$_MISAResource.VN.tableHeaderTitle
+        },
+        btnTitle() {
+            return this.$_MISAResource.VN.btnTitle
         }
     },
     watch: {

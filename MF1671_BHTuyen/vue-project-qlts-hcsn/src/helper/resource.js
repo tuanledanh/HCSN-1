@@ -1,12 +1,6 @@
 export default {
     VN: {
         noResult: 'Không tìm thấy kết quả phù hợp',
-        btnDeleteActive: {
-            delete: 'Xóa',
-            cancel: 'Không',
-            close: 'Đóng',
-            agree: 'Đồng ý'
-        },
         deleteWarning: {
             deleteOne: 'Bạn có muốn xóa tài sản',
             deleteMany: 'tài sản đã được chọn. Bạn có muốn xóa các tài sản này không?',
@@ -19,7 +13,9 @@ export default {
             exportOne: 'Bạn có muốn xuất tài sản',
             exportMany:
                 'tài sản đã được chọn. Bạn có muốn xuất các tài sản này ra file excel không?',
-            exportBlock: 'Bạn chưa chọn tài sản nào để xuất dữ liệu.'
+            exportBlock: 'Bạn chưa chọn tài sản nào để xuất dữ liệu.',
+            exportAllLeft: 'Bạn có muốn xuất tất cả ',
+            exportAllRight: ' tài sản ra file excel không?'
         },
         warningCancel: {
             noUpdate: 'Bạn có muốn hủy bỏ cập nhật tài sản này?',
@@ -44,7 +40,7 @@ export default {
             update: 'Lưu dữ liệu không thành công',
             create: 'Thêm dữ liệu không thành công',
             replicate: 'Nhân bản dữ liệu không thành công',
-            loadData: 'Tai dữ liệu không thành công'
+            loadData: 'Tải dữ liệu không thành công'
         },
 
         labelForm: {
@@ -70,6 +66,44 @@ export default {
             FixedAssetCategoryCode: 'Chọn mã loại tài sản',
             time: 'dd/mm/yyyy'
         },
-        fileNameExcel: 'Danh_sach_tai_san.xlsx'
+        fileNameExcel: 'Danh_sach_tai_san.xlsx',
+        formTitle: {
+            create: 'Thêm tài sản',
+            update: 'Cập nhật tài sản',
+            replicate: 'Nhân bản tài sản'
+        },
+        btnTitleForm: {
+            create: 'Thêm',
+            update: 'Lưu',
+            replicate: 'Thêm',
+            cancel: 'Hủy bỏ'
+        },
+        btnTitleToast: {
+            cancel: 'Hủy bỏ',
+            delete: 'Xóa',
+            export: 'Xuất',
+            dontSave: 'Không lưu'
+        },
+        btnDeleteActive: {
+            delete: 'Xóa',
+            cancel: 'Không',
+            close: 'Đóng',
+            agree: 'Đồng ý'
+        },
+        btnTitle: {
+            create: 'Thêm tài sản'
+        },
+        tableHeaderTitle: {
+            STT: 'STT',
+            FixedAssetCode: 'Mã tài sản',
+            FixedAssetName: 'Tên tài sản',
+            DepartmentName: 'Tên bộ phận sử dụng',
+            FixedAssetCategoryName: 'Tên loại tài sản',
+            Quantity: 'Số lượng',
+            Cost: 'Nguyên giá',
+            cumulative: 'HM/KH lũy kế',
+            remaining: 'Giá trị còn lại',
+            option: 'Chức năng'
+        }
     }
 }

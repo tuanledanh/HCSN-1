@@ -31,6 +31,9 @@
     padding-left: 8px;
     cursor: pointer;
     scroll-snap-align: start;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .combobox__select--item .title {
@@ -64,6 +67,17 @@
 }
 
 .t-combobox .left:hover {
+    background-color: #e0e0e0;
+    border-radius: 4px;
+}
+
+.close {
+    background-position: -336px -248px;
+    width: 8px;
+    height: 8px;
+}
+
+.t-combobox .icon-down:hover {
     background-color: #e0e0e0;
     border-radius: 4px;
 }

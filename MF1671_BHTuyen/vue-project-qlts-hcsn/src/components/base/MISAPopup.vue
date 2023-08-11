@@ -247,7 +247,7 @@
                 >Hủy bỏ</m-button
             >
             <m-button typeButton="sub" @clickButton="closePopup">Không lưu</m-button>
-            <m-button @clickButton="submit">Lưu</m-button>
+            <m-button @clickButton="submit" focus>Lưu</m-button>
         </m-toast>
     </section>
 
@@ -373,6 +373,7 @@ export default {
                 }, 500)
             } catch (error) {
                 console.log(error)
+                this.inputFocus = 'fixedAssetCode'
                 this.setIsLoading(false)
                 this.isShowToastValidateData = true
                 this.errorMessage = error.response.data.UserMessage

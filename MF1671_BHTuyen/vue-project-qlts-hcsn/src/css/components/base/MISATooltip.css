@@ -1,6 +1,6 @@
 .t-tooltip {
     display: none;
-    background-color: var(--background-sidebar);
+    background-color: var(--background-active-icon);
     width: auto;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
     z-index: 99999;
@@ -22,6 +22,7 @@
     right: -6px;
     top: 50%;
     transform: translate(calc(100% + 5px), -50%);
+    z-index: 99999;
 }
 .t-tooltip--top {
     white-space: nowrap;
@@ -30,6 +31,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-40%, -150%);
+    z-index: 99999;
 }
 
 .t-tooltip__content {
@@ -53,7 +55,7 @@
     top: -17px;
     left: 50%;
     transform: translateX(-50%);
-    border-color: transparent transparent var(--background-sidebar) transparent;
+    border-color: transparent transparent var(--background-active-icon) transparent;
     border-style: solid;
     border-width: 5px 5px;
 }
@@ -63,7 +65,7 @@
     left: -9px;
     top: 50%;
     transform: translateY(-50%);
-    border-color: transparent var(--background-sidebar) transparent transparent;
+    border-color: transparent var(--background-active-icon) transparent transparent;
     border-style: solid;
     border-width: 5px 5px;
 }
@@ -74,7 +76,7 @@
     bottom: calc(-100% + 8px);
     left: 50%;
     transform: translate(50%, 50%);
-    border-color: var(--background-sidebar) transparent transparent transparent;
+    border-color: var(--background-active-icon) transparent transparent transparent;
     border-style: solid;
     border-width: 5px 5px;
 }

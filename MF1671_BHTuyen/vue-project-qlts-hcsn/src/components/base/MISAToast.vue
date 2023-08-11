@@ -3,8 +3,9 @@ import { ref } from 'vue';
     <section
         class="t-toast br-4 flex-column"
         :class="{ 't-toast_success': typeToast === 'success' }"
-        @keyup.stop="(event) => $emit('keyup', event)"
+        @keydown.stop="(event) => $emit('keydown', event)"
         ref="toast"
+        tabindex="3"
     >
         <main
             class="t-toast__content center-y"
@@ -59,9 +60,6 @@ export default {
         messageRight: {
             type: String
         }
-    },
-    mounted() {
-        window.focus(this.$refs.toast)
     }
 }
 </script>

@@ -3,7 +3,21 @@
         class="table__row h-40 grid center-y"
         :class="{ 'row-active': checked }"
         @dblclick=";(isShowForm = true), (action = 'update')"
-        @click.ctrl="checked = !checked"
+        @click.ctrl="changeChecked(!checked)"
+        @contextmenu.stop.prevent="
+            (event) => {
+                if (isShowContextMenu) {
+                    isShowContextMenu = false
+                    return
+                }
+                isShowContextMenu = true
+                contextmenuTop = event.y
+                contextmenuLeft = event.x
+            }
+        "
+        v-click-outside="() => ((isShowContextMenu = false), console.log('object'))"
+        ref="tableRow"
+        tabindex="0"
     >
         <!-- checkbox -->
         <section class="row__checkbox center">
@@ -42,13 +56,36 @@
         <!-- Chức năng -->
         <section class="row__option center-y">
             <!-- Update -->
-            <section class="wrapper-icon" @click=";(isShowForm = true), (action = 'update')">
+            <section
+                class="wrapper-icon"
+                @click=";(isShowForm = true), (action = 'update')"
+                title="Sửa"
+            >
                 <section class="icon edit"></section>
             </section>
             <!-- Nhân bản -->
-            <section class="wrapper-icon" @click=";(isShowForm = true), (action = 'replicate')">
+            <section
+                class="wrapper-icon"
+                @click=";(isShowForm = true), (action = 'replicate')"
+                title="Nhân bản"
+            >
                 <section class="icon copy"></section>
             </section>
+        </section>
+    </section>
+    <section
+        class="context-menu fixed flex-column br-4 row-gap-10"
+        v-if="isShowContextMenu"
+        v-click-outside="
+            () => (console.log('object'), isShowContextMenu ? (isShowContextMenu = false) : null)
+        "
+        :style="{ top: contextmenuTop + 'px', left: contextmenuLeft + 'px' }"
+    >
+        <section class="context-menu--item" @click=";(isShowForm = true), (action = 'update')">
+            Chỉnh sửa
+        </section>
+        <section class="context-menu--item" @click=";(isShowForm = true), (action = 'replicate')">
+            Nhân bản
         </section>
     </section>
 
@@ -56,13 +93,14 @@
     <section class="blur" v-if="isShowForm">
         <section class="assets__edit flex-column px-16 br-4 bg-white pt-16">
             <m-popup
-                title="Sửa tài sản"
+                :title="action === 'update' ? 'Cập nhật tài sản' : 'Nhân bản tài sản'"
                 @closePopup="isShowForm = false"
                 @updateListFixedAsset="$emit('updateListFixedAsset', $event)"
                 :fixedAsset="fixedAsset"
                 :action="action"
                 :listDepartment="listDepartment"
                 :listFixedAssetCategory="listFixedAssetCategory"
+                :contentBtnSubmit="action === 'update' ? 'Lưu' : 'Thêm'"
             />
         </section>
     </section>
@@ -118,7 +156,10 @@ export default {
             // Chọn checkbox
             checked: false,
             // Hành động
-            action: ''
+            action: '',
+            isShowContextMenu: false,
+            contextmenuTop: 0,
+            contextmenuLeft: 0
         }
     },
     /**

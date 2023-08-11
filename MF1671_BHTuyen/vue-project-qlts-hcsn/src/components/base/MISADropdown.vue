@@ -3,6 +3,7 @@
         class="dropdown center-y br-4 relative"
         @click="isShowListSelect = !isShowListSelect"
         v-click-outside="() => (isShowListSelect = false)"
+        title="Số bản ghi trên một trang"
     >
         <input :value="value" class="dropdown__input" readonly ref="input" />
         <section class="wrapper-icon icon__dropdown">

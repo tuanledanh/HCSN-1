@@ -30,13 +30,25 @@
                     }
                 "
                 @keyup.stop="(event) => selectWithKeyArrow(event)"
+                @keydown.esc="inputValue !== '' ? (inputValue = '') : null"
                 @blur.stop="blurInput"
                 :maxlength="maxLength"
                 @dblclick="isShowListSelect = !isShowListSelect"
                 ref="input"
                 :title="inputValue"
             />
-            <section class="wrapper-icon absolute r-6" @click="toggleIcon">
+
+            <section
+                class="wrapper-icon icon-close absolute r-6"
+                style="margin-right: 20px"
+                v-if="inputValue !== ''"
+                @click="inputValue = ''"
+                z-index="0"
+            >
+                <section class="icon close"></section>
+            </section>
+
+            <section class="wrapper-icon icon-down absolute r-6" @click="toggleIcon">
                 <section class="icon down"></section>
             </section>
 
@@ -154,10 +166,13 @@ export default {
         this.inputValue = this.modelValue
         if (this.modelValue === '') this.indexFocusActive = 0
         else this.indexFocusActive = this.listItemView.findIndex((item) => item === this.modelValue)
+
         this.$refs.list.scroll({
             top: 36 * this.indexFocusActive,
             behavior: 'smooth'
         })
+        console.log('object')
+
         this.listItemView = this.listSelect
     },
     /**
@@ -194,6 +209,7 @@ export default {
                             this.indexFocusActive === this.listItemView.length - 1
                                 ? 0
                                 : this.indexFocusActive + 1
+
                         this.$refs.list.scroll({
                             top: 36 * this.indexFocusActive,
                             behavior: 'smooth'
@@ -205,10 +221,12 @@ export default {
                             this.indexFocusActive === 0
                                 ? this.listItemView.length - 1
                                 : this.indexFocusActive - 1
+
                         this.$refs.list.scroll({
                             top: 36 * this.indexFocusActive,
                             behavior: 'smooth'
                         })
+
                         break
 
                     case 'Enter':

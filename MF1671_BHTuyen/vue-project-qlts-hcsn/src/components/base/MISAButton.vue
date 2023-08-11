@@ -126,6 +126,8 @@ export default {
             console.log(value)
             if (value) {
                 this.focusButton()
+            } else {
+                this.$refs.button.blur()
             }
         }
     }

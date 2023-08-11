@@ -2,6 +2,7 @@ import '/src/css/app.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { clickOutside } from './helper/directive.js'
 
 import MISAButton from '/src/components/base/MISAButton.vue'
 import MISACheckBox from '/src/components/base/MISACheckBox.vue'
@@ -13,27 +14,11 @@ import MISAToast from '/src/components/base/MISAToast.vue'
 import MISATooltip from '/src/components/base/MISATooltip.vue'
 import MISADropdown from '/src/components/base/MISADropdown.vue'
 import MISAPaging from '/src/components/base/MISAPaging.vue'
-
 import MISAResource from '/src/helper/resource.js'
+import MISAEnum from '/src/helper/enum.js'
 
 import App from './App.vue'
 import router from './router'
-
-const clickOutside = {
-    beforeMount: (el, binding) => {
-        el.clickOutsideEvent = (event) => {
-            // here I check that click was outside the el and his children
-            if (!(el == event.target || el.contains(event.target))) {
-                // and if it did, call method provided in attribute value
-                binding.value()
-            }
-        }
-        document.addEventListener('click', el.clickOutsideEvent)
-    },
-    unmounted: (el) => {
-        document.removeEventListener('click', el.clickOutsideEvent)
-    }
-}
 
 const app = createApp(App)
 
@@ -54,5 +39,6 @@ app.component('m-paging', MISAPaging)
 app.component('m-checkbox', MISACheckBox)
 
 app.config.globalProperties.$_MISAResource = MISAResource
+app.config.globalProperties.$_MISAEnum = MISAEnum
 
 app.mount('#app')

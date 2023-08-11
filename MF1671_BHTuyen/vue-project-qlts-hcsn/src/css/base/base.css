@@ -253,6 +253,10 @@
     position: absolute !important;
 }
 
+.fixed {
+    position: fixed !important;
+}
+
 .l-7 {
     left: 7px;
 }
