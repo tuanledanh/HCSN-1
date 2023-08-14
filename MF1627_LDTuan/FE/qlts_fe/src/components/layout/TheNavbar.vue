@@ -13,11 +13,25 @@
       </div> -->
       <MISAInputYear></MISAInputYear>
       <div class="nav__icon-wrapper">
-        <MISAIcon notification tooltip content="Thông báo" position="bot"></MISAIcon>
-        <MISAIcon utilities tooltip content="Menu" position="bot"></MISAIcon>
-        <MISAIcon question tooltip content="Hỏi đáp" position="bot"></MISAIcon>
-        <MISAIcon user tooltip content="Profile" position="bot"></MISAIcon>
-        <MISAIcon drop_down tooltip content="Tùy chọn" position="left-300"></MISAIcon>
+        <div class="left">
+          <MISATooltip bottom content="Thông báo">
+            <MISAIcon notification></MISAIcon>
+          </MISATooltip>
+          <MISATooltip bottom content="Tiện ích">
+            <MISAIcon utilities></MISAIcon
+          ></MISATooltip>
+          <MISATooltip bottom content="Hỏi đáp">
+            <MISAIcon question></MISAIcon
+          ></MISATooltip>
+          <MISATooltip bottom content="Thông tin">
+            <MISAIcon user></MISAIcon
+          ></MISATooltip>
+        </div>
+        <div class="right">
+          <MISATooltip bottom_end content="Mở rộng">
+            <MISAIcon drop_down navbar></MISAIcon
+          ></MISATooltip>
+        </div>
       </div>
     </div>
   </div>

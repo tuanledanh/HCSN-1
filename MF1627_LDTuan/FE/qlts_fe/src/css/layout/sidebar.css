@@ -1,104 +1,126 @@
-.sidebar{
-    background-color: #1c3048;
-    width: 200px;
-    height: 100vh;
-    float: left;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    transition: all ease-in-out 0.3s;
-    white-space: nowrap;
+.sidebar {
+  background-color: #1c3048;
+  width: 200px;
+  height: 100vh;
+  float: left;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  transition: all ease-in-out 0.3s;
+  white-space: nowrap;
 }
 
-.sidebar--narrow{
-    width: 66px;
+.sidebar--narrow {
+  width: 66px;
 }
 
-.sidebar--narrow .sidebar-text{
-    display: none;
+.sidebar--narrow .sidebar-text {
+  display: none;
 }
 
-.sidebar--narrow .icon-body{
-    margin: auto;
+.sidebar--narrow .icon-body {
+  margin: auto;
 }
 
-.sidebar--narrow .sidebar-foot .icon--narrow{
-    transform: rotate(-180deg);
+.sidebar--narrow .sidebar-foot .icon--narrow {
+  transform: rotate(-180deg);
 }
 
 /*================================= Sidebar top =================================*/
-.sidebar-top{
-    height: 50px;
-    margin-top: 10px;
-    margin-bottom: 3px;
-    padding-left: 4px;
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-    font-family: Roboto;
-    font-weight: 700;
-    font-size: 24px;
-    color: #ffffff;
-    text-decoration: none;
+.sidebar-top {
+  height: 50px;
+  margin-top: 10px;
+  margin-bottom: 3px;
+  padding-left: 4px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  font-family: Roboto;
+  font-weight: 700;
+  font-size: 24px;
+  color: #ffffff;
+  text-decoration: none;
 }
 
-.sidebar-top .icon{
-    margin: unset;
+.sidebar-top .icon {
+  margin: unset;
 }
 
-.sidebar-text{
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-right: 10px;
+.sidebar-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 10px;
 }
 
-.sidebar-text-non-padding{
-    padding: unset;
-    flex: none;
+.sidebar-text-non-padding {
+  padding: unset;
+  flex: none;
 }
 /*================================= Sidebar body =================================*/
-.sidebar-body{
-    flex: 1;
-    margin-top: 15px;
-    padding: 0 11px;
-    box-sizing: border-box;
+.sidebar-body {
+  flex: 1;
+  margin-top: 15px;
+  padding: 0 11px;
+  box-sizing: border-box;
 }
 
-.sidebar-item{
-    height: 40px;
-    display: flex;
-    align-items: center;
-    border-radius: 6px;
-    overflow: hidden;
-    cursor: pointer;
-    font-family: Roboto;
-    font-weight: 500;
-    font-size: 14px;
-    color: #ffffff;
-    opacity: 50%;
-    text-decoration: none;
+.sidebar-item {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: Roboto;
+  font-weight: 500;
+  font-size: 14px;
+  color: #ffffff;
+  opacity: 50%;
+  text-decoration: none;
+  margin-bottom: 4px;
 }
 
-.sidebar-item:hover{
-    background-color: #1aa4c8;
-    opacity: 100%;
+.sidebar--narrow .sidebar-body {
+  padding: unset;
+}
+
+.sidebar--narrow .sidebar-item {
+  padding: 0 11px;
+}
+
+.sidebar-item:hover {
+  background-color: #1aa4c8;
+  opacity: 100%;
+}
+
+.sidebar--narrow .sidebar-item:hover {
+  background-color: unset;
 }
 
 /*================================= Sidebar foot =================================*/
-.sidebar-foot{
-    width: 100%;
-    height: 48px;
-    border-top: 1px solid #ccc;
-    display: flex;
-    align-items: center;
-    flex-direction: row-reverse;
-    box-sizing: border-box;
-    padding-right: 20px;
+.sidebar-foot {
+  width: 100%;
+  height: 48px;
+  border-top: 1px solid #ccc;
+  display: flex;
+  align-items: center;
+  flex-direction: row-reverse;
+  box-sizing: border-box;
 }
 
-.router-link-active{
-    background-color: #1aa4c8;
-    opacity: 100%;
+.router-link-active {
+  background-color: #1aa4c8;
+  opacity: 100%;
+}
+
+.sidebar--narrow .router-link-active {
+  background-color: unset;
+  padding: 0 11px;
+}
+
+.sidebar__icon {
+  width: 46px;
+  display: flex;
+  align-items: center;
 }

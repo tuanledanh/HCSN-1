@@ -22,10 +22,11 @@
   background-color: #ffffff;
   overflow-y: auto;
   z-index: 2;
+  margin-top: 2px;
 }
 
 .data-dropdownList{
-  top: -360%;
+  top: -375%;
 }
 
 .selectOption-item {

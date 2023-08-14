@@ -5,13 +5,15 @@
       top
       home
       nonPadding
+      :narrow="isNarrow"
       content="MISA QLTS"
     ></MISASidebarItem>
     <div class="sidebar-body">
       <MISASidebarItem
-        url="#"
+        url="/a"
         item
         overview
+        :narrow="isNarrow"
         content="Tổng quan"
         expand
       ></MISASidebarItem>
@@ -19,6 +21,7 @@
         url="assets"
         item
         asset
+        :narrow="isNarrow"
         content="Tài sản"
         expand
       ></MISASidebarItem>
@@ -26,6 +29,7 @@
         url="#"
         item
         asset_HTDB
+        :narrow="isNarrow"
         content="Tài sản HT-ĐB"
         expand
       ></MISASidebarItem>
@@ -33,6 +37,7 @@
         url="#"
         item
         tool
+        :narrow="isNarrow"
         content="Công cụ dụng cụ"
         expand
       ></MISASidebarItem>
@@ -40,12 +45,14 @@
         url="#"
         item
         category
+        :narrow="isNarrow"
         content="Danh mục"
       ></MISASidebarItem>
       <MISASidebarItem
         url="#"
         item
         search_sidebar
+        :narrow="isNarrow"
         content="Tra cứu"
         expand
       ></MISASidebarItem>
@@ -53,12 +60,17 @@
         url="#"
         item
         report
+        :narrow="isNarrow"
         content="Báo cáo"
         expand
       ></MISASidebarItem>
     </div>
     <div class="sidebar-foot">
-      <MISAIcon narrow @Click="sidebarNarrow()"></MISAIcon>
+      <MISATooltip right :content="content">
+        <div class="sidebar__icon">
+          <MISAIcon narrow @Click="sidebarNarrow()"></MISAIcon>
+        </div>
+      </MISATooltip>
     </div>
   </div>
 </template>
@@ -71,16 +83,25 @@ export default {
       isNarrow: false,
     };
   },
+  computed:{
+    // Thay đổi nội dung tooltip tương ứng với trường hợp thu hẹp hay mở rộng
+    content(){
+      if(this.isNarrow){
+        return "Mở rộng";
+      }else{
+        return "Thu gọn";
+      }
+    }
+  },
   methods: {
-
     /**
      * Nếu thực hiện thu gọn/mở rộng sidebar thì thông báo cho các component khác mở rộng/thu gọn lại
      * Author: LDTUAN (02/08/2023)
      */
-    sidebarNarrow(){
-        this.isNarrow = !this.isNarrow;
-        this.$emit("changeWidth", this.isNarrow);
-    }
+    sidebarNarrow() {
+      this.isNarrow = !this.isNarrow;
+      this.$emit("changeWidth", this.isNarrow);
+    },
   },
 };
 </script>

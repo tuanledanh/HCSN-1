@@ -2,26 +2,28 @@
   <div :class="[{ 'button-combo': combo }]">
     <MISAIcon v-if="combo" button add></MISAIcon>
     <button
-    :disabled="disabled"
+      :disabled="disabled"
       :class="[
         'button',
-        { 'disabled': disabled },
+        { disabled: disabled },
         { 'button--main': buttonMain },
         { 'button--sub': buttonSub },
         { 'button--outline': buttonOutline },
         { 'button--icon': buttonIcon },
         { 'button--icon-normal': button_icon_normal },
       ]"
+      :tabindex="tabindex"
+      ref="button"
     >
-      <MISAIcon
-        v-if="buttonIcon || button_icon_normal"
-        tooltip
-        :content="content"
-        :position="position"
-        :exportIcon="exportIcon"
-        :deleteIcon="deleteIcon"
-        :exit="exit"
-      ></MISAIcon>
+      <MISATooltip :bottom="bottom" :bottom_end="bottom_end" :content="content">
+        <MISAIcon
+          v-if="buttonIcon || button_icon_normal"
+          :exportIcon="exportIcon"
+          :deleteIcon="deleteIcon"
+          :exit="exit"
+        ></MISAIcon>
+      </MISATooltip>
+
       {{ textButton }}
     </button>
   </div>
@@ -31,7 +33,7 @@ export default {
   name: "MISAButton",
   props: {
     // Ngăn click vào button
-    disabled:{
+    disabled: {
       type: Boolean,
       default: false,
     },
@@ -101,17 +103,48 @@ export default {
       type: Boolean,
       default: false,
     },
-
     // Nội dung tooltip
     content: {
       type: String,
       default: "",
     },
-
-    // Vị trí của tooltip
-    position: {
-      type: String,
-      default: "",
+    bottom: {
+      type: Boolean,
+      default: false,
+    },
+    bottom_end: {
+      type: Boolean,
+      default: false,
+    },
+    tabindex: {
+      type: Number,
+      default: 0,
+    },
+    focus: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  methods: {
+    /**
+     * Focus vào button
+     * Author: LDTUAN (09/08/2023)
+     */
+    focusButton() {
+      this.$refs.button.focus();
+    },
+  },
+  mounted() {
+    if (this.focus) {
+      this.focusButton();
+    }
+  },
+  watch: {
+    focus(value) {
+      console.log(value);
+      if (value) {
+        this.focusButton();
+      }
     },
   },
 };
@@ -144,6 +177,11 @@ export default {
   background-color: #0582a2 !important;
 }
 
+.button--main:focus {
+  outline: 1px solid #28b7dc;
+  transition: all 0.2s linear;
+}
+
 .button--main:active {
   background-color: #28b7dc !important;
 }
@@ -158,12 +196,17 @@ export default {
   background-color: #d1edf4;
 }
 
+.button--sub:focus {
+  outline: 1px solid #ffffff;
+  transition: all 0.2s linear;
+}
+
 .button--sub:active {
   background-color: #ffffff;
 }
 
 .button--outline {
-  border: 1px solid #f5f5f5;
+  border: 1px solid #cdcdcd;
   background-color: #ffffff;
   color: #000000;
 }
@@ -171,6 +214,13 @@ export default {
 .button--outline:hover {
   background-color: #1aa4c8;
   color: #ffffff;
+}
+
+.button--outline:focus {
+  border: none;
+  outline: 1px solid #23cbf5;
+  transition: all 0.2s linear;
+  background-color: #1aa4c8;
 }
 
 .button--outline:active {
@@ -224,8 +274,8 @@ export default {
 }
 
 .button--icon-normal {
-  width: 36px;
-  height: 36px;
+  width: 24px;
+  height: 24px !important;
   background-color: #ffffff;
   border: unset;
   box-shadow: unset;

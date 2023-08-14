@@ -1,24 +1,35 @@
 <template>
-  <router-link
-    :to="'/' + url"
-    :class="[{'sidebar-item': item}, { 'sidebar-top': top }]"
-  >
-    <MISAIcon
-      sidebar
-      :home="home"
-      :overview="overview"
-      :asset="asset"
-      :asset_HTDB="asset_HTDB"
-      :tool="tool"
-      :category="category"
-      :search_sidebar="search_sidebar"
-      :report="report"
-    ></MISAIcon>
-    <div :class="['sidebar-text', {'sidebar-text-non-padding': nonPadding}]">
+  <el-tooltip :visible="visible" placement="right">
+    <template #content>
       <span>{{ content }}</span>
-      <MISAIcon v-if="expand" drop_down_thin></MISAIcon>
-    </div>
-  </router-link>
+    </template>
+    <router-link
+      :to="'/' + url"
+      :class="[{ 'sidebar-item': item }, { 'sidebar-top': top }]"
+      @mouseenter="visible = narrow"
+      @mouseleave="visible = false"
+    >
+      <MISAIcon
+        sidebar
+        :home="home"
+        :overview="overview"
+        :asset="asset"
+        :asset_HTDB="asset_HTDB"
+        :tool="tool"
+        :category="category"
+        :search_sidebar="search_sidebar"
+        :report="report"
+      ></MISAIcon>
+      <div
+        :class="['sidebar-text', { 'sidebar-text-non-padding': nonPadding }]"
+      >
+        <span>{{ content }}</span>
+        <MISATooltip bottom content="Mở rộng">
+          <MISAIcon v-if="expand" drop_down_thin></MISAIcon>
+        </MISATooltip>
+      </div>
+    </router-link>
+  </el-tooltip>
 </template>
 <script>
 export default {
@@ -28,6 +39,11 @@ export default {
     url: {
       type: String,
       default: "",
+    },
+    // Sidebar thu gọn
+    narrow: {
+      type: Boolean,
+      default: false,
     },
 
     // Vị trí
@@ -107,6 +123,12 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    return {
+      // Hiển thị tooltip hay không
+      visible: false,
+    };
   },
 };
 </script>

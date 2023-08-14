@@ -1,132 +1,79 @@
 <template>
-  <section class="absolute tooltip br-4" :class="classTooltip">
-    <section class="tooltip__wrapper relative br-4">
-      <span class="tooltip__content">{{ content }}</span>
-    </section>
-  </section>
+  <el-tooltip v-if="bottom_start"
+    class="box-item"
+    effect="dark"
+    :content="content"
+    placement="bottom-start"
+  >
+    <slot></slot>
+  </el-tooltip>
+  <el-tooltip v-if="bottom"
+    class="box-item"
+    effect="dark"
+    :content="content"
+    placement="bottom"
+  >
+    <slot></slot>
+  </el-tooltip>
+  <el-tooltip v-if="bottom_end"
+    class="box-item"
+    effect="dark"
+    :content="content"
+    placement="bottom-end"
+  >
+    <slot></slot>
+  </el-tooltip>
+  <el-tooltip v-if="top"
+    class="box-item"
+    effect="dark"
+    :content="content"
+    placement="top"
+  >
+    <slot></slot>
+  </el-tooltip>
+  <el-tooltip v-if="right"
+    class="box-item"
+    effect="dark"
+    :content="content"
+    placement="right"
+  >
+    <slot></slot>
+  </el-tooltip>
 </template>
-
 <script>
 export default {
   name: "MISATooltip",
   props: {
-    // Nội dung
+    // Nội dung của tooltip
     content: {
       type: String,
       default: "",
     },
-
-    // Vị trí
-    position: {
-      type: String,
-      default: "bot",
+    // Vị trí hiển thị, góc trái dưới
+    bottom_start: {
+      type: Boolean,
+      default: false,
     },
-  },
-  computed: {
-    /**
-     * Chọn class tương ứng với vị trí đã chọn
-     * Author: LDTUAN (02/08/2023)
-     */
-    classTooltip() {
-      return `tooltip--${this.position}`;
+    // Vị trí hiển thị, ở dưới
+    bottom: {
+      type: Boolean,
+      default: false,
+    },
+    // Vị trí hiển thị, góc phải dưới
+    bottom_end: {
+      type: Boolean,
+      default: false,
+    },
+    // Vị trí hiển thị, bên trên
+    top: {
+      type: Boolean,
+      default: false,
+    },
+    // Vị trí hiển thị, bên phải
+    right: {
+      type: Boolean,
+      default: false,
     },
   },
 };
 </script>
-<style>
-.tooltip {
-  display: none;
-  background-color: rgb(25, 169, 205);
-  width: auto;
-  box-shadow: 0 2px 6px rgb(0, 0, 0);
-  z-index: 999;
-}
-
-.tooltip--bot {
-  top: calc(100% + 5px);
-  left: 50%;
-  transform: translate(-50%, 0);
-  min-width: 80px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-}
-
-.tooltip--bot-head {
-  top: calc(60% + 5px);
-  min-width: 80px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-  left: 2%;
-}
-
-.tooltip--right {
-  min-width: 100px;
-  right: 0;
-  top: 50%;
-  transform: translate(calc(100% + 5px), -50%);
-}
-.tooltip--top {
-  min-width: 150px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -150%);
-}
-
-.tooltip--left{
-  justify-content: left;
-}
-
-.tooltip--left-300 {
-  top: calc(100% + 5px);
-  left: -300%;
-  top: 300%;
-  transform: translate(-50%, 0);
-  min-width: 80px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-}
-
-.tooltip--left-10 {
-  top: calc(100% + 5px);
-  left: -10%;
-  transform: translate(-50%, 0);
-  min-width: 80px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-}
-
-.tooltip__content {
-  font-size: 14px;
-  color: rgb(255, 255, 255);
-  width: auto;
-}
-
-.tooltip__wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  line-height: 20px;
-  font-size: 1.6rem;
-  height: 20px;
-  padding: 0 5px;
-  width: auto;
-}
-
-.tooltip--bottom .tooltip__wrapper::before {
-  content: "";
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-color: transparent transparent rgba(26, 164, 200, 0.2) transparent;
-  border-style: solid;
-  border-width: 5px 5px;
-}
-.tooltip--right .tooltip__wrapper::before {
-  content: "";
-  position: absolute;
-  left: -10px;
-  top: 50%;
-  transform: translateY(-50%);
-  border-color: transparent rgba(26, 164, 200, 0.2) transparent transparent;
-  border-style: solid;
-  border-width: 5px 5px;
-}
-</style>

@@ -78,10 +78,7 @@ thead{
     height: 38px;
     border-bottom: 1px solid #E0E0E0;
     font-size: 15px;
-}
-
-.table__head:hover .tooltip{
-    display: block;
+    cursor: context-menu;
 }
 
 .table__head input{
@@ -111,11 +108,6 @@ thead{
     border-bottom: 1px solid #E0E0E0;
     font-size: 15px;
     position: relative;
-}
-
-.table__body:hover .tooltip{
-    display: flex;
-    width: auto;
 }
 
 .table__body input{

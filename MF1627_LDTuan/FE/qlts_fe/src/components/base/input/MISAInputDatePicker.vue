@@ -1,15 +1,35 @@
 <template>
   <MISALabel v-if="label" :label="label" :required="required"></MISALabel>
-  <VueDatePicker
-    v-model="date"
-    :format="format"
-    ref="input"
-    @focus.passive="$emit('focus')"
-  />
+  <div class="demo-date-picker">
+    <el-date-picker
+      v-model="date"
+      type="date"
+      placeholder="Pick a day"
+      format="DD/MM/YYYY"
+      value-format="YYYY/MM/DD"
+      :defaultValue="new Date()"
+      :clear-icon="false"
+      :prefix-icon="customIconClass"
+      :tabindex="tabindex"
+      @focus.stop="$emit('focus')"
+      ref="input"
+      :class="{ 'input--error': error }"
+    >
+      <template #default="cell">
+        <div class="cell" :class="{ current: cell.isCurrent }">
+          <span class="text">{{ cell.text }}</span>
+        </div>
+      </template>
+    </el-date-picker>
+  </div>
 </template>
 <script>
+import misaIcon from "../icon/MISAIconDatepicker.vue";
 export default {
   name: "MISAInputDatePicker",
+  // components:{
+  //   MISAIcon,
+  // },
   props: {
     // Nhãn dán
     label: {
@@ -22,20 +42,25 @@ export default {
       type: Boolean,
       default: false,
     },
-
     // Giá trị binding 2 chiều nhận được từ component cha
     modelValue: {
       type: String,
       default: "",
     },
+    tabindex: {
+      type: Number,
+      default: 0,
+    },
+    // Border đỏ khi lỗi nhập liệu
+    error: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
-      // Giá trị ngày tháng
       date: null,
-
-      // Định dạng ngày tháng
-      format: null,
+      customIconClass: misaIcon,
     };
   },
   mounted() {
@@ -43,15 +68,6 @@ export default {
     if (this.modelValue) {
       this.date = this.modelValue;
     }
-  },
-  created() {
-    // Định dạng hiển thị của date
-    this.format = (date) => {
-      const day = date.getDate();
-      const month = date.getMonth() + 1;
-      const year = date.getFullYear();
-      return `${day}/${month}/${year}`;
-    };
   },
   watch: {
     // Gán giá trị từ component cha cho date mỗi khi giá trị đó thay đổi
@@ -63,9 +79,9 @@ export default {
     },
   },
   methods: {
-
     /**
-     * Focus vào ô nhập liệu
+     * Hàm focus vào ô nhập liệu
+     * Author: LDTUAN (02/08/2023)
      */
     focusInput() {
       this.$refs.input.focus();
@@ -73,35 +89,78 @@ export default {
   },
 };
 </script>
-
 <style>
-.dp__input {
-  border: 1px solid #afafaf;
+.cell {
+  height: 30px;
+  padding: 3px 0;
+  box-sizing: border-box;
+  position: relative; /* Thêm thuộc tính position */
+}
+
+.cell .text {
+  width: 24px;
+  height: 24px;
+  display: block;
+  margin: 0 auto;
+  line-height: 24px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+}
+
+.cell.current .text {
+  background: #626aef;
+  color: #fff;
+}
+
+.demo-date-picker {
+  width: 265px !important;
+  height: 35px;
+}
+.el-input {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.el-input__wrapper {
+  padding: unset !important;
+  padding-left: 14px !important;
+  width: 100% !important;
+  height: 100%;
   font-family: Roboto, sans-serif;
   font-weight: 400;
   font-size: 13px;
-  width: 265px;
-  height: 35px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #afafaf;
+  outline: none;
+  box-shadow: unset;
+}
+.el-input__inner {
+  font-family: Roboto, sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  color: black;
 }
 
-.dp__input:hover {
+.el-input__wrapper:hover {
+  outline: none;
+  box-shadow: none;
   border-color: #1aa4c8;
 }
 
-.dp__input_focus {
+.el-input__wrapper.is-focus {
+  box-shadow: unset !important;
   border-color: #1aa4c8;
 }
 
-.dp__input_icon_pad {
-  padding-left: 12px;
+.el-input__prefix {
+  position: absolute !important;
+  right: 2px !important;
 }
 
-.dp__input_icon {
-  right: 0;
-  left: auto;
-}
-
-.dp__clear_icon {
-  display: none;
+.input--error .el-input__wrapper{
+  border: 1px solid red !important;
 }
 </style>

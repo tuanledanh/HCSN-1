@@ -2,14 +2,16 @@
   <div
     :class="[
       'icon',
-      'relative',
+      { 'icon--disabled': disabled },
       { 'icon--input': input },
       { 'icon--button': button },
       { 'icon--sidebar': sidebar },
       { 'icon--narrow': narrow },
       { 'icon--tick-true': tick_true },
       { 'icon--combobox': combobox },
+      { 'icon--combobox-delete': combobox_delete },
       { 'icon--filter': filter },
+      { 'icon--navbar': navbar },
     ]"
     @click="onPagingClick"
   >
@@ -29,6 +31,7 @@
     <div
       v-else
       :class="[
+        iconContextMenu,
         'icon-background',
         { 'icon-search': iconSearch },
         { 'icon-required': required },
@@ -57,16 +60,13 @@
         { 'icon-edit': edit },
         { 'icon-copy': copy },
         { 'icon-exit': exit },
+        { 'icon-exit--small': exit_small },
         { 'icon-warning': warning },
         { 'icon-success': success },
         { 'icon-export-toast': export_toast },
+        { 'icon-date-picker': date_picker },
       ]"
     ></div>
-    <MISATooltip
-      v-if="tooltip"
-      :content="content"
-      :position="position"
-    ></MISATooltip>
   </div>
 </template>
 <script>
@@ -84,29 +84,19 @@ export default {
       type: Int32Array,
       default: 1,
     },
-
-    // Tooltip start
-    // Coi dùng tooltip hay không
-    tooltip: {
+    // Disable icon
+    disabled:{
       type: Boolean,
       default: false,
     },
 
-    // Nội dung của tooltip
-    content: {
-      type: String,
-      default: "",
-    },
-
-    // Vị trí của tooltip
-    position: {
-      type: String,
-      default: "",
-    },
-    // Tooltip end
-
     // Xác định xem xài class icon--combobox không
     combobox: {
+      type: Boolean,
+      default: false,
+    },
+    // Xác định xem xài class icon--combobox-delete không
+    combobox_delete: {
       type: Boolean,
       default: false,
     },
@@ -273,6 +263,12 @@ export default {
       default: false,
     },
 
+    // Icon của navbar
+    navbar: {
+      type: Boolean,
+      default: false,
+    },
+
     // Icon lùi
     prev: {
       type: Boolean,
@@ -302,6 +298,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Icon thoát nhỏ hơn, xài cho xóa text của combobox
+    exit_small: {
+      type: Boolean,
+      default: false,
+    },
 
     // Icon cảnh báo
     warning: {
@@ -313,6 +314,16 @@ export default {
     success: {
       type: Boolean,
       default: false,
+    },
+    // Icon chọn thời gian
+    date_picker: {
+      type: Boolean,
+      default: false,
+    },
+    // Icon của context menu
+    iconContextMenu:{
+      type: String,
+      default: null,
     },
   },
   data() {
@@ -442,6 +453,7 @@ export default {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -28px -338px;
   width: 7px;
   height: 5px;
+  transform: scale(1.2);
 }
 
 /*==================== Main content ====================*/
@@ -464,6 +476,13 @@ export default {
   transform: scale(1.2);
 }
 
+.icon-add-black {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -467px -423px;
+	width: 10px;
+	height: 10px;
+  transform: scale(1.8);
+}
+
 .icon-export {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -287px -111px;
   width: 18px;
@@ -474,6 +493,12 @@ export default {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -463px -111px;
   width: 18px;
   height: 18px;
+}
+
+.icon-delete-black {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -419px -111px;
+	width: 18px;
+	height: 18px;
 }
 
 .icon-prev {
@@ -521,6 +546,14 @@ export default {
   cursor: pointer;
 }
 
+.icon-exit--small {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -336px -248px;
+	width: 8px;
+	height: 8px;
+  transform: scale(1.4);
+  cursor: pointer;
+}
+
 .icon-required {
   background: url("../../../assets/icon/Sprites.64af8f61.svg") no-repeat -1612px -474px;
   width: 13px;
@@ -559,8 +592,8 @@ export default {
   cursor: pointer;
 }
 
-.icon:hover .tooltip {
-  display: block;
+.icon--navbar {
+  height: 18px;
 }
 
 .icon--input {
@@ -576,6 +609,21 @@ export default {
 
 .icon--sidebar {
   margin: 0 10px;
+}
+
+.sidebar--narrow .sidebar-item .icon--sidebar {
+  width: 100%;
+  margin: unset;
+  border-radius: 6px;
+}
+
+.sidebar--narrow .sidebar-item .icon--sidebar:hover {
+  background-color: #1aa4c8;
+}
+
+
+.sidebar--narrow .router-link-active .icon--sidebar{
+    background-color: #1aa4c8;
 }
 
 .icon--narrow {
@@ -599,7 +647,14 @@ export default {
 }
 
 .icon--combobox {
-  width: 24px;
+  width: 32px;
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+}
+
+.icon--combobox-delete {
+  width: 32px;
   position: absolute;
   right: 0;
   cursor: pointer;
@@ -609,5 +664,11 @@ export default {
   width: 36px;
   position: absolute;
   left: 0;
+}
+
+.icon--disabled{
+  pointer-events: none;
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>
