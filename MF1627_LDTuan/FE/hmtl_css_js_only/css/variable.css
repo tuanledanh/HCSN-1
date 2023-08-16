@@ -1,0 +1,10 @@
+:root{
+    --table-border-color: #e0dede;
+    --table-body-hover: #d1edf4;
+    --table-body-text-color: #0026ff;
+
+    --background-color-default: #ffffff;
+    --background-color-table-head: #f5f5f5;
+
+    --transition-02s: all ease-in-out 0.2s;
+}

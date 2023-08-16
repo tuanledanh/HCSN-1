@@ -46,6 +46,10 @@
   margin: unset;
 }
 
+.reverse .icon{
+  transform: rotate(180deg);
+}
+
 .sidebar-text {
   flex: 1;
   display: flex;
@@ -64,6 +68,7 @@
   margin-top: 15px;
   padding: 0 11px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .sidebar-item {
@@ -79,6 +84,7 @@
   opacity: 50%;
   text-decoration: none;
   margin-bottom: 4px;
+  transition: var(--transition-02s);
 }
 
 .sidebar--narrow .sidebar-body {
@@ -123,4 +129,21 @@
   width: 46px;
   display: flex;
   align-items: center;
+}
+
+/*================================= Item expand =================================*/
+.item-expand{
+  background-color: var(--background-color-sidebar-sub-item);
+}
+
+.item-expand .router-link-active{
+  background-color: var(--background-color-sidebar-sub-item-hover);
+}
+
+.sub-item:hover{
+  background-color: var(--background-color-sidebar-sub-item-hover);
+}
+
+.sidebar-expand .icon{
+  transition: var(--transition-02s);
 }

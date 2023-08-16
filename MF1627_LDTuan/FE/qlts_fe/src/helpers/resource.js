@@ -88,6 +88,45 @@ const MISAResource = {
         index: 4,
       },
     },
+    // Các link thành phần
+    Asset:[
+      {
+        url: '#',
+        content: 'Ghi tăng'
+      },
+      {
+        url: '#',
+        content: 'Thay đổi thông tin'
+      },
+      {
+        url: '#',
+        content: 'Đánh giá lại'
+      },
+      {
+        url: 'assetsTransfer',
+        content: 'Điều chuyển tài sản'
+      },
+      {
+        url: '#',
+        content: 'Đề nghị xử lý'
+      },
+      {
+        url: '#',
+        content: 'Ghi giảm'
+      },
+      {
+        url: '#',
+        content: 'Tính hao mòn'
+      },
+      {
+        url: '#',
+        content: 'Kiểm kê'
+      },
+      {
+        url: '#',
+        content: 'Khác'
+      },
+    ]
   },
   // Tiếng anh
   EN: {

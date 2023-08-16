@@ -34,6 +34,7 @@
         <MISAButton
           combo
           buttonMain
+          add
           textButton="Thêm tài sản"
           @click="btnAddAsset"
         ></MISAButton>
@@ -416,7 +417,7 @@ export default {
     };
   },
   mounted() {
-    document.addEventListener("selectstart", this.handleKeyShift);
+    //document.addEventListener("selectstart", this.handleKeyShift);
   },
   watch: {
     /**
@@ -812,11 +813,11 @@ export default {
      * Ngăn event liên quan các phím tắt mặc định
      * Author: LDTUAN (09/08/2023)
      */
-    handleKeyShift() {
-      document.addEventListener("selectstart", function(event){
-        event.preventDefault();
-      });
-    },
+    // handleKeyShift() {
+    //   document.addEventListener("selectstart", function(event){
+    //     event.preventDefault();
+    //   });
+    // },
     /**
      * Thực hiện tick/bỏ tick tất cả bản ghi trong danh sách khi tick/bỏ tích checkbox
      * @param {checkbox} event input checkbox
@@ -909,7 +910,7 @@ export default {
      * Author: LDTUAN (09/08/2023)
      */
     btnClickRight(event, asset) {
-      event.preventDefault();
+      //event.preventDefault();
       this.isShowContextMenu = true;
       this.mouseX = event.clientX;
       this.mouseY = event.clientY;
@@ -1043,7 +1044,7 @@ export default {
         index == "islast" &&
         charCode == this.$_MISAEnum.KEYCODE.TAB
       ) {
-        event.preventDefault();
+        //event.preventDefault();
         this.buttonFocus = "button";
         this.$refs[this.buttonFocus].focusButton();
       }
@@ -1060,3 +1061,164 @@ export default {
   },
 };
 </script>
+<style scoped>
+.table-container{
+    height: calc(698px - 39px);
+    width: 100%;
+    overflow-y: auto;
+    border-radius: 3.5px;
+}
+
+.table {
+    flex: 1;
+    width: 100%;
+    background-color: #ffffff;
+    border-spacing: unset;
+    border: unset;
+    border-radius: 3.5px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .16);
+}
+
+.table-container--noData{
+    overflow-y: hidden;
+}
+
+.noData{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: aqua; */
+    width: 100%;
+    height: calc(698px - 70px);
+}
+
+.width-16px{
+    width: 16px;
+    max-width: 16px;
+}
+
+.width-64px{
+    width: 64px;
+    min-width: 64px;
+}
+
+.width-100px{
+    width: 100px;
+    min-width: 100px;
+}
+
+.width-120px{
+    width: 120px;
+    min-width: 120px;
+}
+
+.width-170px{
+    width: 170px;
+    min-width: 170px;
+}
+
+.width-220px{
+    width: 220px;
+}
+
+.table__head:first-child,
+.table__body:first-child {
+    padding-left: 16px;
+}
+
+/*==================== Table head ====================*/
+
+thead{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #ffffff;
+}
+
+.table__head {
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    text-align: left;
+    height: 38px;
+    border-bottom: 1px solid #E0E0E0;
+    font-size: 15px;
+    cursor: context-menu;
+}
+
+.table__head input{
+    margin: unset;
+    width: 14px;
+    height: 14px;
+}
+
+.table__head--right {
+    text-align: right;
+}
+
+.table__head--center {
+    text-align: center;
+}
+
+/*==================== Table body ====================*/
+
+#tbodyAsset{
+    height: calc(100% - 38px);
+}
+
+.table__body {
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    height: 39px;
+    border-bottom: 1px solid #E0E0E0;
+    font-size: 15px;
+    position: relative;
+}
+
+.table__body input{
+    margin: unset;
+    width: 14px;
+    height: 14px;
+}
+
+.tr--body-selected{
+    background-color: rgba(26, 164, 200, .2);
+}
+
+.tr--body{
+    cursor: pointer;
+}
+
+.tr--body:hover{
+    background-color: rgba(26, 164, 200, .2);
+}
+
+/* Ẩn icon edit và copy, chỉ hiện khi hover row */
+.tr--body > .table__body > .icon-function{
+    display: none;
+}
+
+.tr--body:hover > .table__body > .icon-function{
+    display: flex;
+    column-gap: 16px;
+}
+
+.table__body--right {
+    text-align: right;
+}
+
+.table__body--center {
+    text-align: center;
+}
+
+.table__body--center-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-function{
+    align-items: center;
+    justify-content: center;
+    column-gap: 16px;
+  }
+</style>

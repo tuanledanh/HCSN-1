@@ -24,6 +24,7 @@
         :narrow="isNarrow"
         content="Tài sản"
         expand
+        :subItems="this.$_MISAResource.VN.Asset"
       ></MISASidebarItem>
       <MISASidebarItem
         url="#"

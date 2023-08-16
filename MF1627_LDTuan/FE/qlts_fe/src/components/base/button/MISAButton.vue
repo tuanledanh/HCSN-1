@@ -1,12 +1,13 @@
 <template>
-  <div :class="[{ 'button-combo': combo }]">
-    <MISAIcon v-if="combo" button add></MISAIcon>
+  <div :class="[{ 'button-combo': combo }, {'large':large}]">
+    <MISAIcon v-if="combo" button :add="add" :add_box="add_box"></MISAIcon>
     <button
       :disabled="disabled"
       :class="[
         'button',
         { disabled: disabled },
         { 'button--main': buttonMain },
+        { 'button--short': short },
         { 'button--sub': buttonSub },
         { 'button--outline': buttonOutline },
         { 'button--icon': buttonIcon },
@@ -46,6 +47,11 @@ export default {
 
     // Button chính
     buttonMain: {
+      type: Boolean,
+      default: false,
+    },
+    // Button không set chiều cao
+    short: {
       type: Boolean,
       default: false,
     },
@@ -124,6 +130,21 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Những button có width rộng hơn min width là 110px thì sẽ thêm padding
+    large: {
+      type: Boolean,
+      default: false,
+    },
+    // Icon thêm mới
+    add:{
+      type: Boolean,
+      default: false,
+    },
+    // Icon thêm mới có border xung quanh
+    add_box:{
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     /**
@@ -159,6 +180,13 @@ export default {
   border-radius: 4px;
   padding: unset;
   transition: all ease-in-out 0.3s;
+}
+
+.button--short{
+  height: auto;
+  width: auto;
+  white-space: nowrap;
+  padding: 4px 6px;
 }
 
 .button .icon {
@@ -229,7 +257,7 @@ export default {
 }
 
 .button-combo {
-  width: 110px;
+  min-width: 110px;
   height: 36px;
   display: flex;
   flex-direction: row;
@@ -244,7 +272,7 @@ export default {
   padding: unset;
   padding-left: 24px;
   font-family: Roboto, sans-serif;
-  font-weight: 400;
+  font-weight: 500;
   font-size: 13px;
   text-align: left;
   background-color: #1aa4c8;
@@ -285,5 +313,9 @@ export default {
   pointer-events: none; /* Prevents the button from being clicked */
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.large .button{
+  padding-right: 10px;
 }
 </style>

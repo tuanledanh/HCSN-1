@@ -2,6 +2,7 @@
   <div
     :class="[
       'icon',
+        { 'icon-background': background },
       { 'icon--disabled': disabled },
       { 'icon--input': input },
       { 'icon--button': button },
@@ -32,10 +33,10 @@
       v-else
       :class="[
         iconContextMenu,
-        'icon-background',
         { 'icon-search': iconSearch },
         { 'icon-required': required },
         { 'icon-add': add },
+        { 'icon-add-box': add_box },
         { 'icon-export': exportIcon },
         { 'icon-delete': deleteIcon },
         { 'icon-notification': notification },
@@ -65,6 +66,7 @@
         { 'icon-success': success },
         { 'icon-export-toast': export_toast },
         { 'icon-date-picker': date_picker },
+        { 'icon-loading': loading },
       ]"
     ></div>
   </div>
@@ -85,7 +87,7 @@ export default {
       default: 1,
     },
     // Disable icon
-    disabled:{
+    disabled: {
       type: Boolean,
       default: false,
     },
@@ -133,6 +135,11 @@ export default {
 
     // Icon thêm mới
     add: {
+      type: Boolean,
+      default: false,
+    },
+    // Icon thêm mới có border xung quanh
+    add_box: {
       type: Boolean,
       default: false,
     },
@@ -321,9 +328,19 @@ export default {
       default: false,
     },
     // Icon của context menu
-    iconContextMenu:{
+    iconContextMenu: {
       type: String,
       default: null,
+    },
+    // Icon của tải lại dữ liệu
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+    // Background của icon
+    background: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -476,10 +493,16 @@ export default {
   transform: scale(1.2);
 }
 
+.icon-add-box {
+  background: url("../../../assets/icon/Sprites.64af8f61.svg") no-repeat -426px -146px;
+  width: 20px;
+  height: 20px;
+}
+
 .icon-add-black {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -467px -423px;
-	width: 10px;
-	height: 10px;
+  width: 10px;
+  height: 10px;
   transform: scale(1.8);
 }
 
@@ -497,8 +520,8 @@ export default {
 
 .icon-delete-black {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -419px -111px;
-	width: 18px;
-	height: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .icon-prev {
@@ -548,8 +571,8 @@ export default {
 
 .icon-exit--small {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -336px -248px;
-	width: 8px;
-	height: 8px;
+  width: 8px;
+  height: 8px;
   transform: scale(1.4);
   cursor: pointer;
 }
@@ -566,6 +589,12 @@ export default {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -287px -67px;
   width: 18px;
   height: 18px;
+}
+
+.icon-loading {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -110px -68px;
+  width: 20px;
+  height: 16px;
 }
 
 .icon-warning {
@@ -621,9 +650,8 @@ export default {
   background-color: #1aa4c8;
 }
 
-
-.sidebar--narrow .router-link-active .icon--sidebar{
-    background-color: #1aa4c8;
+.sidebar--narrow .router-link-active .icon--sidebar {
+  background-color: #1aa4c8;
 }
 
 .icon--narrow {
@@ -666,9 +694,16 @@ export default {
   left: 0;
 }
 
-.icon--disabled{
+.icon--disabled {
   pointer-events: none;
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.icon-background{
+  background-color: var(--background-color-default);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
 }
 </style>
