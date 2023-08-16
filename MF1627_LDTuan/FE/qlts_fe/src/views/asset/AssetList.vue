@@ -34,23 +34,23 @@
         <MISAButton
           combo
           buttonMain
+          add
           textButton="Thêm tài sản"
           @click="btnAddAsset"
         ></MISAButton>
         <MISAButton
           buttonIcon
           exportIcon
+          bottom
           content="Xuất excel"
-          position="bot"
           @click="btnShowToastExport"
         ></MISAButton>
         <MISAButton
           buttonIcon
           deleteIcon
           content="Xóa"
-          position="left-10"
+          bottom_end
           @click="btnShowToastDelete"
-          :disabled="selectedRows.length == 0"
         ></MISAButton>
       </div>
     </div>
@@ -59,7 +59,7 @@
         class="table-container"
         :class="{ 'table-container--noData': this.assets.length == 0 }"
       >
-        <table class="table relative" id="tbAsset">
+        <table class="table" id="tbAsset">
           <thead>
             <tr>
               <th class="table__head table__head--padding width-16px">
@@ -74,7 +74,9 @@
                 />
               </th>
               <th class="table__head table__head--center width-64px">
-                <section class="relative" title="Số thứ tự">STT</section>
+                <MISATooltip top content="Số thứ tự">
+                  <span>STT</span></MISATooltip
+                >
               </th>
               <th class="table__head width-170px">Mã tài sản</th>
               <th class="table__head width-220px">Tên tài sản</th>
@@ -87,9 +89,9 @@
                 Nguyên giá
               </th>
               <th class="table__head table__head--right width-120px">
-                <section class="relative" title="Hao mòn/khấu hao lỹ kế">
-                  HM/KH lũy kế
-                </section>
+                <MISATooltip top content="Hao mòn/khấu hao lũy kế">
+                  <span>HM/KH lũy kế</span></MISATooltip
+                >
               </th>
               <th class="table__head table__head--right width-120px">
                 Giá trị còn lại
@@ -107,8 +109,11 @@
               class="tr--body"
               v-for="asset in assets"
               :key="asset.FixedAssetId"
-              @click="rowOnClick(asset)"
+              @click.exact="rowOnClick(asset)"
+              @click.ctrl="rowOnCtrlClick(asset)"
+              @click.shift="rowOnShiftClick(asset)"
               @dblclick="btnEditAsset(asset)"
+              @contextmenu.prevent="btnClickRight($event, asset)"
               :class="{ 'tr--body-selected': selectedRows.includes(asset) }"
             >
               <td class="table__body">
@@ -119,37 +124,51 @@
                 />
               </td>
               <td class="table__body table__body--center">
-                {{ assets.indexOf(asset) + 1 }}
+                {{ assets.indexOf(asset) + 1 + pageLimit * (currentPage - 1) }}
               </td>
               <td class="table__body">{{ asset.FixedAssetCode }}</td>
               <td class="table__body">
-                <section
-                  :title="
-                    asset.FixedAssetName.length > 20 ? asset.FixedAssetName : ''
-                  "
+                <el-tooltip
+                  v-if="asset.FixedAssetName.length > 20"
+                  :visible="visible"
+                  placement="right"
                 >
-                  {{ truncateText(asset.FixedAssetName, 20) }}
-                </section>
+                  <template #content>
+                    <span>{{ asset.FixedAssetName }}</span>
+                  </template>
+                  <span>{{ truncateText(asset.FixedAssetName, 20) }}</span>
+                </el-tooltip>
+                <span v-else>{{ truncateText(asset.FixedAssetName, 20) }}</span>
               </td>
               <td class="table__body">
-                <section
-                  :title="
-                    asset.FixedAssetCategoryName.length > 20
-                      ? asset.FixedAssetCategoryName
-                      : ''
-                  "
+                <el-tooltip
+                  v-if="asset.FixedAssetCategoryName.length > 20"
+                  :visible="visible"
+                  placement="right"
                 >
-                  {{ truncateText(asset.FixedAssetCategoryName, 20) }}
-                </section>
+                  <template #content>
+                    <span>{{ asset.FixedAssetCategoryName }}</span>
+                  </template>
+                  <span>{{
+                    truncateText(asset.FixedAssetCategoryName, 20)
+                  }}</span>
+                </el-tooltip>
+                <span v-else>{{
+                  truncateText(asset.FixedAssetCategoryName, 20)
+                }}</span>
               </td>
               <td class="table__body">
-                <section
-                  :title="
-                    asset.DepartmentName.length > 20 ? asset.DepartmentName : ''
-                  "
+                <el-tooltip
+                  v-if="asset.DepartmentName.length > 20"
+                  :visible="visible"
+                  placement="right"
                 >
-                  {{ truncateText(asset.DepartmentName, 20) }}
-                </section>
+                  <template #content>
+                    <span>{{ asset.DepartmentName }}</span>
+                  </template>
+                  <span>{{ truncateText(asset.DepartmentName, 20) }}</span>
+                </el-tooltip>
+                <span v-else>{{ truncateText(asset.DepartmentName, 20) }}</span>
               </td>
               <td class="table__body table__body--right">
                 {{ formatMoney(asset.Quantity) }}
@@ -167,12 +186,12 @@
               </td>
               <td class="table__body">
                 <div class="icon-function">
-                  <div @click="btnEditAsset(asset)">
-                    <MISAIcon edit></MISAIcon>
-                  </div>
-                  <div @click="btnCloneAsset(asset)">
-                    <MISAIcon copy></MISAIcon>
-                  </div>
+                  <MISATooltip bottom content="Chỉnh sửa">
+                    <MISAIcon edit @click="btnEditAsset(asset)"></MISAIcon>
+                  </MISATooltip>
+                  <MISATooltip bottom content="Sao chép">
+                    <MISAIcon copy @click="btnCloneAsset(asset)"></MISAIcon>
+                  </MISATooltip>
                 </div>
               </td>
             </tr>
@@ -201,36 +220,69 @@
     @onCloseForm="onCloseForm"
     @reLoad="reLoad"
   ></MISAAssetForm>
+  <MISAContextMenu
+    :listItem="this.$_MISAResource.VN.ContextMenu"
+    :isShowContextMenu="isShowContextMenu"
+    :posX="mouseX"
+    :posY="mouseY"
+    @click.stop="hideContextMenu"
+    @getItemContext="getItemContext"
+    v-click-outside="() => (isShowContextMenu = false)"
+  ></MISAContextMenu>
   <MISAToast
     v-if="isShowToastSuccess"
     typeToast="success"
     :content="toast_content_success"
   ></MISAToast>
   <div v-if="isShowToastDelete" class="blur">
-    <MISAToast typeToast="warning" :content="toast_content_delete"
+    <MISAToast
+      v-if="selectedRows.length > 0"
+      typeToast="warning"
+      :content="toast_content_delete"
       ><MISAButton
-        buttonSub
+        buttonOutline
         textButton="Không"
         @click="btnCloseToastWarning"
+        :tabindex="2"
+        @keydown="checkTabIndex($event, 'islast')"
       ></MISAButton>
       <MISAButton
         buttonMain
         textButton="Xóa"
         @click="btnDeleteAssets"
+        focus
+        ref="button"
+        :tabindex="1"
+      ></MISAButton>
+    </MISAToast>
+    <MISAToast v-else typeToast="warning" :content="toast_content_delete"
+      ><MISAButton
+        buttonMain
+        textButton="Đóng"
+        @click="btnCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
       ></MISAButton>
     </MISAToast>
   </div>
   <div v-if="isShowToastExport" class="blur">
     <MISAToast typeToast="export" :content="toast_content_export"
       ><MISAButton
-        buttonSub
+        buttonOutline
         textButton="Không"
         @click="btnCloseToastWarning"
+        :tabindex="2"
+        @keydown="checkTabIndex($event, 'islast')"
       ></MISAButton>
       <MISAButton
         buttonMain
         textButton="Tạo"
         @click="btnExportData"
+        focus
+        ref="button"
+        :tabindex="1"
       ></MISAButton>
     </MISAToast>
   </div>
@@ -240,6 +292,10 @@
         buttonSub
         textButton="Đóng"
         @click="btnCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
       ></MISAButton>
     </MISAToast>
   </div>
@@ -268,6 +324,8 @@ export default {
     return {
       // Danh sách tài sản
       assets: [],
+      // Danh sách toàn bộ tài sản, chỉ có filter theo mã code (nếu tìm kiếm), mã phòng ban và mã loại tài sản
+      assetsTotal: [],
       // Danh sách loại tài sản
       assetTypes: [],
       // Danh sách phòng ban
@@ -276,6 +334,10 @@ export default {
       selectedRows: [],
       // Loading
       isLoading: false,
+      // Index của bản ghi đầu tiên trong danh sách
+      lastIndex: 0,
+      // Focus vào ô nhập liệu, ban đầu là mã tài sản
+      buttonFocus: "",
 
       // =================================Filter=================================
       // Số trang hiện tại
@@ -302,7 +364,7 @@ export default {
       inputAssetCategoryNameChange: null,
       // Thay đổi giá trị của phòng ban khi cập nhật hoặc thêm mới, sẽ lọc theo tên phòng ban đó
       inputDepartmentNameChange: null,
-      // 
+      //
       // =================================Toast=================================
       // Hiển thị thông báo khi xóa
       isShowToastDelete: false,
@@ -340,7 +402,22 @@ export default {
       totalDepreciation: "0",
       // Tổng giá trị còn lại
       totalResidualValue: "0",
+
+      // =================================Context menu=================================
+      // Hiển thị context menu
+      isShowContextMenu: false,
+      // Tọa độ x của menu
+      mouseX: 0,
+      // Tọa độ y của menu
+      mouseY: 0,
+      // 
+      rowIndex: -1,
+      // Thông tin của bản ghi
+      assetContext: null,
     };
+  },
+  mounted() {
+    //document.addEventListener("selectstart", this.handleKeyShift);
   },
   watch: {
     /**
@@ -440,19 +517,23 @@ export default {
     AssetDepreciation,
     /** --------------------Load data---------------------- */
 
-    // getTotalRecord() {
-    //   try {
-    //     this.$_MISAApi.FixedAsset.GetCount()
-    //       .then((res) => {
-    //         this.totalRecords = res.data;
-    //       })
-    //       .catch((res) => {
-    //         this.$processErrorResponse(res);
-    //       });
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // },
+    async getTotalRecordBaseFilter() {
+      await this.$_MISAApi.FixedAsset.Filter(
+        1,
+        this.$_MISAEnum.INT.MAX_VALUE,
+        this.filterName,
+        this.departmentFilter,
+        this.assetTypeFilter
+      )
+        .then((res) => {
+          this.assetsTotal = res.data.Data;
+        })
+        .catch((res) => {
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+        });
+    },
 
     /**
      * Hàm chung load dữ liệu tương ứng với các tham số truyền vào
@@ -470,61 +551,57 @@ export default {
       departmentFilter,
       assetTypeFilter
     ) {
-      try {
-        this.isLoading = true;
-        this.$_MISAApi.FixedAsset.Filter(
-          pageNumber,
-          pageLimit,
-          filterName,
-          departmentFilter,
-          assetTypeFilter
-        )
-          .then((res) => {
-            this.assets = res.data.Data;
-            this.selectedRows = [];
-            this.isLoading = false;
-            this.totalPages = res.data.TotalPages;
-            this.totalRecords = res.data.TotalRecords;
+      this.isLoading = true;
+      this.$_MISAApi.FixedAsset.Filter(
+        pageNumber,
+        pageLimit,
+        filterName,
+        departmentFilter,
+        assetTypeFilter
+      )
+        .then((res) => {
+          this.assets = res.data.Data;
+          this.selectedRows = [];
+          this.isLoading = false;
+          this.totalPages = res.data.TotalPages;
+          this.totalRecords = res.data.TotalRecords;
 
-            // Array.reduce(callback, initialValue) initialvalue là giá trị ban đầu
-            var totalQuantity = this.assets.reduce((total, asset) => {
-              return total + asset.Quantity;
-            }, 0);
-            var totalPrice = this.assets.reduce((total, asset) => {
-              return total + asset.Cost;
-            }, 0);
-            var totalDepreciation = this.assets.reduce((total, asset) => {
-              return (
-                total +
-                this.formatMoneyToInt(
-                  (asset.Cost * (1 / asset.LifeTime)).toFixed(0)
-                )
-              );
-            }, 0);
-            var totalResidualValue = totalPrice - totalDepreciation;
+          // Array.reduce(callback, initialValue) initialvalue là giá trị ban đầu
+          var totalQuantity = this.assets.reduce((total, asset) => {
+            return total + asset.Quantity;
+          }, 0);
+          var totalPrice = this.assets.reduce((total, asset) => {
+            return total + asset.Cost;
+          }, 0);
+          var totalDepreciation = this.assets.reduce((total, asset) => {
+            return (
+              total +
+              this.formatMoneyToInt(
+                (asset.Cost * (1 / asset.LifeTime)).toFixed(0)
+              )
+            );
+          }, 0);
+          var totalResidualValue = totalPrice - totalDepreciation;
 
-            this.totalQuantity = formatMoney(totalQuantity);
-            this.totalPrice = formatMoney(totalPrice);
-            this.totalDepreciation = formatMoney(totalDepreciation);
-            this.totalResidualValue = formatMoney(totalResidualValue);
+          this.totalQuantity = formatMoney(totalQuantity);
+          this.totalPrice = formatMoney(totalPrice);
+          this.totalDepreciation = formatMoney(totalDepreciation);
+          this.totalResidualValue = formatMoney(totalResidualValue);
 
-            if (this.isSuccessAddOrUpdate) {
-              this.toast_content_success = this.$_MISAResource.VN.Form.Success;
-              this.isShowToastSuccess = true;
-            }
-            setTimeout(() => {
-              this.isShowToastSuccess = false;
-              this.isSuccessAddOrUpdate = false;
-            }, 3000);
-          })
-          .catch((res) => {
-            this.$processErrorResponse(res);
-            this.isShowToastValidateBE = true;
-            this.toast_content_warning = res.response.data.UserMessage;
-          });
-      } catch (error) {
-        console.log(error);
-      }
+          if (this.isSuccessAddOrUpdate) {
+            this.toast_content_success = this.$_MISAResource.VN.Form.Success;
+            this.isShowToastSuccess = true;
+          }
+          setTimeout(() => {
+            this.isShowToastSuccess = false;
+            this.isSuccessAddOrUpdate = false;
+          }, 3000);
+        })
+        .catch((res) => {
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+        });
     },
 
     /**
@@ -578,21 +655,16 @@ export default {
       if (this.selectedRows.length > 0) {
         const listIds = this.selectedRows.map((asset) => asset.FixedAssetId);
         const requestData = listIds;
-
-        try {
-          this.$_MISAApi.FixedAsset.DeleteMany(requestData, {
-            headers: { "Content-Type": "application/json" },
-          })
-            .then(() => this.loadDataAsset())
-            .then((this.isLoading = false))
-            .catch((res) => {
-              this.$processErrorResponse(res);
-              this.isShowToastValidateBE = true;
-              this.toast_content_warning = res.response.data.UserMessage;
-            });
-        } catch (error) {
-          console.log(error);
-        }
+        this.$_MISAApi.FixedAsset.DeleteMany(requestData, {
+          headers: { "Content-Type": "application/json" },
+        })
+          .then(() => this.loadDataAsset())
+          .then((this.isLoading = false))
+          .catch((res) => {
+            this.$processErrorResponse(res);
+            this.isShowToastValidateBE = true;
+            this.toast_content_warning = res.response.data.UserMessage;
+          });
       }
       this.isShowToastDelete = false;
     },
@@ -626,7 +698,8 @@ export default {
           formattedNumberOfRecords +
           this.$_MISAResource.VN.Form.Warning.Delete.Multiple;
       } else {
-        return;
+        this.toast_content_delete =
+          this.$_MISAResource.VN.Form.Warning.Delete.Zero;
       }
       this.isShowToastDelete = true;
     },
@@ -635,10 +708,11 @@ export default {
      * Show thông báo khi thực hiện xóa
      * Author: LDTUAN (02/08/2023)
      */
-    btnShowToastExport() {
+    async btnShowToastExport() {
       let selectedRows = null;
       if (this.selectedRows.length == 0) {
-        selectedRows = this.assets;
+        await this.getTotalRecordBaseFilter();
+        selectedRows = this.assetsTotal;
       } else {
         selectedRows = this.selectedRows;
       }
@@ -734,8 +808,16 @@ export default {
       this.pageNumber = pageNumber;
     },
 
-    /** ------------------------Tick checkbox-------------------- */
-
+    /** ------------------------Tick checkbox / short cut-------------------- */
+    /**
+     * Ngăn event liên quan các phím tắt mặc định
+     * Author: LDTUAN (09/08/2023)
+     */
+    // handleKeyShift() {
+    //   document.addEventListener("selectstart", function(event){
+    //     event.preventDefault();
+    //   });
+    // },
     /**
      * Thực hiện tick/bỏ tick tất cả bản ghi trong danh sách khi tick/bỏ tích checkbox
      * @param {checkbox} event input checkbox
@@ -762,11 +844,111 @@ export default {
      */
     rowOnClick(asset) {
       const index = this.selectedRows.indexOf(asset);
+      if (index !== -1 && this.selectedRows.length == 1) {
+        this.selectedRows = [];
+      } else {
+        this.selectedRows = [];
+        this.selectedRows.push(asset);
+      }
+      if (this.selectedRows.length == 0) {
+        this.lastIndex = 0;
+      } else {
+        this.lastIndex = this.assets.indexOf(asset);
+      }
+    },
+    // rowOnClick(asset) {
+    //   const index = this.selectedRows.indexOf(asset);
+    //   if (index !== -1) {
+    //     this.selectedRows.splice(index, 1);
+    //   } else {
+    //     this.selectedRows.push(asset);
+    //   }
+    // },
+
+    /**
+     * Chọn bản ghi bằng cách nhấn ctrl + click
+     * @param {object} asset bản ghi
+     * Author: LDTUAN (09/08/2023)
+     */
+    rowOnCtrlClick(asset) {
+      const index = this.selectedRows.indexOf(asset);
       if (index !== -1) {
         this.selectedRows.splice(index, 1);
       } else {
         this.selectedRows.push(asset);
       }
+      if (this.selectedRows.length == 0) {
+        this.lastIndex = 0;
+      } else {
+        this.lastIndex = this.assets.indexOf(asset);
+      }
+    },
+
+    /**
+     * Chọn bản ghi bằng cách nhấn shift + click
+     * @param {object} asset bản ghi
+     * Author: LDTUAN (09/08/2023)
+     */
+    rowOnShiftClick(asset) {
+      if (event.shiftKey) {
+        const index = this.assets.indexOf(asset);
+        let list = [];
+        let newestIndex = index + 1;
+        if (newestIndex <= this.lastIndex) {
+          list = this.assets.slice(newestIndex - 1, this.lastIndex + 1);
+        } else {
+          list = this.assets.slice(this.lastIndex, newestIndex);
+        }
+        this.selectedRows = list;
+      }
+    },
+
+    /**
+     * Chuột phải để mở context mennu
+     * @param {*} event 
+     * @param {object} asset bản ghi
+     * Author: LDTUAN (09/08/2023)
+     */
+    btnClickRight(event, asset) {
+      //event.preventDefault();
+      this.isShowContextMenu = true;
+      this.mouseX = event.clientX;
+      this.mouseY = event.clientY;
+      this.rowIndex = this.assets.indexOf(asset);
+      this.assetContext = asset;
+      this.selectedRows = [];
+      this.selectedRows.push(this.assetContext);
+    },
+
+    /**
+     * Thực hiện hành động tương ứng với option đã chọn từ context menu
+     * @param {int} index số index nhận từ option của context menu
+     * Author: LDTUAN (09/08/2023)
+     */
+    getItemContext(index) {
+      switch (index) {
+        case 1:
+          this.btnAddAsset();
+          break;
+        case 2:
+          this.btnEditAsset(this.assetContext);
+          break;
+        case 3:
+          this.btnCloneAsset(this.assetContext);
+          break;
+        case 4:
+          this.btnShowToastDelete();
+          break;
+      }
+    },
+
+    /**
+     * Tắt context menu
+     * Author: LDTUAN (09/08/2023)
+     */
+    hideContextMenu() {
+      this.isShowContextMenu = false;
+      this.rowIndex = -1;
     },
 
     /** ------------------------Form-------------------- */
@@ -786,7 +968,7 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     onCloseForm() {
-      this.onOpenForm = !this.onOpenForm;
+      this.onOpenForm = false;
     },
 
     /**
@@ -813,12 +995,13 @@ export default {
 
     /** ------------------------Form-------------------- */
     btnExportData() {
+      this.isShowToastExport = false;
       this.isLoading = true;
       let listIds = null;
       if (this.selectedRows != null && this.selectedRows.length > 0) {
         listIds = this.selectedRows.map((asset) => asset.FixedAssetId);
       } else {
-        listIds = this.assets.map((asset) => asset.FixedAssetId);
+        listIds = this.assetsTotal.map((asset) => asset.FixedAssetId);
       }
       let idsQuery = "";
       listIds.forEach((id) => {
@@ -836,12 +1019,7 @@ export default {
         idsQuery
       )
         .then((res) => {
-          // console.log(res);
-          // saveAs(res.data, "Asset.xlsx", {
-          //   type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          // });
           fileDownload(res.data, "Asset.xlsx");
-          this.isShowToastExport = false;
           this.loadDataAsset();
           this.isLoading = false;
         })
@@ -852,6 +1030,195 @@ export default {
           this.toast_content_warning = res.response.data.UserMessage;
         });
     },
+
+
+    /**
+     * Nhấn tab để di chuyển giữa các component
+     * @param {*} event 
+     * @param {int} index số index của các component
+     * Author: LDTUAN (09/08/2023)
+     */
+    checkTabIndex(event, index) {
+      var charCode = event.which ? event.which : event.keyCode;
+      if (
+        index == "islast" &&
+        charCode == this.$_MISAEnum.KEYCODE.TAB
+      ) {
+        //event.preventDefault();
+        this.buttonFocus = "button";
+        this.$refs[this.buttonFocus].focusButton();
+      }
+      // if (
+      //   index == "isFirst" &&
+      //   event.shiftKey == true &&
+      //   charCode == this.$_MISAEnum.KEYCODE.TAB
+      // ) {
+      //   event.preventDefault();
+      //   this.inputFocus = "exit";
+      //   this.$refs[this.inputFocus].focusInput();
+      // }
+    },
   },
 };
 </script>
+<style scoped>
+.table-container{
+    height: calc(698px - 39px);
+    width: 100%;
+    overflow-y: auto;
+    border-radius: 3.5px;
+}
+
+.table {
+    flex: 1;
+    width: 100%;
+    background-color: #ffffff;
+    border-spacing: unset;
+    border: unset;
+    border-radius: 3.5px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .16);
+}
+
+.table-container--noData{
+    overflow-y: hidden;
+}
+
+.noData{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: aqua; */
+    width: 100%;
+    height: calc(698px - 70px);
+}
+
+.width-16px{
+    width: 16px;
+    max-width: 16px;
+}
+
+.width-64px{
+    width: 64px;
+    min-width: 64px;
+}
+
+.width-100px{
+    width: 100px;
+    min-width: 100px;
+}
+
+.width-120px{
+    width: 120px;
+    min-width: 120px;
+}
+
+.width-170px{
+    width: 170px;
+    min-width: 170px;
+}
+
+.width-220px{
+    width: 220px;
+}
+
+.table__head:first-child,
+.table__body:first-child {
+    padding-left: 16px;
+}
+
+/*==================== Table head ====================*/
+
+thead{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #ffffff;
+}
+
+.table__head {
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    text-align: left;
+    height: 38px;
+    border-bottom: 1px solid #E0E0E0;
+    font-size: 15px;
+    cursor: context-menu;
+}
+
+.table__head input{
+    margin: unset;
+    width: 14px;
+    height: 14px;
+}
+
+.table__head--right {
+    text-align: right;
+}
+
+.table__head--center {
+    text-align: center;
+}
+
+/*==================== Table body ====================*/
+
+#tbodyAsset{
+    height: calc(100% - 38px);
+}
+
+.table__body {
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+    height: 39px;
+    border-bottom: 1px solid #E0E0E0;
+    font-size: 15px;
+    position: relative;
+}
+
+.table__body input{
+    margin: unset;
+    width: 14px;
+    height: 14px;
+}
+
+.tr--body-selected{
+    background-color: rgba(26, 164, 200, .2);
+}
+
+.tr--body{
+    cursor: pointer;
+}
+
+.tr--body:hover{
+    background-color: rgba(26, 164, 200, .2);
+}
+
+/* Ẩn icon edit và copy, chỉ hiện khi hover row */
+.tr--body > .table__body > .icon-function{
+    display: none;
+}
+
+.tr--body:hover > .table__body > .icon-function{
+    display: flex;
+    column-gap: 16px;
+}
+
+.table__body--right {
+    text-align: right;
+}
+
+.table__body--center {
+    text-align: center;
+}
+
+.table__body--center-button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-function{
+    align-items: center;
+    justify-content: center;
+    column-gap: 16px;
+  }
+</style>

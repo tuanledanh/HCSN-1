@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "SyEbYNOr9Pe1GFBjAIDsxpbQKkD1+RMvrLZZcUS3F6N4qI1IgtLrufAs2oQPgFvcYLOQsBwsODXT/2DGKZrkHw==",
+  "dgSpecHash": "uwJn0ZIiND6AkoS4zDhAlLADDaX9uSfWPj1SLa27P2KTfDD6Mc3VgWH7e8VsMMX2DzBzK+36vWJnL5cybbutgA==",
   "success": true,
-  "projectFilePath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj",
+  "projectFilePath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tuanl\\.nuget\\packages\\dapper\\2.0.143\\dapper.2.0.143.nupkg.sha512",
     "C:\\Users\\tuanl\\.nuget\\packages\\google.protobuf\\3.21.9\\google.protobuf.3.21.9.nupkg.sha512",

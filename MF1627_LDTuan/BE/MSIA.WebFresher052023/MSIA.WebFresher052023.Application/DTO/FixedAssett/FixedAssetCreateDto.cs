@@ -25,20 +25,20 @@ namespace Application.DTO.FixedAssett
         [StringLength(255, ErrorMessage = "Tên tài sản không được vượt quá 255 ký tự")]
         public string FixedAssetName { get; set; }
         /// <summary>
-        /// Id tài sản
+        /// Id phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         [Required(ErrorMessage = "Phải nhập id phòng ban")]
         public Guid DepartmentId { get; set; }
         /// <summary>
-        /// Mã tài sản
+        /// Mã phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         [Required(ErrorMessage = "Phải nhập mã phòng ban")]
         [StringLength(50, ErrorMessage = "Mã phòng ban không được vượt quá 50 ký tự")]
         public string DepartmentCode { get; set; }
         /// <summary>
-        /// Tên tài sản
+        /// Tên phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         [Required(ErrorMessage = "Phải nhập tên phòng ban")]
@@ -88,7 +88,7 @@ namespace Application.DTO.FixedAssett
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         [Required(ErrorMessage = "Phải nhập số lượng")]
-        [Range(1, int.MaxValue, ErrorMessage = "Số lượng tài sản phái lớn hơn 0")]
+        [Range(20, int.MaxValue, ErrorMessage = "Số lượng tài sản phải lớn hơn 20")]
         public int Quantity { get; set; }
         /// <summary>
         /// Năm bắt đầu theo dõi tài sản trên phần mềm

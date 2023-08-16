@@ -1,8 +1,14 @@
 <template>
-  <MISALabel v-if="label" :label="label" :required="required"></MISALabel>
+  <MISALabel
+    v-if="label"
+    :label="label"
+    :required="required"
+    @click="focusInput"
+  ></MISALabel>
   <div
     :class="[
       'input',
+      { 'input--error': error },
       { 'input--search': search },
       { 'input--normal': normal },
       { 'input--large': large },
@@ -10,6 +16,7 @@
       { 'input--combobox': combobox },
       { 'input--dropdown-list': dropdown_list },
       { 'input--small': small },
+      { 'input--incre-decre': inputInDe },
     ]"
   >
     <input
@@ -20,23 +27,26 @@
       :placeholder="placeholder"
       :required="required"
       v-model="inputText"
+      :tabindex="tabindex"
       @input="onSearchItem"
       @keydown="inputOnKeyDown"
       :class="{ 'text--right': right }"
       @focus.stop="$emit('focus')"
       :maxlength="maxlength"
     />
-    <MISAIcon
-      v-if="search"
-      input
-      iconSearch
-      tooltip
-      content="Tìm kiếm"
-      position="bot"
-    ></MISAIcon>
+    <MISATooltip bottom content="Tìm kiếm">
+      <MISAIcon v-if="search" input iconSearch></MISAIcon>
+    </MISATooltip>
+
+    <div v-if="inputInDe" class="icon__wrapper absolute">
+      <MISAIcon pull_up @click="btnIncrease"></MISAIcon>
+      <MISAIcon drop_down @click="btnDecrease"></MISAIcon>
+    </div>
   </div>
 </template>
 <script>
+import { formatMoney } from "../../../helpers/common/format/format";
+import { formatMoneyToInt } from "../../../helpers/common/format/format";
 export default {
   name: "MISAInput",
   props: {
@@ -60,6 +70,12 @@ export default {
 
     // Input dạng danh sách
     dropdown_list: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Input có icon tăng giảm
+    inputInDe: {
       type: Boolean,
       default: false,
     },
@@ -140,6 +156,16 @@ export default {
     maxlength: {
       type: String,
       default: "255",
+    },
+    // Số thứ tự khi xài tab
+    tabindex: {
+      type: Number,
+      default: 0,
+    },
+    // Border đỏ khi lỗi nhập liệu
+    error: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -222,6 +248,39 @@ export default {
       }
       this.$emit("update:modelValue", this.inputText);
     },
+
+    /**
+     * Tăng số lượng
+     * Author: LDTUAN (07/08/2023)
+     */
+    btnIncrease() {
+      this.focusInput();
+      switch (this.typeOfValue) {
+        case "number":
+          this.inputText = formatMoney(formatMoneyToInt(this.inputText) + 1);
+          break;
+      }
+      this.$emit("update:modelValue", this.inputText);
+    },
+
+    /**
+     * Giảm số lượng
+     * Author: LDTUAN (07/08/2023)
+     */
+    btnDecrease() {
+      if (formatMoneyToInt(this.inputText) > 0) {
+        this.focusInput();
+        switch (this.typeOfValue) {
+          case "number":
+            this.inputText = formatMoney(formatMoneyToInt(this.inputText) - 1);
+            break;
+        }
+        if (!this.inputText) {
+          this.inputText = "0";
+        }
+        this.$emit("update:modelValue", this.inputText);
+      }
+    },
   },
 };
 </script>
@@ -249,8 +308,7 @@ export default {
   font-weight: 400;
   font-size: 13px;
   padding: unset;
-  padding-left: 14px;
-  padding-right: 4px;
+  padding: 0 14px;
   box-sizing: border-box;
   outline: unset;
 }
@@ -265,6 +323,10 @@ export default {
 
 .input input::placeholder {
   font-style: italic;
+}
+
+.input--error input {
+  border: 1px solid red;
 }
 
 /*--------------------------------------------*/
@@ -316,5 +378,19 @@ export default {
 
 .text--right {
   text-align: right;
+}
+
+.icon__wrapper {
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 4px;
+  width: 36px;
+}
+
+.input--incre-decre input {
+  padding-right: 32px;
 }
 </style>

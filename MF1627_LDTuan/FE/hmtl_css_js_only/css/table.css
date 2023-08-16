@@ -1,0 +1,35 @@
+.table {
+    display: flex;
+    flex-direction: column;
+    border-color: var(--table-border-color);
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 44px 50px 120px 140px 140px 824px 104px;
+    height: 35px;
+}
+
+.cell {
+    min-height: 35px;
+    background-color: var(--background-color-default);
+    border-color: var(--table-border-color);
+    transition: var(--transition-02s);
+}
+
+.header {
+    background-color: var(--background-color-table-head);
+}
+
+.header input[type="text"]{
+    width: 100%;
+    height: 100%;
+}
+
+.body--row:hover .cell{
+    background-color: var(--table-body-hover);
+}
+
+.body{
+    color: var(--table-body-text-color);
+}

@@ -1,4 +1,5 @@
 ﻿using Domain.Exceptions;
+using MSIA.WebFresher052023.Domain.Resource;
 
 namespace API.Middleware
 {
@@ -54,7 +55,7 @@ namespace API.Middleware
                     await context.Response.WriteAsync(new BaseException()
                     {
                         ErrorCode = notFoundException.ErrorCode,
-                        UserMessage = "Không tìm thấy tài nguyên",
+                        UserMessage = ErrorMessages.NotFound,
                         DevMessage = exception.Message,
                         TraceId = context.TraceIdentifier,
                         MoreInfo = exception.HelpLink
@@ -64,16 +65,29 @@ namespace API.Middleware
                 // Xử lý ngoại lệ ConflictException
                 case ConflictException:
                     context.Response.StatusCode = StatusCodes.Status409Conflict;
-
                     await context.Response.WriteAsync(
-                            new BaseException()
-                            {
-                                ErrorCode = StatusCodes.Status409Conflict,
-                                UserMessage = "Mã tài sản bị trùng",
-                                DevMessage = exception.Message,
-                                TraceId = context.TraceIdentifier,
-                                MoreInfo = exception.HelpLink
-                            }.ToString() ?? "");
+                        new BaseException()
+                        {
+                            ErrorCode = StatusCodes.Status409Conflict,
+                            UserMessage = ErrorMessages.Conflict,
+                            DevMessage = exception.Message,
+                            TraceId = context.TraceIdentifier,
+                            MoreInfo = exception.HelpLink
+                        }.ToString() ?? "");
+                    break;
+
+                // Xử lý ngoại lệ ConflictException
+                case DataException:
+                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    await context.Response.WriteAsync(
+                        new BaseException()
+                        {
+                            ErrorCode = StatusCodes.Status409Conflict,
+                            UserMessage = ErrorMessages.Data,
+                            DevMessage = exception.Message,
+                            TraceId = context.TraceIdentifier,
+                            MoreInfo = exception.HelpLink
+                        }.ToString() ?? "");
                     break;
 
                 // Xử lý các ngoại lệ khác
@@ -82,7 +96,7 @@ namespace API.Middleware
                     await context.Response.WriteAsync(new BaseException()
                     {
                         ErrorCode = StatusCodes.Status500InternalServerError,
-                        UserMessage = "Lỗi hệ thống",
+                        UserMessage = ErrorMessages.Other,
                         DevMessage = exception.Message,
                         TraceId = context.TraceIdentifier,
                         MoreInfo = exception.HelpLink

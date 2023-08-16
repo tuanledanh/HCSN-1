@@ -11,6 +11,7 @@
     "@vuepic/vue-datepicker": "^5.4.0",
     "axios": "^1.4.0",
     "core-js": "^3.8.3",
+    "element-plus": "^2.3.9",
     "file-saver": "^2.0.5",
     "js-file-download": "^0.4.12",
     "tiny-emitter": "^2.1.0",

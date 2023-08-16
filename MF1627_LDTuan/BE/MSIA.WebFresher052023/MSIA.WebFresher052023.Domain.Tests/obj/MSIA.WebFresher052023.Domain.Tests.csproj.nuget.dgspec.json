@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\MSIA.WebFresher052023.Domain.Tests.csproj": {}
+    "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\MSIA.WebFresher052023.Domain.Tests.csproj": {}
   },
   "projects": {
-    "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\MSIA.WebFresher052023.Domain.Tests.csproj": {
+    "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\MSIA.WebFresher052023.Domain.Tests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\MSIA.WebFresher052023.Domain.Tests.csproj",
+        "projectUniqueName": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\MSIA.WebFresher052023.Domain.Tests.csproj",
         "projectName": "MSIA.WebFresher052023.Domain.Tests",
-        "projectPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\MSIA.WebFresher052023.Domain.Tests.csproj",
+        "projectPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\MSIA.WebFresher052023.Domain.Tests.csproj",
         "packagesPath": "C:\\Users\\tuanl\\.nuget\\packages\\",
-        "outputPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\obj\\",
+        "outputPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain.Tests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\tuanl\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,8 +28,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj": {
-                "projectPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj"
+              "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj": {
+                "projectPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj"
               }
             }
           }
@@ -95,14 +95,14 @@
         }
       }
     },
-    "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj": {
+    "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj",
+        "projectUniqueName": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj",
         "projectName": "MSIA.WebFresher052023.Domain",
-        "projectPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj",
+        "projectPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj",
         "packagesPath": "C:\\Users\\tuanl\\.nuget\\packages\\",
-        "outputPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\obj\\",
+        "outputPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\tuanl\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -150,14 +150,14 @@
         }
       }
     },
-    "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj": {
+    "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj",
+        "projectUniqueName": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj",
         "projectName": "MSIA.WebFresher052023.Infrastructure",
-        "projectPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj",
+        "projectPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\MSIA.WebFresher052023.Infrastructure.csproj",
         "packagesPath": "C:\\Users\\tuanl\\.nuget\\packages\\",
-        "outputPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\obj\\",
+        "outputPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Infrastructure\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\tuanl\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -174,8 +174,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj": {
-                "projectPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj"
+              "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj": {
+                "projectPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj"
               }
             }
           }

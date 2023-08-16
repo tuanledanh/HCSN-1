@@ -1,6 +1,3 @@
-/* Import base */
-@import url(./base/table.css);
-
 /* Import layout */
 @import url(./layout/main-content.css);
 @import url(./layout/navbar.css);
@@ -13,30 +10,55 @@
 /* General css */
 body{
     margin: 0;
+    font-family: 'Roboto', sans-serif;
     font-size: 13px;
-    font-family: Roboto, sans-serif;
+    font-weight: 400;
+}
+
+input[type="checkbox"] {
+    margin: unset;
+    transform: scale(1.23);
 }
 
 @font-face {
-    font-family: Roboto;
+    font-family: 'Roboto';
     src: url("../assets/font/Roboto/Roboto-Regular.ttf");
     font-weight: 400;
 }
 
 @font-face {
-    font-family: Roboto;
+    font-family: 'Roboto';
     src: url("../assets/font/Roboto/Roboto-Bold.ttf");
     font-weight: 500;
 }
 
 @font-face {
-    font-family: Roboto;
+    font-family: 'Roboto';
     src: url("../assets/font/Roboto/Roboto-Medium.ttf");
     font-weight: 700;
 }
 
 @font-face {
-    font-family: Roboto;
+    font-family: 'Roboto';
     src: url("../assets/font/Roboto/Roboto-Italic.ttf");
     font-style: italic;
+}
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: var(--background-color-scroll-bar-track);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--background-color-scroll-bar);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: var(--background-color-scroll-bar-hover);
 }

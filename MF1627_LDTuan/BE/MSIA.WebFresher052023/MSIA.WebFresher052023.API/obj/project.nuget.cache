@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "H7uFO5RYIVhnJFmNmRr7ZbZhj2hyWn4U93oQCqbG7C3P3fhNG8TI7DnbUAu/JiLz0KgpO7vY3A0dnTfv1qveeQ==",
+  "dgSpecHash": "udzh233O2UnRb1WbCiXkwmBZfvZBL7y6CgsYYyC+0cZST0URQvKKd7szf3smWQzsCRzjM+W8E601/6AUhZ/+tQ==",
   "success": true,
-  "projectFilePath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.API\\MSIA.WebFresher052023.API.csproj",
+  "projectFilePath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.API\\MSIA.WebFresher052023.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tuanl\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\tuanl\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",

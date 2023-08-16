@@ -1,8 +1,8 @@
 <template>
   <div
     class="selectOption dropdownList"
-    @click="isShowData = true"
-    @mouseleave="handleMouseLeave"
+    @dblclick="isShowData = true"
+    v-click-outside="() => (isShowData = false)"
   >
     <MISAInput
       readonly
@@ -115,12 +115,6 @@ export default {
     this.onLoadData();
   },
   methods: {
-    /**
-     * Di chuột ra ngoài thì ẩn data
-     */
-    handleMouseLeave() {
-      this.isShowData = false;
-    },
 
     /**
      * Tải dữ liệu lên cho combobox

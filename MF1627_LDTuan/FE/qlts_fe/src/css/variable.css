@@ -1,0 +1,35 @@
+:root {
+  /* ------------------------ Table ------------------------ */
+  --table-border-color: #e0dede;
+  --table-body-hover: #d1edf4;
+  --table-body-text-color: #0026ff;
+
+  /* ------------------------ Background default ------------------------ */
+  --background-color-default: #ffffff;
+
+  /* ------------------------ Background table ------------------------ */
+  --background-color-table-head: #f5f5f5;
+
+  /* ------------------------ Background sidebar ------------------------ */
+  --background-color-main-content: #d6ebf9;
+
+  /* ------------------------ Background sidebar ------------------------ */
+  --background-color-sidebar-sub-item: #2f3443;
+  --background-color-sidebar-sub-item-hover: #424655;
+
+  /* ------------------------ Background scroll bar ------------------------ */
+  --background-color-scroll-bar: #d6d6d6;
+  --background-color-scroll-bar-hover: #c4c4c4;
+  --background-color-scroll-bar-track: #f1f1f1;
+
+  --resize-bar-color: #afafaf;
+
+  /* ------------------------ Box shadow ------------------------ */
+  --box-shadow-table: 0 3px 10px rgba(0, 0, 0, 0.16);
+
+  /* ------------------------ Transition ------------------------ */
+  --transition-02s: all ease-in-out 0.2s;
+
+  /* ------------------------ Text color ------------------------ */
+  --text-color-default: #edffff;
+}

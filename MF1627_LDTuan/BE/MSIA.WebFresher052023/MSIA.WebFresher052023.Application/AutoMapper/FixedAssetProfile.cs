@@ -10,6 +10,7 @@ namespace Application.AutoMapper
         public FixedAssetProfile()
         {
             CreateMap<FixedAsset, FixedAssetDto>();
+            CreateMap<FixedAsset, ExportFixedAsset>();
             CreateMap<FixedAsset, FixedAssetModel>();
             CreateMap<FixedAssetModel, FixedAssetDto>();
             CreateMap<FixedAssetCreateDto, FixedAsset>();

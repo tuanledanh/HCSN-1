@@ -29,4 +29,8 @@ export default {
   flex-direction: row;
   align-items: center;
 }
+
+label{
+  cursor: pointer !important;
+}
 </style>

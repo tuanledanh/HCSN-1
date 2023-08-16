@@ -42,5 +42,19 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    column-gap: 20px;
+    column-gap: 8px;
+}
+
+.left{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 16px;
+}
+
+.right{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: 16px;
 }

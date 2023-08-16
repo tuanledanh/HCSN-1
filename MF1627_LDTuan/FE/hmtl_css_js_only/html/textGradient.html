@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .gradient {
+            font-size: 24px;
+            background: linear-gradient(to right, blue, orange, green);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            background-size: 300%;
+            background-position: -100%;
+            animation: gradientAnimation 5s infinite;
+            /* Thêm animation */
+        }
+
+        @keyframes gradientAnimation {
+            from {
+                background-position: 0%;
+            }
+
+            to {
+                background-position: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <p class="gradient">HELLO</p>
+</body>
+
+</html>

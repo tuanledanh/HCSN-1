@@ -15,6 +15,7 @@
             :totalPages="totalPages"
             :currentPage="currentPage"
             @paging="getPageNumber"
+            :disabled="pageNumber == 1"
           ></MISAIcon>
           <div
             v-for="(page, index) in pages"
@@ -30,6 +31,7 @@
             :totalPages="totalPages"
             :currentPage="currentPage"
             @paging="getPageNumber"
+            :disabled="pageNumber == totalPages"
           ></MISAIcon>
         </div>
       </div>

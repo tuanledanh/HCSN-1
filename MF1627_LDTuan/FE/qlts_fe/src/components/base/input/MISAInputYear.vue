@@ -4,8 +4,8 @@
         <div class="input__wrapper">
             <input type="text" value="2023">
             <div class="icon__wrapper">
-                <MISAIcon pull_up tooltip content="Tăng" position="bot"></MISAIcon>
-                <MISAIcon drop_down tooltip content="Giảm" position="bot"></MISAIcon>
+                <MISAIcon pull_up></MISAIcon>
+                <MISAIcon drop_down></MISAIcon>
             </div>
         </div>
     </div>

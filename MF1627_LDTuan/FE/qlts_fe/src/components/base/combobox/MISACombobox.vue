@@ -1,18 +1,27 @@
 <template>
-  <div @dblclick="isShowData = true">
-    <!-- Xem lại video combox để biết cách truyền dữ liệu từ form sang -->
-    <MISALabel v-if="label" :label="label" :required="required"></MISALabel>
-    <div class="selectOption" @mouseleave="handleMouseLeave">
-      <MISAInput
-        combobox
-        :placeholder="placeholder"
-        v-model="inputText"
-        @indexHover="onIndexHover"
-        @focus="$emit('focus')"
-        ref="input"
-        maxlength="100"
-      ></MISAInput>
-      <div v-if="isShowData" class="selectOption__data">
+  <MISALabel
+    v-if="label"
+    :label="label"
+    :required="required"
+    @click="focusInput"
+  ></MISALabel>
+  <div v-click-outside="() => (isShowData = false)">
+    <div class="selectOption">
+      <div @click="isShowData = true">
+        <MISAInput
+          combobox
+          :placeholder="placeholder"
+          v-model="inputText"
+          @indexHover="onIndexHover"
+          @focus="$emit('focus')"
+          ref="input"
+          maxlength="100"
+          :tabindex="tabindex"
+          :error="error"
+        ></MISAInput>
+      </div>
+
+      <div v-show="isShowData" class="selectOption__data" ref="list">
         <div
           class="selectOption-item"
           :class="[
@@ -30,8 +39,16 @@
           <span>{{ item[propText] }}</span>
         </div>
       </div>
-      <MISAIcon filter tooltip content="Lọc" position="bot"></MISAIcon>
-      <MISAIcon drop_down combobox @click="onShowData"></MISAIcon>
+      <MISATooltip bottom content="Lọc">
+        <MISAIcon filter></MISAIcon>
+      </MISATooltip>
+      <MISAIcon
+        v-if="canDelete"
+        exit_small
+        combobox_delete
+        @click="onDeleteText"
+      ></MISAIcon>
+      <MISAIcon v-else drop_down combobox @click="onShowData"></MISAIcon>
     </div>
   </div>
 </template>
@@ -46,74 +63,71 @@ export default {
       type: String,
       default: "",
     },
-
     // Api nhận từ component cha, để thực hiện lấy dữ liệu
     api: {
       type: String,
       default: null,
     },
-
     // Id, mã code của bản ghi khi thực hiện cập nhật
     existCode: {
       type: String,
       default: null,
     },
-
     // Value của object hiển thị trên combobox
     propValue: {
       type: String,
       default: "",
     },
-
     // Giá trị hiển thị trên combobox
     propText: {
       type: String,
       default: "",
     },
-
     // Tên nhãn dán
     label: {
       type: String,
       default: "",
     },
-
     // Kiểm tra coi có cần xài icon required không
     required: {
       type: Boolean,
       default: false,
     },
-
     // Giá trị nhận từ component cha, truyền về để search
     inputChange: {
       type: String,
       default: "",
+    },
+    tabindex: {
+      type: Number,
+      default: 0,
+    },
+    // Border đỏ khi lỗi nhập liệu
+    error: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
     return {
       // Data đầy đủ nhận được từ api
       ComboboxItems: [],
-      
       // Data dùng để search
       itemFilter: [],
-      
       // Hiển thị danh sách dữ liệu hay không
       isShowData: false,
-      
       // Item được chọn
       itemSelected: {},
-      
       // Item được chọn bằng click chuột
       itemSelectedByClick: {},
-      
       // Giá trị hiển thị trên ô input
       inputText: "",
-      
       // Giá trị hover khi sử dụng bàn phím
       indexHover: -1,
-      
       // Xem người dùng nhấn phím gì trên bàn phím
       keyCode: null,
+      // Hiển thị icon xóa text
+      canDelete: false,
     };
   },
   watch: {
@@ -132,9 +146,10 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     inputText(value) {
-      if (value == null || value == "") {
+      if (value == null || value == "" || !value) {
         this.indexHover = -1;
         this.isShowData = true;
+        this.canDelete = false;
       }
       this.itemFilter = [];
       let itemFilter = this.ComboboxItems.filter((i) => {
@@ -175,6 +190,9 @@ export default {
       if (this.itemSelectedByClick) {
         this.itemSelected = this.itemSelectedByClick;
       }
+      if (this.itemSelected && this.inputText.length > 0) {
+        this.canDelete = true;
+      }
     },
 
     /**
@@ -198,12 +216,16 @@ export default {
   },
   methods: {
     /**
-     * Di chuột ra ngoài thì ẩn data
+     * Xóa input text
+     * Author: LDTUAN (09/08/2023)
      */
-    handleMouseLeave() {
-      this.isShowData = false;
+    onDeleteText() {
+      this.inputText = "";
+      this.$emit("filter", "");
+      this.indexHover = -1;
+      this.itemSelected = null;
+      this.itemSelectedByClick = null;
     },
-
     /**
      * Focus vào ô nhập liệu
      * Author: LDTUAN (02/08/2023)
@@ -265,14 +287,24 @@ export default {
       }
       switch (keyCode) {
         case this.$_MISAEnum.KEYCODE.DOWN:
+          this.isShowData = true;
           if (this.indexHover < this.itemFilter.length - 1) {
             this.indexHover++;
           }
+          this.$refs.list.scroll({
+            top: 36 * this.indexHover,
+            behavior: "smooth",
+          });
           break;
         case this.$_MISAEnum.KEYCODE.UP:
+          this.isShowData = true;
           if (this.indexHover > -1) {
             this.indexHover--;
           }
+          this.$refs.list.scroll({
+            top: 36 * this.indexHover,
+            behavior: "smooth",
+          });
           break;
         case this.$_MISAEnum.KEYCODE.ENTER:
           if (this.inputText) {
@@ -298,7 +330,6 @@ export default {
           this.itemFilter = this.ComboboxItems;
           break;
       }
-      //}
     },
   },
 };

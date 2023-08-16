@@ -23,11 +23,11 @@ builder.Services.AddControllers()
             return new BadRequestObjectResult(new BaseException()
             {
                 ErrorCode = 400,
-                UserMessage = "Program: Lỗi nhập từ người dùng",
+                UserMessage = errors.Select(e => e.ErrorMessage).ToList()[0],
                 DevMessage = "Program: Lỗi nhập từ người dùng",
                 TraceId = "",
                 MoreInfo = "",
-                Errors = errors
+                Errors = errors,
             }.ToString() ?? "");
         };
     })

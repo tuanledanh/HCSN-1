@@ -58,6 +58,11 @@ namespace Domain.Entity
         {
             return DepartmentId;
         }
+
+        public Guid SetKey(Guid id)
+        {
+            return DepartmentId = id;
+        }
         #endregion
     }
 }

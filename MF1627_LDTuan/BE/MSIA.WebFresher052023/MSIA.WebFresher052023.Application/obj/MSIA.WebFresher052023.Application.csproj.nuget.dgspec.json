@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\MSIA.WebFresher052023.Application.csproj": {}
+    "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\MSIA.WebFresher052023.Application.csproj": {}
   },
   "projects": {
-    "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\MSIA.WebFresher052023.Application.csproj": {
+    "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\MSIA.WebFresher052023.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\MSIA.WebFresher052023.Application.csproj",
+        "projectUniqueName": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\MSIA.WebFresher052023.Application.csproj",
         "projectName": "MSIA.WebFresher052023.Application",
-        "projectPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\MSIA.WebFresher052023.Application.csproj",
+        "projectPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\MSIA.WebFresher052023.Application.csproj",
         "packagesPath": "C:\\Users\\tuanl\\.nuget\\packages\\",
-        "outputPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\obj\\",
+        "outputPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Application\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\tuanl\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,8 +28,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj": {
-                "projectPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj"
+              "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj": {
+                "projectPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj"
               }
             }
           }
@@ -81,14 +81,14 @@
         }
       }
     },
-    "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj": {
+    "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj",
+        "projectUniqueName": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj",
         "projectName": "MSIA.WebFresher052023.Domain",
-        "projectPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj",
+        "projectPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\MSIA.WebFresher052023.Domain.csproj",
         "packagesPath": "C:\\Users\\tuanl\\.nuget\\packages\\",
-        "outputPath": "D:\\MisaCode\\BE-HCSN\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\obj\\",
+        "outputPath": "D:\\MisaCode\\git nhóm\\HCSN-1\\MF1627_LDTuan\\BE\\MSIA.WebFresher052023\\MSIA.WebFresher052023.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\tuanl\\AppData\\Roaming\\NuGet\\NuGet.Config",

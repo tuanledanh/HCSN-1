@@ -1,0 +1,87 @@
+/* -----------------------Text align----------------------- */
+.text-align--left{
+    text-align: left;
+}
+
+.text-align--right{
+    text-align: right;
+}
+
+.text-align--center{
+    text-align: center;
+}
+
+/* -----------------------Display----------------------- */
+.display--center-left{
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.display--center-center{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.display--center-right{
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
+/* -----------------------Margin----------------------- */
+.margin--left-10{
+    margin-left: 10px;
+}
+
+/* -----------------------Padding----------------------- */
+.padding-4{
+    padding: 4px;
+}
+
+.padding--left-10{
+    padding-left: 10px;
+}
+
+.padding--left-2{
+    padding-left: 2px;
+}
+
+.padding--right-2{
+    padding-left: 2px;
+}
+
+/* -----------------------Border----------------------- */
+.border--top{
+    border-top-width: 1px;
+    border-top-style: solid;
+}
+
+.border--right{
+    border-right-width: 1px;
+    border-right-style: solid;
+}
+
+.border--bottom{
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.border--left{
+    border-left-width: 1px;
+    border-left-style: solid;
+}
+
+/* -----------------------Font----------------------- */
+.font-weight--400{
+    font-weight: 400;
+}
+
+.font-weight--500{
+    font-weight: 500;
+}
+
+.font-weight--700{
+    font-weight: 700;
+}

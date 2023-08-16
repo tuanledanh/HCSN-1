@@ -1,14 +1,23 @@
 <template>
-  <div class="popup">
+  <div
+    class="popup"
+    @keyup.esc="btnCloseForm"
+    @keydown="saveShortCut"
+    ref="form"
+    tabindex="4"
+  >
     <div class="popup-container">
       <div class="popup-head">
         <span>Sửa tài sản</span>
         <MISAButton
           button_icon_normal
           exit
+          bottom
+          ref="exit"
           content="Thoát"
-          position="bot"
           @click="btnCloseForm"
+          :tabindex="17"
+          @keydown="checkTabIndex($event, 'islast')"
         ></MISAButton>
       </div>
       <div class="popup-body">
@@ -24,6 +33,9 @@
               focus
               required
               maxlength="50"
+              :tabindex="5"
+              @keydown="checkTabIndex($event, 'isFirst')"
+              :error="isSubmitForm && (!asset.FixedAssetCode || asset.FixedAssetCode == '')"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -36,6 +48,8 @@
               v-model="asset.FixedAssetName"
               required
               maxlength="100"
+              :tabindex="6"
+              :error="isSubmitForm && (!asset.FixedAssetName || asset.FixedAssetName == '')"
             ></MISAInput>
           </div>
         </div>
@@ -54,6 +68,8 @@
               @filter="getDepartmentCode"
               :inputChange="inputChange"
               maxlength="100"
+              :tabindex="7"
+              :error="isSubmitForm && (!asset.DepartmentId || asset.DepartmentId == '')"
             ></MISACombobox>
           </div>
           <div class="popup__column">
@@ -81,6 +97,8 @@
               @filter="getAssetTypeCode"
               :inputChange="inputChange"
               maxlength="100"
+              :tabindex="8"
+              :error="isSubmitForm && (!asset.FixedAssetCategoryId || asset.FixedAssetCategoryId == '')"
             ></MISACombobox>
           </div>
           <div class="popup__column">
@@ -97,6 +115,7 @@
           <div class="popup__column">
             <MISAInput
               normal
+              inputInDe
               label="Số lượng"
               ref="AssetQuantity"
               @focus="setInputFocus('AssetQuantity')"
@@ -104,7 +123,9 @@
               typeOfValue="number"
               required
               right
-              maxlength="100"
+              maxlength="12"
+              :tabindex="9"
+              :error="isSubmitForm && (!asset.Quantity || asset.Quantity == '' || asset.Quantity == 0 || asset.Quantity == '0')"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -117,7 +138,9 @@
               typeOfValue="number"
               required
               right
-              maxlength="100"
+              maxlength="12"
+              :tabindex="10"
+              :error="isSubmitForm && (!asset.Cost || asset.Cost == '' || asset.Cost == 0 || asset.Cost == '0')"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -130,7 +153,9 @@
               v-model="asset.LifeTime"
               required
               right
-              maxlength="100"
+              maxlength="4"
+              :tabindex="11"
+              :error="isSubmitForm && (!asset.LifeTime || asset.LifeTime == '' || asset.LifeTime == 0 || asset.LifeTime == '0')"
             ></MISAInput>
           </div>
         </div>
@@ -138,14 +163,16 @@
           <div class="popup__column">
             <MISAInput
               normal
+              inputInDe
               label="Tỷ lệ hao mòn (%)"
               ref="assetDepreciation"
               @focus="setInputFocus('assetDepreciation')"
               v-model="assetDepreciation"
               typeOfValue="percent"
+              disabled
               required
               right
-              maxlength="100"
+              maxlength="7"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -159,6 +186,8 @@
               required
               right
               maxlength="100"
+              :tabindex="12"
+              :error="isSubmitForm && (!yearlyDepreciationAmount || yearlyDepreciationAmount == '' || yearlyDepreciationAmount == 0 || yearlyDepreciationAmount == '0')"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -181,6 +210,8 @@
               v-model="asset.PurchaseDate"
               label="Ngày mua"
               required
+              :tabindex="13"
+              :error="isSubmitForm && (!asset.PurchaseDate || asset.PurchaseDate == '' || asset.PurchaseDate == 0 || asset.PurchaseDate == '0')"
             ></MISAInputDatePicker>
           </div>
           <div class="popup__column">
@@ -190,6 +221,8 @@
               v-model="asset.StartUsingDate"
               label="Ngày bắt đầu sử dụng"
               required
+              :tabindex="14"
+              :error="isSubmitForm && (!asset.StartUsingDate || asset.StartUsingDate == '' || asset.StartUsingDate == 0 || asset.StartUsingDate == '0')"
             ></MISAInputDatePicker>
           </div>
         </div>
@@ -199,45 +232,61 @@
           buttonMain
           textButton="Lưu"
           @click="btnSaveAsset"
+          :tabindex="16"
         ></MISAButton>
         <MISAButton
           buttonOutline
           textButton="Hủy"
           @click="btnCancelForm"
+          :tabindex="15"
         ></MISAButton>
       </div>
     </div>
     <MISALoading v-if="isLoading"></MISALoading>
+
+    <!-- ==================================Toast================================== -->
+
     <div v-if="isShowToastWarningCancel" class="blur">
       <MISAToast typeToast="warning" :content="toast_content_warning"
         ><MISAButton
-        buttonOutline
+          buttonOutline
           textButton="Không"
           @click="btnCloseToastWarning"
+          :tabindex="2"
+          @keydown="checkTabIndex($event, 'islast')"
         ></MISAButton>
         <MISAButton
           buttonMain
           textButton="Hủy bỏ"
           @click="btnNotSaveAsset"
+          :tabindex="1"
+          ref="cancelForm"
+          focus
         ></MISAButton
       ></MISAToast>
     </div>
     <div v-if="isShowToastWarningEdit" class="blur">
       <MISAToast typeToast="warning" :content="toast_content_warning"
         ><MISAButton
-        buttonOutline
+          buttonOutline
           textButton="Hủy bỏ"
           @click="btnCloseToastWarning"
+          focus
+          :tabindex="1"
+          ref="cancelForm"
         ></MISAButton>
         <MISAButton
           buttonSub
           textButton="Không lưu"
           @click="btnNotSaveAsset"
+          :tabindex="2"
         ></MISAButton>
         <MISAButton
           buttonMain
           textButton="Lưu"
           @click="btnSaveAsset"
+          :tabindex="3"
+          @keydown="checkTabIndex($event, 'islast')"
         ></MISAButton
       ></MISAToast>
     </div>
@@ -246,9 +295,13 @@
         typeToast="warning"
         :content="'Cần phải nhập thông tin ' + toast_content_warning + '.'"
         ><MISAButton
-        buttonMain
+          buttonMain
           textButton="Đóng"
           @click="btnCloseToastWarning"
+          focus
+          :tabindex="1"
+          ref="cancelForm"
+          @keydown="checkTabIndex($event, 'islast')"
         ></MISAButton>
       </MISAToast>
     </div>
@@ -258,6 +311,10 @@
           buttonMain
           textButton="Đóng"
           @click="btnCloseToastWarning"
+          focus
+          :tabindex="1"
+          ref="cancelForm"
+          @keydown="checkTabIndex($event, 'islast')"
         ></MISAButton>
       </MISAToast>
     </div>
@@ -286,6 +343,8 @@ export default {
     return {
       // Tài sản
       asset: {},
+      // Đã lưu tài sản hay chưa
+      isSubmitForm: false,
       // Giá trị input thay đổi
       inputChange: null,
       // Loading
@@ -301,14 +360,16 @@ export default {
       // Danh sách loại tài sản
       assetType: {},
       // Tỉ lệ hao mòn
-      assetDepreciation: 0,
+      assetDepreciation: "0",
       // Giá trị hao mòn năm
-      yearlyDepreciationAmount: 0,
+      yearlyDepreciationAmount: "0",
       // Ngày tháng
       date: null,
       // Focus
       // Focus vào ô nhập liệu, ban đầu là mã tài sản
       inputFocus: "AssetCode",
+      // Focus vào ô nhập liệu, ban đầu là mã tài sản
+      buttonFocus: "",
 
       // =================================Toast===================================================
       // Hiển thị thông báo khi click vào icon thoát hoặc hủy
@@ -359,6 +420,7 @@ export default {
         );
       } else {
         this.assetDepreciation = 0;
+        this.yearlyDepreciationAmount = 0;
       }
     },
 
@@ -408,7 +470,9 @@ export default {
     }
   },
   beforeMount() {},
-  mounted() {},
+  mounted() {
+    this.$refs[this.inputFocus].focusInput();
+  },
   computed: {
     /**
      * Kiểm trả xem chức năng user đang thực hiện là thêm mới hay cập nhật tài sản
@@ -431,81 +495,70 @@ export default {
      * Author: LDTUAN (03/07/2023)
      */
     async loadUpdateAsset() {
-      try {
-        this.isLoading = true;
-        let assetOld = this.editAsset;
-        var clone = false;
-        if (this.formMode == this.$_MISAEnum.FORM_MODE.CLONE) {
-          assetOld = this.cloneAsset;
-          clone = true;
-        }
-        await this.$_MISAApi.FixedAsset.GetByCode(assetOld.FixedAssetCode)
-          .then((res) => {
-            setTimeout(() => {
-              this.asset = res.data;
-              // Lý do format vì ở watch có theo dõi giá trị của assetPrice
-              // nhưng là giá trị kiểu string, nếu là int khi truyền từ editAsset
-              // thì sẽ có lỗi khi formatMoneyToInt, nên phải chuyển đổi ngay ở đây
-              this.asset.Cost = formatMoney(this.asset.Cost);
-              this.asset.PurchaseDate = DateFormat(this.asset.PurchaseDate);
-              this.asset.StartUsingDate = DateFormat(this.asset.StartUsingDate);
-              if (clone) {
-                this.asset.FixedAssetCode = this.cloneAssetCode;
-              }
-            }, 0);
-
-            this.isLoading = false;
-          })
-          .catch((res) => {
-            this.$processErrorResponse(res);
-            this.isShowToastValidateBE = true;
-            this.toast_content_warning = res.response.data.UserMessage;
-          });
-      } catch (error) {
-        // this.errors.push(error);
-        // this.showNotice = true;
-        console.log(error);
+      this.isLoading = true;
+      let assetOld = this.editAsset;
+      var clone = false;
+      if (this.formMode == this.$_MISAEnum.FORM_MODE.CLONE) {
+        assetOld = this.cloneAsset;
+        clone = true;
       }
+      await this.$_MISAApi.FixedAsset.GetByCode(assetOld.FixedAssetCode)
+        .then((res) => {
+          setTimeout(() => {
+            this.asset = res.data;
+            // Lý do format vì ở watch có theo dõi giá trị của assetPrice
+            // nhưng là giá trị kiểu string, nếu là int khi truyền từ editAsset
+            // thì sẽ có lỗi khi formatMoneyToInt, nên phải chuyển đổi ngay ở đây
+            this.asset.Quantity = formatMoney(this.asset.Quantity);
+            this.asset.Cost = formatMoney(this.asset.Cost);
+            this.asset.PurchaseDate = DateFormat(this.asset.PurchaseDate);
+            this.asset.StartUsingDate = DateFormat(this.asset.StartUsingDate);
+            if (clone) {
+              this.asset.FixedAssetCode = this.cloneAssetCode;
+            }
+          }, 0);
+
+          this.isLoading = false;
+        })
+        .catch((res) => {
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+        });
     },
     /**
      * Lấy mã tài sản mới đế thêm mới tài sản
      * Author: LDTUAN (03/07/2023)
      */
     async loadAssetCode() {
-      try {
-        this.isLoading = true;
-        await this.$_MISAApi.FixedAsset.GetNewCode()
-          .then((res) => {
-            this.asset.FixedAssetCode = res.data;
-            this.cloneAssetCode = res.data;
-            const date = new Date();
-            this.asset.TrackedYear = date.getFullYear();
-            this.asset.PurchaseDate = DateFormat(this.$getCurrentDate());
-            this.asset.StartUsingDate = DateFormat(this.$getCurrentDate());
-            if (this.formMode == this.$_MISAEnum.FORM_MODE.ADD) {
-              this.asset.Quantity = 0;
-              this.asset.Cost = 0;
-              this.asset.LifeTime = 0;
-            }
-            this.isLoading = false;
-          })
-          .catch((res) => {
-            this.$processErrorResponse(res);
-            this.isShowToastValidateBE = true;
-            this.toast_content_warning = res.response.data.UserMessage;
-          });
-      } catch (error) {
-        // this.errors.push(error);
-        // this.showNotice = true;
-        console.log(error);
-      }
+      this.isLoading = true;
+      await this.$_MISAApi.FixedAsset.GetNewCode()
+        .then((res) => {
+          this.asset.FixedAssetCode = res.data;
+          this.cloneAssetCode = res.data;
+          const date = new Date();
+          this.asset.TrackedYear = date.getFullYear();
+          this.asset.PurchaseDate = DateFormat(this.$getCurrentDate());
+          this.asset.StartUsingDate = DateFormat(this.$getCurrentDate());
+          if (this.formMode == this.$_MISAEnum.FORM_MODE.ADD) {
+            this.asset.Quantity = 0;
+            this.asset.Cost = 0;
+            this.asset.LifeTime = 0;
+          }
+          this.isLoading = false;
+        })
+        .catch((res) => {
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+        });
     },
 
     /**
      * Gán lại id của phòng ban cho tài sản
      * @param {object} item phòng ban
      */
-    async getDepartmentCode(item) {
+    getDepartmentCode(item) {
       this.department = item;
       this.asset.DepartmentId = this.department.DepartmentId;
     },
@@ -515,7 +568,7 @@ export default {
      * @param {object} item loại tài sản
      * Author: LDTUAN (02/08/2023)
      */
-    async getAssetTypeCode(item) {
+    getAssetTypeCode(item) {
       this.assetType = item;
       this.asset.FixedAssetCategoryId = this.assetType.FixedAssetCategoryId;
       if (!this.isUpdate()) {
@@ -601,10 +654,14 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     btnSaveAsset() {
+      this.isSubmitForm = true;
       this.validate();
       // if toast show validate thì cần if nếu k có nó thì mới cho add hoặc update
       if (!this.isShowToastValidate && !this.isShowToastValidateBE) {
-        if (this.isUpdate()) {
+        if (
+          this.isUpdate() ||
+          this.formMode == this.$_MISAEnum.FORM_MODE.CLONE
+        ) {
           const asset = {
             FixedAssetCode: this.asset.FixedAssetCode.trim(),
             FixedAssetName: this.asset.FixedAssetName.trim(),
@@ -622,54 +679,45 @@ export default {
             LifeTime: this.asset.LifeTime,
           };
           if (this.formMode == this.$_MISAEnum.FORM_MODE.UPDATE) {
-            try {
-              this.$_MISAApi.FixedAsset.Update(this.asset.FixedAssetId, asset)
-                .then(() => {
-                  this.btnCloseForm();
-                  const ob = {
-                    Asset: this.asset,
-                    FixedAssetCategoryName:
-                      this.assetType.FixedAssetCategoryName,
-                    DepartmentName: this.department.DepartmentName,
-                  };
-                  this.$emit("reLoad", ob);
-                  this.btnCloseToastWarning();
-                  this.btnNotSaveAsset();
-                })
-                .catch((res) => {
-                  this.$processErrorResponse(res);
-                  this.isShowToastValidateBE = true;
-                  this.toast_content_warning = res.response.data.UserMessage;
-                });
-            } catch (error) {
-              console.log(error);
-            }
+            this.$_MISAApi.FixedAsset.Update(this.asset.FixedAssetId, asset)
+              .then(() => {
+                this.btnCloseForm();
+                const ob = {
+                  Asset: this.asset,
+                  FixedAssetCategoryName: this.assetType.FixedAssetCategoryName,
+                  DepartmentName: this.department.DepartmentName,
+                };
+                this.$emit("reLoad", ob);
+                this.btnCloseToastWarning();
+                this.btnNotSaveAsset();
+              })
+              .catch((res) => {
+                this.$processErrorResponse(res);
+                this.isShowToastValidateBE = true;
+                this.toast_content_warning = res.response.data.UserMessage;
+              });
           } else if (
             this.formMode == this.$_MISAEnum.FORM_MODE.ADD ||
             this.formMode == this.$_MISAEnum.FORM_MODE.CLONE
           ) {
-            try {
-              this.$_MISAApi.FixedAsset.Create(asset)
-                .then(() => {
-                  this.btnCloseForm();
-                  const ob = {
-                    Asset: this.asset,
-                    FixedAssetCategoryName:
-                      this.assetType.FixedAssetCategoryName,
-                    DepartmentName: this.department.DepartmentName,
-                  };
-                  this.$emit("reLoad", ob);
-                  this.btnCloseToastWarning();
-                  this.btnNotSaveAsset();
-                })
-                .catch((res) => {
-                  this.$processErrorResponse(res);
-                  this.isShowToastValidateBE = true;
-                  this.toast_content_warning = res.response.data.UserMessage;
-                });
-            } catch (error) {
-              console.log(error);
-            }
+            this.$_MISAApi.FixedAsset.Create(asset)
+              .then((res) => {
+                console.log(res);
+                this.btnCloseForm();
+                const ob = {
+                  Asset: this.asset,
+                  FixedAssetCategoryName: this.assetType.FixedAssetCategoryName,
+                  DepartmentName: this.department.DepartmentName,
+                };
+                this.$emit("reLoad", ob);
+                this.btnCloseToastWarning();
+                this.btnNotSaveAsset();
+              })
+              .catch((res) => {
+                this.$processErrorResponse(res);
+                this.isShowToastValidateBE = true;
+                this.toast_content_warning = res.response.data.UserMessage;
+              });
           }
         } else {
           this.btnNotSaveAsset();
@@ -697,6 +745,16 @@ export default {
       this.isShowToastWarningEdit = false;
       this.isShowToastValidate = false;
       this.isShowToastValidateBE = false;
+      this.toast_content_warning = null;
+      if (
+        !this.inputFocus ||
+        this.inputFocus == null ||
+        this.inputFocus == ""
+      ) {
+        this.$refs.form.focus();
+      } else {
+        this.$refs[this.inputFocus].focusInput();
+      }
     },
 
     /**
@@ -717,7 +775,52 @@ export default {
       if (this.asset.PurchaseDate > this.asset.StartUsingDate) {
         this.isShowToastValidateBE = true;
         this.toast_content_warning =
-          this.$_MISAResource.VN.Form.Validate.PurchaseDate;
+          this.$_MISAResource.VN.Form.Validate.CompareDate;
+      }
+      if (
+        formatMoneyToInt(this.asset.Quantity) > this.$_MISAEnum.INT.MAX_VALUE
+      ) {
+        this.inputFocus = "AssetQuantity";
+        this.isShowToastValidateBE = true;
+        this.toast_content_warning =
+          this.$_MISAResource.VN.Form.Max_value.Quantity;
+      }
+      if (formatMoneyToInt(this.asset.Cost) > this.$_MISAEnum.INT.MAX_VALUE) {
+        this.inputFocus = "AssetQuantity";
+        this.isShowToastValidateBE = true;
+        this.toast_content_warning = this.$_MISAResource.VN.Form.Max_value.Cost;
+      }
+      switch (0) {
+        case formatMoneyToInt(this.asset.Quantity):
+          this.inputFocus = "AssetQuantity";
+          this.isShowToastValidate = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Validate.Quantity;
+          break;
+        case formatMoneyToInt(this.asset.Cost):
+          this.inputFocus = "AssetPrice";
+          this.isShowToastValidate = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Validate.Cost;
+          break;
+        case formatMoneyToInt(this.asset.LifeTime):
+          this.inputFocus = "YearOfUse";
+          this.isShowToastValidate = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Validate.LifeTime;
+          break;
+        case this.assetDepreciation:
+          this.inputFocus = "assetDepreciation";
+          this.isShowToastValidate = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Validate.AssetDepreciation;
+          break;
+        case formatMoneyToInt(this.yearlyDepreciationAmount):
+          this.inputFocus = "yearlyDepreciationAmount";
+          this.isShowToastValidate = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Validate.YearlyDepreciationAmount;
+          break;
       }
       switch ("") {
         case this.asset.FixedAssetCode ?? "":
@@ -744,37 +847,17 @@ export default {
           this.toast_content_warning =
             this.$_MISAResource.VN.Form.Validate.FixedAssetCategoryId;
           break;
-      }
-      switch (0) {
-        case this.asset.Quantity:
-          this.inputFocus = "AssetQuantity";
+        case this.asset.PurchaseDate ?? "":
+          this.inputFocus = "PurchaseDate";
           this.isShowToastValidate = true;
           this.toast_content_warning =
-            this.$_MISAResource.VN.Form.Validate.Quantity;
+            this.$_MISAResource.VN.Form.Validate.PurchaseDate;
           break;
-        case this.asset.Cost:
-          this.inputFocus = "AssetPrice";
+        case this.asset.StartUsingDate ?? "":
+          this.inputFocus = "StartUsingDate";
           this.isShowToastValidate = true;
           this.toast_content_warning =
-            this.$_MISAResource.VN.Form.Validate.Cost;
-          break;
-        case formatMoneyToInt(this.asset.LifeTime):
-          this.inputFocus = "YearOfUse";
-          this.isShowToastValidate = true;
-          this.toast_content_warning =
-            this.$_MISAResource.VN.Form.Validate.LifeTime;
-          break;
-        case this.assetDepreciation:
-          this.inputFocus = "assetDepreciation";
-          this.isShowToastValidate = true;
-          this.toast_content_warning =
-            this.$_MISAResource.VN.Form.Validate.AssetDepreciation;
-          break;
-        case formatMoneyToInt(this.yearlyDepreciationAmount):
-          this.inputFocus = "yearlyDepreciationAmount";
-          this.isShowToastValidate = true;
-          this.toast_content_warning =
-            this.$_MISAResource.VN.Form.Validate.YearlyDepreciationAmount;
+            this.$_MISAResource.VN.Form.Validate.StartUsingDate;
           break;
       }
     },
@@ -790,7 +873,9 @@ export default {
         isChange =
           isChange ||
           this.editAsset.FixedAssetName !== this.asset.FixedAssetName.trim();
-        isChange = isChange || this.editAsset.Quantity !== this.asset.Quantity;
+        isChange =
+          isChange ||
+          this.editAsset.Quantity !== formatMoneyToInt(this.asset.Quantity);
         isChange =
           isChange || this.editAsset.Cost !== formatMoneyToInt(this.asset.Cost);
         isChange =
@@ -814,12 +899,13 @@ export default {
           isChange || this.editAsset.DepartmentId !== this.asset.DepartmentId;
         return isChange;
       } else if (this.formMode == this.$_MISAEnum.FORM_MODE.CLONE) {
-        let isChange =
-          this.cloneAsset.FixedAssetCode !== this.asset.FixedAssetCode.trim();
+        let isChange = this.asset.FixedAssetCode !== this.cloneAssetCode.trim();
         isChange =
           isChange ||
           this.cloneAsset.FixedAssetName !== this.asset.FixedAssetName.trim();
-        isChange = isChange || this.cloneAsset.Quantity !== this.asset.Quantity;
+        isChange =
+          isChange ||
+          this.cloneAsset.Quantity !== formatMoneyToInt(this.asset.Quantity);
         isChange =
           isChange ||
           this.cloneAsset.Cost !== formatMoneyToInt(this.asset.Cost);
@@ -848,10 +934,57 @@ export default {
       }
       return false;
     },
-  },
-  updated() {
-    // Focus vào ô nhập liệu
-    this.$refs[this.inputFocus].focusInput();
+
+    //=====================================Short cut==================================
+
+    /**
+     * Cho tab index quay lại
+     * @param {sự kiện khi nhấn Tab} event
+     * @param {vị trí của sự kiện} index
+     * Author: LDTUAN (09/08/2023)
+     */
+    checkTabIndex(event, index) {
+      var charCode = event.which ? event.which : event.keyCode;
+      if (
+        index == "islast" &&
+        charCode == this.$_MISAEnum.KEYCODE.TAB &&
+        !this.toast_content_warning
+      ) {
+        event.preventDefault();
+        this.inputFocus = "AssetCode";
+        this.$refs[this.inputFocus].focusInput();
+      } else if (
+        index == "islast" &&
+        charCode == this.$_MISAEnum.KEYCODE.TAB &&
+        this.toast_content_warning
+      ) {
+        event.preventDefault();
+        this.buttonFocus = "cancelForm";
+        this.$refs[this.buttonFocus].focusButton();
+      }
+      // if (
+      //   index == "isFirst" &&
+      //   event.shiftKey == true &&
+      //   charCode == this.$_MISAEnum.KEYCODE.TAB
+      // ) {
+      //   event.preventDefault();
+      //   this.inputFocus = "exit";
+      //   this.$refs[this.inputFocus].focusInput();
+      // }
+    },
+
+    /**
+     * Bấm tổ hợp phím ctrl + s để lưu
+     * @param {*} event sự kiện khi khi nhấn ctrl
+     * Author: LDTUAN (09/08/2023)
+     */
+    saveShortCut(event) {
+      var charCode = event.which ? event.which : event.keyCode;
+      if (charCode == this.$_MISAEnum.KEYCODE.S && event.ctrlKey == true) {
+        event.preventDefault();
+        this.btnSaveAsset();
+      }
+    },
   },
 };
 </script>

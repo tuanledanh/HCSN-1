@@ -1,13 +1,8 @@
 ﻿using Dapper;
-using Domain.Entity;
-using Domain.Exceptions;
-using Microsoft.Extensions.Configuration;
 using MSIA.WebFresher052023.Domain.Entity.Base;
 using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Repository.Base;
-using MySql.Data.MySqlClient;
 using System.Data;
-using System.Data.Common;
 using System.Text.RegularExpressions;
 
 namespace MSIA.WebFresher052023.Infrastructure.Repository.Base

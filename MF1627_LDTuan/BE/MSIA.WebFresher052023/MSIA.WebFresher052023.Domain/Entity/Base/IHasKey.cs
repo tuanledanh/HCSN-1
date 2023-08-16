@@ -15,7 +15,9 @@ namespace MSIA.WebFresher052023.Domain.Entity.Base
         /// </summary>
         /// <returns>Giá trị kiểu guid</returns>
         /// Created by: ldtuan (19/07/2023)
-        Guid GetKey(); 
+        Guid GetKey();
+
+        Guid SetKey(Guid id);
         #endregion
     }
 }

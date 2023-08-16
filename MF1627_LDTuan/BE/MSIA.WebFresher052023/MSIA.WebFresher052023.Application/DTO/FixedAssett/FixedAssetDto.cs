@@ -26,17 +26,17 @@ namespace Application.DTO.FixedAssett
         /// Created by: ldtuan (31/07/2023)
         public string FixedAssetName { get; set; }
         /// <summary>
-        /// Id tài sản
+        /// Id phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         public Guid DepartmentId { get; set; }
         /// <summary>
-        /// Mã tài sản
+        /// Mã phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         public string DepartmentCode { get; set; }
         /// <summary>
-        /// Tên tài sản
+        /// Tên phòng ban
         /// </summary>
         /// Created by: ldtuan (31/07/2023)
         public string DepartmentName { get; set; }
