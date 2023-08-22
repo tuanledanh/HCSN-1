@@ -2,7 +2,10 @@
   <div
     :class="[
       'icon',
-        { 'icon-background': background },
+      { 'icon-reverse': reverse },
+      'icon--resize',
+      { 'icon--background': background },
+      { 'icon--background-expand-narrow': background_expand_narrow },
       { 'icon--disabled': disabled },
       { 'icon--input': input },
       { 'icon--button': button },
@@ -29,6 +32,47 @@
         d="M21 7L9 19l-5.5-5.5l1.41-1.41L9 16.17L19.59 5.59L21 7Z"
       />
     </svg>
+    <svg
+      v-else-if="add_box"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 48 48"
+    >
+      <g
+        fill="none"
+        stroke="currentColor"
+        stroke-linejoin="round"
+        stroke-width="4"
+      >
+        <rect width="36" height="36" x="6" y="6" rx="6" />
+        <path stroke-linecap="round" d="M24 16v16m-8-8h16" />
+      </g>
+    </svg>
+    <svg
+      v-else-if="add_box_white"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 48 48"
+    >
+      <g fill="none" stroke="white" stroke-linejoin="round" stroke-width="4">
+        <rect width="36" height="36" x="6" y="6" rx="6" />
+        <path stroke-linecap="round" d="M24 16v16m-8-8h16" />
+      </g>
+    </svg>
+    <svg
+      v-else-if="resize"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 512 512"
+    >
+      <path
+        fill="currentColor"
+        d="M256.236 504L120 367.764v-38.156h72v-144h-72V146.98L255.766 11.216L392 147.452v38.156h-72v144h72v38.627ZM159.1 361.608l97.137 97.137l97.137-97.137H288v-208h64.9l-97.134-97.137l-97.138 97.137H224v208Z"
+      />
+    </svg>
     <div
       v-else
       :class="[
@@ -36,7 +80,6 @@
         { 'icon-search': iconSearch },
         { 'icon-required': required },
         { 'icon-add': add },
-        { 'icon-add-box': add_box },
         { 'icon-export': exportIcon },
         { 'icon-delete': deleteIcon },
         { 'icon-notification': notification },
@@ -54,6 +97,7 @@
         { 'icon-search-sidebar': search_sidebar },
         { 'icon-report': report },
         { 'icon-drop-down-thin': drop_down_thin },
+        { 'icon-drop-down-thin-blue': drop_down_thin_blue },
         { 'icon-prev-white': narrow },
         { 'icon-filter': filter },
         { 'icon-prev': prev },
@@ -140,6 +184,11 @@ export default {
     },
     // Icon thêm mới có border xung quanh
     add_box: {
+      type: Boolean,
+      default: false,
+    },
+    // Icon thêm mới có border xung quanh, nhưng màu trắng
+    add_box_white: {
       type: Boolean,
       default: false,
     },
@@ -251,6 +300,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Icon xổ xuống nhưng mỏng hơn và màu xanh dương
+    drop_down_thin_blue: {
+      type: Boolean,
+      default: false,
+    },
 
     // Icon thu gọn
     narrow: {
@@ -260,6 +314,11 @@ export default {
 
     // Icon dấu tích
     tick_true: {
+      type: Boolean,
+      default: false,
+    },
+    // Icon điều chỉnh độ rộng theo chiều dọc
+    resize: {
       type: Boolean,
       default: false,
     },
@@ -337,8 +396,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Quay ngược icon 180 độ
+    reverse: {
+      type: Boolean,
+      default: false,
+    },
     // Background của icon
     background: {
+      type: Boolean,
+      default: false,
+    },
+    // Background của icon xài cho mở rộng thu hẹp
+    background_expand_narrow: {
       type: Boolean,
       default: false,
     },
@@ -466,6 +535,12 @@ export default {
   height: 7px;
 }
 
+.icon-drop-down-thin-blue {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -334px -293px;
+  width: 11px;
+  height: 7px;
+}
+
 .icon-pull-up {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -28px -338px;
   width: 7px;
@@ -491,12 +566,6 @@ export default {
   width: 8px;
   height: 8px;
   transform: scale(1.2);
-}
-
-.icon-add-box {
-  background: url("../../../assets/icon/Sprites.64af8f61.svg") no-repeat -426px -146px;
-  width: 20px;
-  height: 20px;
 }
 
 .icon-add-black {
@@ -621,6 +690,10 @@ export default {
   cursor: pointer;
 }
 
+.icon-reverse {
+  transform: rotate(180deg);
+}
+
 .icon--navbar {
   height: 18px;
 }
@@ -634,6 +707,7 @@ export default {
 .icon--button {
   position: absolute;
   left: 12px;
+  top: 0;
 }
 
 .icon--sidebar {
@@ -700,10 +774,17 @@ export default {
   cursor: not-allowed;
 }
 
-.icon-background{
+.icon--background {
   background-color: var(--background-color-default);
   width: 28px;
   height: 28px;
+  border-radius: 50%;
+}
+
+.icon--background-expand-narrow {
+  background-color: var(--background-color-table-expand-narrow);
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
 }
 </style>

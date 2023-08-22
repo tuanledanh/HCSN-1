@@ -1,5 +1,5 @@
 <template>
-  <el-tooltip :visible="display" placement="right">
+  <el-tooltip :visible="visible" placement="bottom">
     <template #content>
       <span>{{ content }}</span>
     </template>
@@ -16,14 +16,10 @@ export default {
       default: "",
     },
     // Nhìn thấy tooltip hoặc không
-    display: {
+    visible: {
       type: Boolean,
       default: false,
     },
-  },
-  data() {
-    return {
-    };
   },
 };
 </script>

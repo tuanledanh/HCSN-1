@@ -3,15 +3,19 @@
     v-if="label"
     :label="label"
     :required="required"
+    :medium="medium"
     @click="focusInput"
   ></MISALabel>
   <div
     :class="[
       'input',
+      {'padding-2': padding_2},
       { 'input--error': error },
       { 'input--search': search },
       { 'input--normal': normal },
+      { 'input--normal-grid': normalGrid },
       { 'input--large': large },
+      { 'input--large-grid': largeGrid },
       { 'input--disabled': disabled },
       { 'input--combobox': combobox },
       { 'input--dropdown-list': dropdown_list },
@@ -30,7 +34,7 @@
       :tabindex="tabindex"
       @input="onSearchItem"
       @keydown="inputOnKeyDown"
-      :class="{ 'text--right': right }"
+      :class="[{ 'text--right': right }]"
       @focus.stop="$emit('focus')"
       :maxlength="maxlength"
     />
@@ -60,6 +64,11 @@ export default {
     readonly: {
       type: Boolean,
       default: false,
+    },
+    // Font weight của label
+    medium: {
+      type: Boolean,
+      dedfault: false,
     },
 
     // Input dạng tìm kiếm
@@ -164,6 +173,16 @@ export default {
     },
     // Border đỏ khi lỗi nhập liệu
     error: {
+      type: Boolean,
+      default: false,
+    },
+    // Width 100%
+    normalGrid: {
+      type: Boolean,
+      default: false,
+    },
+    // Padding cho input
+    padding_2: {
       type: Boolean,
       default: false,
     },
@@ -348,8 +367,17 @@ export default {
   width: 265px;
 }
 
+.input--normal-grid {
+  min-width: unset !important;
+  width: 100%;
+}
+
 .input--large {
   width: 546px;
+}
+
+.input--large-grid {
+  width: 100%;
 }
 
 .input--combobox {

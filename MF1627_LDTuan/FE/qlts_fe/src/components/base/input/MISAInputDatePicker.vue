@@ -1,6 +1,11 @@
 <template>
-  <MISALabel v-if="label" :label="label" :required="required"></MISALabel>
-  <div class="demo-date-picker">
+  <MISALabel
+    v-if="label"
+    :label="label"
+    :required="required"
+    :medium="medium"
+  ></MISALabel>
+  <div :class="[{ 'date-picker': !medium }, {'date-picker-grid':medium}]">
     <el-date-picker
       v-model="date"
       type="date"
@@ -13,7 +18,7 @@
       :tabindex="tabindex"
       @focus.stop="$emit('focus')"
       ref="input"
-      :class="{ 'input--error': error }"
+      :class="[{ 'input--error': error }, { 'font-size-16': medium }]"
     >
       <template #default="cell">
         <div class="cell" :class="{ current: cell.isCurrent }">
@@ -36,11 +41,15 @@ export default {
       type: Boolean,
       default: false,
     },
-
     // Ô nhập liệu cần phải nhập
     required: {
       type: Boolean,
       default: false,
+    },
+    // Font weight của label
+    medium: {
+      type: Boolean,
+      dedfault: false,
     },
     // Giá trị binding 2 chiều nhận được từ component cha
     modelValue: {
@@ -114,8 +123,13 @@ export default {
   color: #fff;
 }
 
-.demo-date-picker {
+.date-picker {
   width: 265px !important;
+  height: 35px;
+}
+
+.date-picker-grid {
+  width: 100% !important;
   height: 35px;
 }
 .el-input {
@@ -160,7 +174,7 @@ export default {
   right: 2px !important;
 }
 
-.input--error .el-input__wrapper{
+.input--error .el-input__wrapper {
   border: 1px solid red !important;
 }
 </style>
