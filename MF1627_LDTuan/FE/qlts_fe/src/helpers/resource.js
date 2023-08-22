@@ -30,6 +30,8 @@ const MISAResource = {
           Multiple: " tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách?",
           // Nếu không chọn bản ghi nào thì hiện thông báo
           Zero: "Hãy chọn ít nhất một tài sản để xóa!",
+
+          
         },
         // Xuất excel
         Export: {

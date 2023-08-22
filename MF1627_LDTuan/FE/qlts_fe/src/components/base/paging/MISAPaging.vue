@@ -37,10 +37,10 @@
       </div>
       <div class="paging--right">
         <div class="calculator">
-          <div class="quantity">{{ quantity }}</div>
-          <div class="price">{{ price }}</div>
-          <div class="depreciation">{{ depreciation }}</div>
-          <div class="residualValue">{{ residualValue }}</div>
+          <div v-if="quantity > 0" class="quantity">{{ quantity }}</div>
+          <div v-if="price > 0" class="price">{{ price }}</div>
+          <div v-if="depreciation > 0" class="depreciation">{{ depreciation }}</div>
+          <div v-if="residualValue > 0" class="residualValue">{{ residualValue }}</div>
         </div>
       </div>
     </div>

@@ -6,10 +6,12 @@
     @click="focusInput"
   ></MISALabel>
   <div v-click-outside="() => (isShowData = false)">
-    <div class="selectOption">
+    <div id="selectOption" :class="['selectOption', {'width-100per':self_adjust_size}, {'padding-2':self_adjust_size}]">
       <div @click="isShowData = true">
         <MISAInput
           combobox
+          :normalGrid="self_adjust_size"
+          :padding_2="self_adjust_size"
           :placeholder="placeholder"
           v-model="inputText"
           @indexHover="onIndexHover"
@@ -20,7 +22,6 @@
           :error="error"
         ></MISAInput>
       </div>
-
       <div v-show="isShowData" class="selectOption__data" ref="list">
         <div
           class="selectOption-item"
@@ -104,6 +105,11 @@ export default {
     },
     // Border đỏ khi lỗi nhập liệu
     error: {
+      type: Boolean,
+      default: false,
+    },
+    // Width = 100% component cha chứa nó
+    self_adjust_size: {
       type: Boolean,
       default: false,
     },

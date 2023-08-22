@@ -109,7 +109,7 @@
               class="tr--body"
               v-for="asset in assets"
               :key="asset.FixedAssetId"
-              @click.exact="rowOnClick(asset)"
+              @click.exact="callRowOnClick(asset)"
               @click.ctrl="rowOnCtrlClick(asset)"
               @click.shift="rowOnShiftClick(asset)"
               @dblclick="btnEditAsset(asset)"
@@ -307,6 +307,9 @@ import { AssetDepreciation } from "../../helpers/common/format/format";
 import fileDownload from "js-file-download";
 import { truncateText } from "../../helpers/common/format/format";
 import MISAAssetForm from "./AssetForm.vue";
+
+import {rowOnClick} from "../../helpers/table/selectRow"
+
 //import { saveAs } from "file-saver";
 export default {
   name: "AssetList",
@@ -495,6 +498,8 @@ export default {
     this.loadDataAsset();
     // Tải danh sách option giới hạn bản ghi mỗi trang
     this.getPageLimitList();
+    // Hiển thị chữ danh sách tài sản
+    this.$_emitter.emit('onDisplayContent', { message: 'Danh sách tài sản' });
   },
   methods: {
     truncateText,
@@ -838,32 +843,13 @@ export default {
     },
 
     /**
-     * Thực hiện bôi xanh 1 dòng nếu click vào dòng đó
+     * Thực hiện call hàm rowOnClick từ file js để bôi xanh 1 dòng nếu click vào dòng đó
      * @param {object} asset thông tin tài sản
      * Author: LDTUAN (02/08/2023)
      */
-    rowOnClick(asset) {
-      const index = this.selectedRows.indexOf(asset);
-      if (index !== -1 && this.selectedRows.length == 1) {
-        this.selectedRows = [];
-      } else {
-        this.selectedRows = [];
-        this.selectedRows.push(asset);
-      }
-      if (this.selectedRows.length == 0) {
-        this.lastIndex = 0;
-      } else {
-        this.lastIndex = this.assets.indexOf(asset);
-      }
+    callRowOnClick(asset) {
+      rowOnClick.call(this, asset);
     },
-    // rowOnClick(asset) {
-    //   const index = this.selectedRows.indexOf(asset);
-    //   if (index !== -1) {
-    //     this.selectedRows.splice(index, 1);
-    //   } else {
-    //     this.selectedRows.push(asset);
-    //   }
-    // },
 
     /**
      * Chọn bản ghi bằng cách nhấn ctrl + click
@@ -1044,19 +1030,10 @@ export default {
         index == "islast" &&
         charCode == this.$_MISAEnum.KEYCODE.TAB
       ) {
-        //event.preventDefault();
+        event.preventDefault();
         this.buttonFocus = "button";
         this.$refs[this.buttonFocus].focusButton();
       }
-      // if (
-      //   index == "isFirst" &&
-      //   event.shiftKey == true &&
-      //   charCode == this.$_MISAEnum.KEYCODE.TAB
-      // ) {
-      //   event.preventDefault();
-      //   this.inputFocus = "exit";
-      //   this.$refs[this.inputFocus].focusInput();
-      // }
     },
   },
 };

@@ -1,14 +1,18 @@
 <template>
-  <div :class="[{ 'button-combo': combo }, {'large':large}]">
-    <MISAIcon v-if="combo" button :add="add" :add_box="add_box"></MISAIcon>
+  <div :class="[{ 'button-combo': combo }, { large: large }, { basic: basic }]">
     <button
       :disabled="disabled"
       :class="[
         'button',
+        'relative',
+        { 'button--add-box': add_box_white },
+        { 'button--add-box': add_box },
+        { border: basic },
         { disabled: disabled },
         { 'button--main': buttonMain },
         { 'button--short': short },
         { 'button--sub': buttonSub },
+        { 'button--error': error },
         { 'button--outline': buttonOutline },
         { 'button--icon': buttonIcon },
         { 'button--icon-normal': button_icon_normal },
@@ -16,6 +20,7 @@
       :tabindex="tabindex"
       ref="button"
     >
+      <MISAIcon v-if="combo" button :add="add" :add_box="add_box" :add_box_white="add_box_white"></MISAIcon>
       <MISATooltip :bottom="bottom" :bottom_end="bottom_end" :content="content">
         <MISAIcon
           v-if="buttonIcon || button_icon_normal"
@@ -44,6 +49,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Button màu mè đơn giản
+    basic: {
+      type: Boolean,
+      default: false,
+    },
 
     // Button chính
     buttonMain: {
@@ -58,6 +68,11 @@ export default {
 
     // Button phụ
     buttonSub: {
+      type: Boolean,
+      default: false,
+    },
+    // Button đỏ, dùng để cảnh báo
+    error: {
       type: Boolean,
       default: false,
     },
@@ -136,12 +151,17 @@ export default {
       default: false,
     },
     // Icon thêm mới
-    add:{
+    add: {
       type: Boolean,
       default: false,
     },
     // Icon thêm mới có border xung quanh
-    add_box:{
+    add_box: {
+      type: Boolean,
+      default: false,
+    },
+    // Icon thêm mới có border xung quanh nhưng màu trắng
+    add_box_white: {
       type: Boolean,
       default: false,
     },
@@ -182,22 +202,22 @@ export default {
   transition: all ease-in-out 0.3s;
 }
 
-.button--short{
+.button--short {
   height: auto;
   width: auto;
   white-space: nowrap;
   padding: 4px 6px;
 }
 
-.button .icon {
-  font-weight: 300;
-  width: 100%;
-  height: 100%;
+.button--error {
+  height: 36px;
+  width: auto;
+  padding: 0px 18px;
 }
 
 .button--main {
   background-color: #1aa4c8;
-  color: #ffffff;
+  color: var(--background-color-default);
   border: unset;
 }
 
@@ -216,7 +236,7 @@ export default {
 
 .button--sub {
   border: 1px solid #1aa4c8;
-  background-color: #ffffff;
+  background-color: var(--background-color-default);
   color: #1aa4c8;
 }
 
@@ -225,23 +245,42 @@ export default {
 }
 
 .button--sub:focus {
-  outline: 1px solid #ffffff;
+  outline: 1px solid #23cbf5;
   transition: all 0.2s linear;
 }
 
 .button--sub:active {
-  background-color: #ffffff;
+  background-color: var(--background-color-default);
+}
+
+.button--error {
+  border: 1px solid #c81a1a;
+  background-color: var(--background-color-default);
+  color: #c81a1a;
+}
+
+.button--error:hover {
+  background-color: #f4d1d1;
+}
+
+.button--error:focus {
+  outline: 1px solid var(--background-color-default);
+  transition: all 0.2s linear;
+}
+
+.button--error:active {
+  background-color: var(--background-color-default);
 }
 
 .button--outline {
   border: 1px solid #cdcdcd;
-  background-color: #ffffff;
+  background-color: var(--background-color-default);
   color: #000000;
 }
 
 .button--outline:hover {
   background-color: #1aa4c8;
-  color: #ffffff;
+  color: var(--background-color-default);
 }
 
 .button--outline:focus {
@@ -253,7 +292,7 @@ export default {
 
 .button--outline:active {
   background-color: #23cbf5;
-  color: #ffffff;
+  color: var(--background-color-default);
 }
 
 .button-combo {
@@ -280,15 +319,25 @@ export default {
   border-radius: 4px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
   overflow: hidden;
-  color: #ffffff;
+  color: var(--background-color-default);
   cursor: pointer;
   box-sizing: border-box;
+}
+
+.basic .button {
+  background-color: var(--background-color-default);
+  color: #000000;
+  border-color: #1aa4c8;
+}
+
+.button-combo .button--add-box {
+  padding-left: 42px;
 }
 
 .button--icon {
   width: 36px;
   height: 36px;
-  background-color: #ffffff;
+  background-color: var(--background-color-default);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
   border: unset;
 }
@@ -304,7 +353,7 @@ export default {
 .button--icon-normal {
   width: 24px;
   height: 24px !important;
-  background-color: #ffffff;
+  background-color: var(--background-color-default);
   border: unset;
   box-shadow: unset;
 }
@@ -315,7 +364,7 @@ export default {
   cursor: not-allowed;
 }
 
-.large .button{
-  padding-right: 10px;
+.large .button {
+  padding-right: 20px;
 }
 </style>

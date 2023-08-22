@@ -1,5 +1,5 @@
 <template>
-  <div class="label">
+  <div class="label" :class="[{ 'font-weight--500': medium }]">
     <label for="">{{ label }}</label>
     <MISAIcon v-if="required" required></MISAIcon>
   </div>
@@ -19,6 +19,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Font weight của label
+    medium: {
+      type: Boolean,
+      default: false,
+    },
   },
 };
 </script>
@@ -30,7 +35,7 @@ export default {
   align-items: center;
 }
 
-label{
+label {
   cursor: pointer !important;
 }
 </style>

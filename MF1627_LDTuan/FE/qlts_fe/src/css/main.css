@@ -13,6 +13,7 @@ body{
     font-family: 'Roboto', sans-serif;
     font-size: 13px;
     font-weight: 400;
+    box-sizing: border-box;
 }
 
 input[type="checkbox"] {
@@ -29,13 +30,13 @@ input[type="checkbox"] {
 @font-face {
     font-family: 'Roboto';
     src: url("../assets/font/Roboto/Roboto-Bold.ttf");
-    font-weight: 500;
+    font-weight: 700;
 }
 
 @font-face {
     font-family: 'Roboto';
     src: url("../assets/font/Roboto/Roboto-Medium.ttf");
-    font-weight: 700;
+    font-weight: 500;
 }
 
 @font-face {

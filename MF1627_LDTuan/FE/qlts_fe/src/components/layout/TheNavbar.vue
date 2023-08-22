@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    <div class="nav-left">Danh sách tài sản</div>
+    <div v-if="contentDisplay" class="nav-left">{{ contentDisplayText }}</div>
     <div class="nav-right">
       <span class="nav__span">Sở tài chính</span>
       <!-- <div class="input--year">
@@ -39,5 +39,15 @@
 <script>
 export default {
   name: "TheNavbar",
+  props: {
+    contentDisplay: {
+      type: Boolean,
+      default: false,
+    },
+    contentDisplayText: {
+      type: String,
+      default: null,
+    },
+  },
 };
 </script>

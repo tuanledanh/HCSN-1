@@ -9,9 +9,10 @@
 
   /* ------------------------ Background table ------------------------ */
   --background-color-table-head: #f5f5f5;
+  --background-color-table-expand-narrow: #e4e4e4;
 
   /* ------------------------ Background sidebar ------------------------ */
-  --background-color-main-content: #d6ebf9;
+  --background-color-main-content: #f3f6fe;
 
   /* ------------------------ Background sidebar ------------------------ */
   --background-color-sidebar-sub-item: #2f3443;
@@ -22,6 +23,9 @@
   --background-color-scroll-bar-hover: #c4c4c4;
   --background-color-scroll-bar-track: #f1f1f1;
 
+  /* ------------------------ Background form asset transfer ------------------------ */
+  --background-color-asset-transfer-form: #fdfdfd;
+
   --resize-bar-color: #afafaf;
 
   /* ------------------------ Box shadow ------------------------ */
@@ -30,6 +34,12 @@
   /* ------------------------ Transition ------------------------ */
   --transition-02s: all ease-in-out 0.2s;
 
+  /* ------------------------ Color ------------------------ */
+  --main-color: #1aa4c8;
+
   /* ------------------------ Text color ------------------------ */
   --text-color-default: #edffff;
+
+  /* ------------------------ Font size ------------------------ */
+  --font-size-default: 14px;
 }
