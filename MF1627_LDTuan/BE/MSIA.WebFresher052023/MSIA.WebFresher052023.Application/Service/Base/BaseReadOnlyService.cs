@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace MSIA.WebFresher052023.Application.Service.Base
 {
-    public abstract class BaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> : IBaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> where TModel : IHasKeyModel
+    public abstract class BaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> : IBaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> where TModel : IHasKeyModel
     {
         #region Fields
         protected readonly IBaseReadOnlyRepository<TEntity, TModel> _baseReadOnlyRepository;

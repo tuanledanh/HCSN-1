@@ -1,4 +1,4 @@
-﻿using Application.DTO.FixedAssett;
+﻿using Application.DTO;
 using Domain.Entity;
 using Domain.Model;
 using MSIA.WebFresher052023.Application.Interface.Base;
@@ -7,7 +7,7 @@ using System.Data;
 
 namespace Application.Interface
 {
-    public interface IFixedAssetService : IBaseService<FixedAsset, FixedAssetModel, FixedAssetDto, FixedAssetCreateDto, FixedAssetUpdateDto>
+    public interface IFixedAssetService : IBaseService<FixedAsset, FixedAssetModel, FixedAssetDto, FixedAssetCreateDto, FixedAssetUpdateDto, FixedAssetUpdateMultiDto>
     {
         /// <summary>
         /// Lấy danh sách các bản ghi, có phân trang, tìm kiếm theo mã code, lọc theo phòng ban và loại tài sản

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.DTO.FixedAssett
+namespace Application.DTO
 {
     public class FixedAssetCreateDto
     {

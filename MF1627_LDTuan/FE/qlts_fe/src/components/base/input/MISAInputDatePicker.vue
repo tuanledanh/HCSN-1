@@ -4,6 +4,7 @@
     :label="label"
     :required="required"
     :medium="medium"
+    @click="focusInput"
   ></MISALabel>
   <div :class="[{ 'date-picker': !medium }, {'date-picker-grid':medium}]">
     <el-date-picker

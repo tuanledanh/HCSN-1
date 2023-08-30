@@ -2,6 +2,7 @@
 using MSIA.WebFresher052023.Domain.Entity.Base;
 using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Repository.Base;
+using MSIA.WebFresher052023.Domain.Result;
 using System.Data;
 using System.Text.RegularExpressions;
 
@@ -32,6 +33,13 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             return affectedRow > 0;
         }
 
+        public virtual async Task<bool> InsertMultiAsync(List<TEntity> entities)
+        {
+            string sql = GenerateInsertQuery();
+            var affectedRow = await _unitOfWork.Connection.ExecuteAsync(sql, entities, transaction: _unitOfWork.Transaction);
+            return affectedRow > 0;
+        }
+
         /// <summary>
         /// Cập nhật thông tin của bản ghi
         /// </summary>
@@ -43,6 +51,13 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             var param = MapEntityToParams(entity);
             var sql = $"Proc_Update{TableName}";
             var affectedRow = await _unitOfWork.Connection.ExecuteAsync(sql, param, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
+            return affectedRow > 0;
+        }
+
+        public virtual async Task<bool> UpdateMultiAsync(List<TEntity> entities)
+        {
+            string sql = GenerateUpdateQuery();
+            var affectedRow = await _unitOfWork.Connection.ExecuteAsync(sql, entities, transaction: _unitOfWork.Transaction);
             return affectedRow > 0;
         }
 
@@ -74,7 +89,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         /// Created by: ldtuan (17/07/2023)
         public virtual async Task<bool> DeleteManyAsync(List<TEntity> entities)
         {
-            var tableName = Regex.Replace(TableName, "([a-z0-9])([A-Z])", "$1_$2").ToLower();
+            var tableName = TableNameSnakeCase;
             var tableId = tableName + "_id";
             var sql = $"delete from {tableName} where {tableId} in @listIds;";
             var param = new DynamicParameters();
@@ -99,6 +114,29 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
                 param.Add($"p_{property.Name}", value);
             }
             return param;
+        }
+
+
+        public string GenerateInsertQuery()
+        {
+            string columns = string.Join(", ", typeof(TEntity).GetProperties().Select(prop => ConvertPascalToSnakeCase(prop.Name)));
+            string values = string.Join(", ", typeof(TEntity).GetProperties().Select(prop => $"@{prop.Name}"));
+            return $"Insert into {ConvertPascalToSnakeCase(TableName)} ({columns}) values ({values})";
+        }
+
+        public string GenerateUpdateQuery()
+        {
+            string setClauses = string.Join(", ", typeof(TEntity).GetProperties().Select(prop => $"{ConvertPascalToSnakeCase(prop.Name)} = @{prop.Name}"));
+            return $"Update {ConvertPascalToSnakeCase(TableName)} set {setClauses} where {ConvertPascalToSnakeCase(TableId)} = @{TableId}";
+        }
+
+        static string ConvertPascalToSnakeCase(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            string snakeCase = Regex.Replace(input, "([a-z0-9])([A-Z])", "$1_$2").ToLower();
+            return snakeCase;
         }
         #endregion
     }

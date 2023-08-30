@@ -5,7 +5,7 @@ using MSIA.WebFresher052023.Application.Interface.Base;
 
 namespace Application.Interface
 {
-    public interface IFixedAssetCategoryService : IBaseService<FixedAssetCategory, FixedAssetCategoryModel, FixedAssetCategoryDto, FixedAssetCategoryCreateDto, FixedAssetCategoryUpdateDto>
+    public interface IFixedAssetCategoryService : IBaseService<FixedAssetCategory, FixedAssetCategoryModel, FixedAssetCategoryDto, FixedAssetCategoryCreateDto, FixedAssetCategoryUpdateDto, FixedAssetCategoryUpdateMultiDto>
     {
     }
 }

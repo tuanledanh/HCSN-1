@@ -6,9 +6,9 @@ using static Dapper.SqlMapper;
 
 namespace MSIA.WebFresher052023.API.Controllers.Base
 {
-    public class BaseSearchPagingController<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> : BaseReadOnlyController<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto>
+    public class BaseSearchPagingController<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> : BaseReadOnlyController<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto>
     {
-        public BaseSearchPagingController(IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> baseService, IMapper mapper) : base(baseService, mapper)
+        public BaseSearchPagingController(IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> baseService, IMapper mapper) : base(baseService, mapper)
         {
         }
 

@@ -19,6 +19,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         protected readonly IUnitOfWork _unitOfWork;
         public virtual string TableName { get; } = typeof(TEntity).Name;
         public virtual string TableId { get; } = typeof(TEntity).Name + "Id";
+        public virtual string TableNameSnakeCase { get; } = Regex.Replace(typeof(TEntity).Name, "([a-z0-9])([A-Z])", "$1_$2").ToLower();
         #endregion
 
         #region Constructor
@@ -157,7 +158,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         /// Created by: ldtuan (24/07/2023)
         public virtual async Task<List<TEntity>> GetListByIdsAsync(List<Guid> ids)
         {
-            var tableName = Regex.Replace(TableName, "([a-z0-9])([A-Z])", "$1_$2").ToLower();
+            var tableName = TableNameSnakeCase;
             var sql = $"select * from view_{tableName} where {TableId} in @listIds;";
             var param = new DynamicParameters();
             param.Add("listIds", ids);
@@ -172,11 +173,25 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         /// Created by: ldtuan (28/07/2023)
         public virtual async Task<int> GetCountAsync()
         {
-            var tableName = Regex.Replace(TableName, "([a-z0-9])([A-Z])", "$1_$2").ToLower();
+            var tableName = TableNameSnakeCase;
             var sql = $"select count(*) from view_{tableName}";
             var count = await _unitOfWork.Connection.ExecuteScalarAsync<int>(sql, transaction: _unitOfWork.Transaction);
             return count;
         }
+
+        /// <summary>
+        /// Lấy tổng số bản ghi
+        /// </summary>
+        /// <returns>tổng số bản ghi dạng int</returns>
+        /// Created by: ldtuan (28/07/2023)
+        public virtual async Task<int> GetCountItemInListAsync(List<Guid> ids)
+        {
+            var tableName = TableNameSnakeCase;
+            var sql = $"select count(*) from view_{tableName} where {TableId} in @ids";
+            var count = await _unitOfWork.Connection.ExecuteScalarAsync<int>(sql, new { ids }, transaction: _unitOfWork.Transaction);
+            return count;
+        }
+
         #endregion
     }
 }

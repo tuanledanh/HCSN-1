@@ -1,7 +1,9 @@
-﻿using Application.DTO.FixedAssett;
+﻿using Application.DTO;
 using Application.Interface;
 using AutoMapper;
-using ClosedXML.Excel;
+using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Domain.Entity;
 using Domain.Exceptions;
 using Domain.Model;
@@ -11,13 +13,14 @@ using MSIA.WebFresher052023.Application.Service.Base;
 using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Manager;
 using MSIA.WebFresher052023.Domain.Interface.Repository;
+using MSIA.WebFresher052023.Domain.Result;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Reflection;
 
 namespace Application.Service
 {
-    public class FixedAssetService : BaseService<FixedAsset, FixedAssetModel, FixedAssetDto, FixedAssetCreateDto, FixedAssetUpdateDto>, IFixedAssetService
+    public class FixedAssetService : BaseService<FixedAsset, FixedAssetModel, FixedAssetDto, FixedAssetCreateDto, FixedAssetUpdateDto, FixedAssetUpdateMultiDto>, IFixedAssetService
     {
         #region Fields
         private readonly IFixedAssetRepository _assetRepository;
@@ -58,7 +61,7 @@ namespace Application.Service
             string assetTypeIdString = Guid.TryParse(aTypeId, out Guid assetTypeId) ? aTypeId : string.Empty;
 
             int totalRecords = await _assetRepository.GetCountFilterAsync(filterName, departmentIdString, assetTypeIdString);
-            int totalPages = Convert.ToInt32(Math.Ceiling((double)totalRecords / (double) pageLimit));
+            int totalPages = Convert.ToInt32(Math.Ceiling((double)totalRecords / (double)pageLimit));
 
             entities = await _assetRepository.GetFilterSearchAsync(pageNumber, pageLimit, filterName, departmentIdString, assetTypeIdString);
             List<FixedAssetDto> entitiesDto = new List<FixedAssetDto>();
@@ -96,6 +99,47 @@ namespace Application.Service
             return result;
         }
 
+        public override async Task<ApiResponse> InsertMultiAsync(List<FixedAssetCreateDto> fixedAssetCreateDtos)
+        {
+            // Sửa chỗ check mã trùng của 1 list, viết sql ném vào where code in @listCode
+            foreach (var fixedAssetCreateDto in fixedAssetCreateDtos)
+            {
+                await _fixedAssetManager.CheckDuplicateCode(fixedAssetCreateDto.FixedAssetCode);
+                var existDepartment = await _departmentRepository.GetAsync(fixedAssetCreateDto.DepartmentId);
+                var existAssetType = await _fixedAssetCategoryRepository.GetAsync(fixedAssetCreateDto.FixedAssetCategoryId);
+                if (existDepartment == null || existAssetType == null)
+                {
+                    throw new NotFoundException();
+                }
+            }
+
+            var fixedAssetsRaw = _mapper.Map<List<FixedAsset>>(fixedAssetCreateDtos);
+            var fixedAssets = new List<FixedAsset>();
+            foreach (var fixedAsset in fixedAssetsRaw)
+            {
+                fixedAsset.CreatedDate = DateTime.Now;
+                fixedAsset.ModifiedDate = DateTime.Now;
+                var id = Guid.NewGuid();
+                fixedAsset.SetKey(id);
+
+                fixedAssets.Add(fixedAsset);
+            }
+
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _baseRepository.InsertMultiAsync(fixedAssets);
+
+                await _unitOfWork.CommitAsync();
+                return new ApiResponse { UserMessage = "Success" };
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new Exception();
+            }
+        }
+
         /// <summary>
         /// Gọi đến hàm UpdateAsync ở repository để xử lý cập nhật một bản ghi
         /// </summary>
@@ -121,6 +165,50 @@ namespace Application.Service
             return result;
         }
 
+        public override async Task<ApiResponse> UpdateMultiAsync(List<FixedAssetUpdateMultiDto> fixedAssetUpdateMultipleDtos)
+        {
+            var ids = fixedAssetUpdateMultipleDtos.Select(f => f.FixedAssetId).ToList();
+            var fixedAssetUpdateDtos = _mapper.Map<List<FixedAssetUpdateDto>>(fixedAssetUpdateMultipleDtos);
+
+            var oldAssets = await _baseRepository.GetListByIdsAsync(ids);
+            if (ids.Count == 0 || oldAssets.Count != ids.Count)
+            {
+                throw new Domain.Exceptions.DataException();
+            }
+            var oldAssetModels = _mapper.Map<List<FixedAssetModel>>(oldAssets);
+            var assetModels = _mapper.Map<List<FixedAssetModel>>(fixedAssetUpdateDtos);
+            for (int i = 0; i < assetModels.Count; i++)
+            {
+                await _manager.CheckDuplicateCode(assetModels[i].FixedAssetCode, oldAssetModels[i].FixedAssetCode);
+                var existDepartment = await _departmentRepository.GetAsync(assetModels[i].DepartmentId);
+                var existAssetType = await _fixedAssetCategoryRepository.GetAsync(assetModels[i].FixedAssetCategoryId);
+                if (existDepartment == null || existAssetType == null)
+                {
+                    throw new NotFoundException();
+                }
+            }
+            var assets = _mapper.Map<List<FixedAsset>>(fixedAssetUpdateDtos);
+            for (int i = 0; i < oldAssets.Count; i++)
+            {
+                assets[i].FixedAssetId = oldAssets[i].FixedAssetId;
+                assets[i].ModifiedDate = DateTime.Now;
+            }
+
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _baseRepository.UpdateMultiAsync(assets);
+
+                await _unitOfWork.CommitAsync();
+                return new ApiResponse { UserMessage = "Success" };
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                throw new Exception();
+            }
+        }
+
         /// <summary>
         /// Lấy dữ liệu tài sản dưới dạng dataTable
         /// </summary>
@@ -134,27 +222,6 @@ namespace Application.Service
             List<FixedAsset> fixedAssets = await _baseRepository.GetListByIdsAsync(ids);
 
             List<ExportFixedAsset> fixedAssetDtos = fixedAssets.Select(fa => _mapper.Map<ExportFixedAsset>(fa)).ToList();
-
-            //List<FixedAssetDto> fixedAssetDtos = new List<FixedAssetDto>();
-            //fixedAssetDtos.Add(new FixedAssetDto
-            //{
-            //    FixedAssetId= Guid.Parse("aab92299-30f0-11ee-b14c-f875a4da458a"),
-            //      FixedAssetCode= "FA00052",
-            //      FixedAssetName= "oijiohjpoij[ ouig iuhphouh oph 09 i90u 98 ",
-            //     DepartmentId= Guid.Parse("4e272fc4-7875-78d6-7d32-6a1673ffca7c"),
-            //      DepartmentCode= "DP0002",
-            //      DepartmentName= "Phòng ban Nghiên cứu và phát triển",
-            //      FixedAssetCategoryId= Guid.Parse("697be7ba-1738-6adf-298f-4d82f3a13455"),
-            //      FixedAssetCategoryCode= "FAC0007",
-            //      FixedAssetCategoryName= "Công cụ và dụng cụ thủ công",
-            //      PurchaseDate= DateTime.Now,
-            //      StartUsingDate= DateTime.Now,
-            //      Cost= 9098,
-            //      Quantity= 890809,
-            //      TrackedYear= 2023,
-            //      LifeTime= 13,
-            //      ProductionYear= 0
-            //});
             if (fixedAssetDtos != null && fixedAssetDtos.Count > 0)
             {
                 var assetData = GetFixedAssetData(fixedAssetDtos);

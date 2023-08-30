@@ -51,14 +51,23 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddScoped<IFixedAssetRepository, FixedAssetRepository>();
 builder.Services.AddScoped<IFixedAssetCategoryRepository, FixedAssetCategoryRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<ITransferAssetRepository, TransferAssetRepository>();
+builder.Services.AddScoped<ITransferAssetDetailRepository, TransferAssetDetailRepository>();
+builder.Services.AddScoped<IReceiverRepository, ReceiverRepository>();
 // Service
 builder.Services.AddScoped<IFixedAssetService, FixedAssetService>();
 builder.Services.AddScoped<IFixedAssetCategoryService, FixedAssetCategoryService>();
 builder.Services.AddScoped<IDepartmentService, DepartmentService>();
+builder.Services.AddScoped<ITransferAssetService, TransferAssetService>();
+builder.Services.AddScoped<ITransferAssetDetailService, TransferAssetDetailService>();
+builder.Services.AddScoped<IReceiverService, ReceiverService>();
 // Manager
 builder.Services.AddScoped<IFixedAssetManager, FixedAssetManager>();
 builder.Services.AddScoped<IFixedAssetCategoryManager, FixedAssetCategoryManager>();
 builder.Services.AddScoped<IDepartmentManager, DepartmentManager>();
+builder.Services.AddScoped<ITransferAssetManager, TransferAssetManager>();
+builder.Services.AddScoped<ITransferAssetDetailManager, TransferAssetDetailManager>();
+builder.Services.AddScoped<IReceiverManager, ReceiverManager>();
 
 // Các class đã đánh abstract class rồi thì không cần addScope, vì nó được khởi tạo qua thk con rồi
 

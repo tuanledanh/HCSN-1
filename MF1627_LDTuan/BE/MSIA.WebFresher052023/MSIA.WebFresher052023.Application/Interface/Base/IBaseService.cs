@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Application.DTO;
+using MSIA.WebFresher052023.Domain.Result;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MSIA.WebFresher052023.Application.Interface.Base
 {
-    public interface IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> : IBaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto>
+    public interface IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> : IBaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto>
     {
         #region Methods
         /// <summary>
@@ -17,6 +19,8 @@ namespace MSIA.WebFresher052023.Application.Interface.Base
         /// Created by: ldtuan (17/07/2023)
         Task<bool> InsertAsync(TEntityCreateDto entityCreateDto);
 
+        Task<ApiResponse> InsertMultiAsync(List<TEntityCreateDto> entityCreateDtos);
+
         /// <summary>
         /// Hàm cập nhật 1 bản ghi có sẵn
         /// </summary>
@@ -25,6 +29,8 @@ namespace MSIA.WebFresher052023.Application.Interface.Base
         /// <returns>True hoặc false tương ứng với cập nhật thành công hay thất bại</returns>
         /// Created by: ldtuan (17/07/2023)
         Task<bool> UpdateAsync(Guid id, TEntityUpdateDto entityUpdateDto);
+
+        Task<ApiResponse> UpdateMultiAsync(List<TEntityUpdateMultiDto> entityUpdateMultiDtos);
 
         /// <summary>
         /// Hàm xóa 1 bản ghi có sẵn

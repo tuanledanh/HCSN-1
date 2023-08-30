@@ -10,7 +10,7 @@ using MSIA.WebFresher052023.Domain.Interface.Repository;
 
 namespace Application.Service
 {
-    public class FixedAssetCategoryService : BaseService<FixedAssetCategory, FixedAssetCategoryModel, FixedAssetCategoryDto, FixedAssetCategoryCreateDto, FixedAssetCategoryUpdateDto>, IFixedAssetCategoryService
+    public class FixedAssetCategoryService : BaseService<FixedAssetCategory, FixedAssetCategoryModel, FixedAssetCategoryDto, FixedAssetCategoryCreateDto, FixedAssetCategoryUpdateDto, FixedAssetCategoryUpdateMultiDto>, IFixedAssetCategoryService
     {
         #region Fields
         private readonly IFixedAssetCategoryManager _fixedAssetCategoryManager; 

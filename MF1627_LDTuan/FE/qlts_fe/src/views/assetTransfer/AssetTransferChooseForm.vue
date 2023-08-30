@@ -1,0 +1,515 @@
+<template>
+  <div class="popup--child">
+    <div class="popup-container border-radius-4">
+      <div class="popup__header--child border--top-right border--top-left">
+        <span class="header__title font-weight--500"
+          >Chọn tài sản điều chuyển
+        </span>
+        <MISAButton
+          button_icon_normal
+          exit
+          bottom
+          ref="exit"
+          content="Thoát"
+          @click="btnCloseForm"
+        ></MISAButton>
+      </div>
+      <div class="popup__body--child">
+        <div class="body__form">
+          <!-- ------------------------Table start------------------------ -->
+          <div class="table border-radius-4">
+            <!-- ------------------------Header------------------------ -->
+            <div class="header--row row--child">
+              <div
+                class="header cell display--center-center border--right border--bottom"
+              >
+                <input type="checkbox" />
+              </div>
+              <div
+                class="header cell display--center-center font-weight--700 border--right border--bottom"
+              >
+                STT
+              </div>
+              <div
+                class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
+              >
+                Mã tài sản
+              </div>
+              <div
+                class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
+              >
+                Tên tài sản
+              </div>
+              <div
+                class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
+              >
+                Bộ phận sử dụng
+              </div>
+              <div
+                class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
+              >
+                Nguyên giá
+              </div>
+              <div
+                class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
+              >
+                Giá trị còn lại
+              </div>
+              <div
+                class="header cell display--center-center font-weight--700 border--right border--bottom"
+              >
+                Năm theo dõi
+              </div>
+            </div>
+            <!-- ------------------------Body------------------------ -->
+            <div class="body-data relative">
+              <div
+                class="body--row row--child"
+                v-for="asset in assets"
+                :key="asset.FixedAssetId"
+                :class="{ 'row--selected': selectedRows.includes(asset) }"
+                @click.exact.stop="callRowOnClick(asset)"
+                @click.ctrl.stop="callRowOnCtrlClick(asset)"
+              >
+                <div
+                  class="cell display--center-center border--right border--bottom"
+                  @click.stop="callRowOnClickByCheckBox(asset)"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="selectedRowsByCheckBox.includes(asset)"
+                  />
+                </div>
+                <div
+                  class="cell display--center-center border--right border--bottom"
+                >
+                  {{ assets.indexOf(asset) + 1 }}
+                </div>
+                <div
+                  class="cell display--center-left border--right border--bottom padding--left-10"
+                >
+                  {{ asset.FixedAssetName }}
+                </div>
+                <div
+                  class="cell display--center-left border--right border--bottom padding--left-10"
+                >
+                  {{ asset.FixedAssetName }}
+                </div>
+                <div
+                  class="cell display--center-right border--right border--bottom padding--right-10"
+                >
+                  {{ asset.FixedAssetName }}
+                </div>
+                <div
+                  class="cell display--center-right border--right border--bottom padding--right-10"
+                >
+                  {{ asset.FixedAssetName }}
+                </div>
+                <div
+                  class="cell display--center-left border--right border--bottom padding--left-10"
+                >
+                  {{ asset.FixedAssetName }}
+                </div>
+                <div
+                  id="cell"
+                  class="cell display--center-center border--right border--bottom"
+                >
+                  {{ asset.FixedAssetName }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ------------------------Table end------------------------ -->
+
+          <MISAPaging
+            :totalRecords="totalRecords"
+            :totalPages="totalPages"
+            :currentPage="currentPage"
+            :pageLimitList="pageLimitList"
+            @filter="getPageLimit"
+            @paging="getPageNumber"
+          ></MISAPaging>
+        </div>
+      </div>
+      <div class="hr border--bottom"></div>
+      <div class="body__content--child">
+        <div class="content--top">
+          <div class="content__row--child">
+            <div class="content__column">
+              <MISACombobox
+                  :api="this.$_MISAApi.Department.Api"
+                  propText="DepartmentName"
+                  propValue="DepartmentId"
+                  label="Bộ phận sử dụng mới"
+                  required
+                  placeholder="Bộ phận sử dụng"
+                  @filter="getDepartmentFilter"
+                  :inputChange="inputDepartmentNameChange"
+                  isDisplay
+                  self_adjust_size
+                  medium
+                  padding
+                  input_35
+                ></MISACombobox>
+            </div>
+            <div class="content__column">
+              <MISAInput
+                normalGrid
+                label="Ghi chú"
+                medium
+                required
+                maxlength="4"
+              ></MISAInput>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="popup__footer border--bot-right border--bot-left">
+        <MISAButton
+          buttonOutline
+          textButton="Hủy"
+          @click="btnCancelForm"
+          :tabindex="15"
+        ></MISAButton>
+        <MISAButton
+          buttonMain
+          textButton="Lưu"
+          @click="btnSaveAsset"
+          :tabindex="16"
+        ></MISAButton>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import { rowOnClick } from "../../helpers/table/selectRow";
+import { rowOnCtrlClick } from "../../helpers/table/selectRow";
+import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
+export default {
+  name: "AssetTransferChooseForm",
+  data() {
+    return {
+      // ----------------------------- Data -----------------------------
+      // Danh sách bản ghi
+      assets: [],
+      // Danh sách các bản ghi đã chọn
+      selectedRows: [],
+      // Index của bản ghi đầu tiên trong danh sách
+      lastIndex: 0,
+      // Danh sách người nhận
+      listReceivers: 1,
+      // Hiển thị phần tạo người nhận
+      isCreateReceiver: false,
+
+      // ----------------------------- Form -----------------------------
+      isFormDisplay: false,
+
+      // ----------------------------- Paging -----------------------------
+      pageLimitList: [],
+      // Tổng bản ghi
+      totalRecords: 0,
+      // Tổng trang
+      totalPages: 0,
+      // Trang hiện tại
+      currentPage: 1,
+
+      // ----------------------------- Checkbox -----------------------------
+      // Tick ô checkbox input
+      isCheckboxChecked: false,
+      // Danh sách các bản ghi đã chọn
+      selectedRowsByCheckBox: [],
+
+      // ----------------------------- Toast -----------------------------
+      isShowToastDelete: false,
+      toast_content_delete: null,
+
+      // ----------------------------- Tab index -----------------------------
+      buttonFocus: null,
+    };
+  },
+  created() {
+    this.loadData();
+  },
+  methods: {
+    // load data tạm thời
+    loadData() {
+      this.$_MISAApi.FixedAsset.Filter(1, 5, null, null, null)
+        .then((res) => {
+          this.assets = res.data.Data;
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    },
+
+    //------------------------------------------- Click row -------------------------------------------
+
+    /**
+     * Thực hiện call hàm rowOnClick từ file js để bôi xanh 1 dòng nếu click vào dòng đó
+     * @param {object} asset thông tin tài sản
+     * Author: LDTUAN (02/08/2023)
+     */
+    callRowOnClick(asset) {
+      rowOnClick.call(this, asset);
+    },
+
+    callRowOnClickByCheckBox(asset) {
+      rowOnClickByCheckBox.call(this, asset);
+    },
+
+    callRowOnCtrlClick(asset) {
+      rowOnCtrlClick.call(this, asset);
+    },
+
+    btnUncheckedAll() {
+      this.selectedRows = [];
+      this.selectedRowsByCheckBox = [];
+    },
+
+    /**
+     * Đóng form, gửi thông tin về cho component cha để đóng nó
+     * Author: LDTUAN (21/08/2023)
+     */
+    btnCloseForm() {
+      this.$emit("onCloseForm");
+    },
+  },
+};
+</script>
+<style scoped>
+.popup--child {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #0000005d;
+  z-index: 2;
+}
+
+.popup-container {
+  width: 1100px;
+  height: 680px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.popup__header--child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+  height: 70px;
+  padding: 0 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--background-color-asset-transfer-form);
+}
+
+.popup__body--child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup__footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.16);
+  height: 52px;
+  padding-right: 12px;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  column-gap: 12px;
+  background-color: var(--background-color-asset-transfer-form);
+}
+
+.header__title {
+  font-size: 18px;
+}
+
+.body__title {
+  font-size: 16px;
+}
+
+/* ------------------------------------------- Body Content ------------------------------------------- */
+
+.body__content--child {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color-asset-transfer-form);
+  box-sizing: border-box;
+  padding: 0px 28px 0px 28px;
+}
+
+.content--top {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100px;
+}
+
+.content__row--child {
+  display: grid;
+  grid-template-columns: 1.5fr 3fr;
+  column-gap: 20px;
+}
+
+.content__row--bot {
+  flex: 1;
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  column-gap: 10px;
+}
+
+/* ------------------------------------------- Body content bot ------------------------------------------- */
+.content--bot__row {
+  display: flex;
+  flex-direction: column;
+  row-gap: 13px;
+}
+
+.row--form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 13px;
+  max-height: 83px;
+  overflow-y: auto;
+}
+
+.content--bot__header {
+  margin-top: 20px;
+}
+
+.content--bot__header .content__column {
+  margin-left: 10px;
+}
+
+.row--bot {
+  display: grid;
+  grid-template-columns: 38px repeat(3, 1.5fr) 1fr;
+  column-gap: 15px;
+}
+
+.number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-color: #afafaf;
+}
+
+.combo-icon {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-left: 20px;
+  column-gap: 20px;
+}
+
+.content--bot__body .content__column {
+  margin-left: 10px;
+}
+
+/* ------------------------------------------- Body Action ------------------------------------------- */
+.body__action {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0px;
+}
+
+.action--left {
+  display: flex;
+  align-items: center;
+  column-gap: 14px;
+}
+
+.action--right {
+  display: flex;
+  align-items: center;
+  column-gap: 14px;
+}
+
+/* ------------------------------------------- Body Form ------------------------------------------- */
+.body__form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: var(--background-color-default);
+}
+
+/* ------------------------------------------- Table ------------------------------------------- */
+.table {
+  display: flex;
+  flex-direction: column;
+  border-spacing: unset;
+  overflow-y: auto;
+  padding-top: 20px;
+}
+
+.table-bot {
+  flex: 1;
+}
+
+.row--child {
+  display: grid;
+  grid-template-columns: 44px 50px 160px 172px 176px 156px 200px calc(
+      100% - 958px
+    );
+  height: 35px;
+  cursor: pointer;
+}
+
+.cell {
+  width: 100%;
+  min-height: 35px;
+  background-color: var(--background-color-default);
+  transition: var(--transition-02s);
+  border-color: var(--table-border-color);
+}
+
+.icon-function {
+  display: flex;
+  column-gap: 8px;
+}
+
+.header {
+  background-color: var(--background-color-table-head);
+}
+
+.header input[type="text"] {
+  width: 100%;
+  height: 100%;
+}
+
+.body--row:hover .cell {
+  background-color: var(--table-body-hover);
+}
+
+.row--selected .cell {
+  background-color: var(--table-body-hover);
+}
+
+.body {
+  color: var(--table-body-text-color);
+}
+.body-data {
+  overflow-y: auto;
+}
+
+/* ------------------------------------------- Hr ------------------------------------------- */
+.hr{
+  height: 8px;
+  border-color: var(--background-color-table-expand-narrow);
+  background-color: var(--background-color-default);
+}
+</style>

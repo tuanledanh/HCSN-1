@@ -189,7 +189,8 @@ export default {
 
 <style scoped>
 .paging {
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--background-color-table-expand-narrow);
+  border-bottom: 1px solid var(--background-color-table-expand-narrow);
   background-color: #ffffff;
   height: 39px;
   width: 100%;
