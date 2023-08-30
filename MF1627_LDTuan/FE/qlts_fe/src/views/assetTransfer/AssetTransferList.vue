@@ -40,7 +40,7 @@
     >
       <div class="body--top" ref="bodyTop">
         <!-- ------------------------Table start------------------------ -->
-        <div class="table">
+        <div :class="[{ table: !isResize }, { 'table-flex': isResize }]">
           <!-- ------------------------Header------------------------ -->
           <div class="header--row row">
             <div
@@ -205,14 +205,10 @@
             <div class="top-right__icon">
               <MISATooltip
                 bottom_end
-                :content="
-                  initialHeightAfterResize == tableTopHeightFix
-                    ? 'Mở rộng'
-                    : 'Thu gọn'
-                "
+                :content="!isShowPagingBottom ? 'Mở rộng' : 'Thu gọn'"
               >
                 <MISAIcon
-                  :reverse="initialHeightAfterResize == tableTopHeightFix"
+                  :reverse="!isShowPagingBottom"
                   drop_down_thin_blue
                   background_expand_narrow
                   @click="btnCollapseTable"
@@ -221,7 +217,10 @@
             </div>
           </div>
         </div>
-        <div class="table table-bot">
+        <div
+          class="table"
+          :class="[{ 'table-bot': !isResize }, { 'table-bot-flex': isResize }]"
+        >
           <!-- ------------------------Header------------------------ -->
           <div class="header--row row">
             <div
@@ -317,16 +316,17 @@
           </div>
         </div>
         <!-- ------------------------Table end------------------------ -->
-
-        <MISAPaging
-          v-if="initialHeightAfterResize > tableTopHeightFix"
-          :totalRecords="totalRecords"
-          :totalPages="totalPages"
-          :currentPage="currentPage"
-          :pageLimitList="pageLimitList"
-          @filter="getPageLimit"
-          @paging="getPageNumber"
-        ></MISAPaging>
+        <div>
+          <MISAPaging
+            v-if="isShowPagingBottom"
+            :totalRecords="totalRecords"
+            :totalPages="totalPages"
+            :currentPage="currentPage"
+            :pageLimitList="pageLimitList"
+            @filter="getPageLimit"
+            @paging="getPageNumber"
+          ></MISAPaging>
+        </div>
       </div>
     </div>
   </div>
@@ -412,6 +412,10 @@ export default {
       tableTopHeightFix: null,
       // Thu gọn table bằng icon
       isNarrow: false,
+      // Hiển thị paging ở dưới
+      isShowPagingBottom: true,
+      // Table đã thay đổi width do resize
+      isResize: false,
 
       // ----------------------------- Checkbox -----------------------------
       // Tick ô checkbox input
@@ -434,7 +438,7 @@ export default {
   methods: {
     // load data tạm thời
     loadData() {
-      this.$_MISAApi.FixedAsset.Filter(1, 5, null, null, null)
+      this.$_MISAApi.FixedAsset.Filter(1, 15, null, null, null)
         .then((res) => {
           this.assets = res.data.Data;
         })
@@ -486,12 +490,18 @@ export default {
      * Nếu thả chuột thì gọi đến event stopResize để thôi chỉnh độ dài
      */
     startResize(event) {
+      if (!this.initialHeightFix) {
+        this.initialHeightFix = this.$refs.resizableTable.clientHeight;
+      }
+      console.log(this.initialHeightFix);
       event.preventDefault(); // Ngăn chặn chọn văn bản khi kéo
       document.addEventListener("mousemove", this.resizing);
       document.addEventListener("mouseup", this.stopResize);
 
       this.startY = event.clientY; // Lưu vị trí chuột xuất phát
       this.initialHeight = this.$refs.resizableTable.clientHeight; // Lưu kích thước ban đầu của resizable-table
+      this.isResize = true;
+      this.resizing(event);
     },
 
     /**
@@ -517,6 +527,11 @@ export default {
         contentBodyHeight - Math.min(Math.max(newHeight, minHeight), maxHeight)
       }px`;
       document.body.style.cursor = "ns-resize";
+      if (this.$refs.resizableTable.clientHeight == minHeight) {
+        this.isShowPagingBottom = false;
+      } else {
+        this.isShowPagingBottom = true;
+      }
     },
 
     /**
@@ -530,6 +545,10 @@ export default {
     },
 
     btnCollapseTable() {
+      if (!this.initialHeightFix) {
+        this.initialHeightFix = this.$refs.resizableTable.clientHeight;
+      }
+      this.isResize = true;
       const tableHeight = this.$refs.resizableTable.clientHeight;
       const tableTop = this.$refs.tableTop.clientHeight;
       const contentBodyHeight = this.$refs.contentBody.clientHeight;
@@ -544,7 +563,7 @@ export default {
         this.$refs.bodyTop.style.height = `${contentBodyHeight}px`;
         this.initialHeightAfterResize = tableTop;
       }
-      console.log(this.$refs.resizableTable.clientHeight);
+      this.isShowPagingBottom = !this.isShowPagingBottom;
     },
 
     //------------------------------------------- Tool tip resize -------------------------------------------
@@ -593,7 +612,7 @@ export default {
       this.isFormDisplay = true;
     },
 
-    onCloseForm(){
+    onCloseForm() {
       this.isFormDisplay = false;
     },
   },
@@ -611,7 +630,6 @@ export default {
      * Author: LDTUAN (19/08/2023)
      */
     this.initialHeightAfterResize = this.$refs.resizableTable.clientHeight;
-    this.initialHeightFix = this.$refs.resizableTable.clientHeight;
     this.tableTopHeightFix = this.$refs.tableTop.clientHeight;
   },
   beforeUnmount() {
@@ -657,6 +675,7 @@ export default {
 .content--body {
   width: 100%;
   height: calc(100% - 36px);
+  max-height: 702px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -664,7 +683,7 @@ export default {
 }
 
 .body--top {
-  height: 65%;
+  height: 60%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -673,6 +692,17 @@ export default {
 
 /* ------------------------------------------- Table ------------------------------------------- */
 .table {
+  max-height: 363px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-color-default);
+  border-spacing: unset;
+  overflow-y: auto;
+}
+
+.table-flex {
+  max-height: unset;
+  flex: 1;
   display: flex;
   flex-direction: column;
   background-color: var(--background-color-default);
@@ -681,7 +711,12 @@ export default {
 }
 
 .table-bot {
+  max-height: 214px;
+}
+
+.table-bot-flex {
   flex: 1;
+  max-height: unset;
 }
 
 .row {
@@ -694,6 +729,12 @@ export default {
 }
 
 .table-bot .row {
+  grid-template-columns: 50px 120px 200px 140px 150px 180px 200px calc(
+      100% - 1040px
+    );
+}
+
+.table-bot-flex .row {
   grid-template-columns: 50px 120px 200px 140px 150px 180px 200px calc(
       100% - 1040px
     );

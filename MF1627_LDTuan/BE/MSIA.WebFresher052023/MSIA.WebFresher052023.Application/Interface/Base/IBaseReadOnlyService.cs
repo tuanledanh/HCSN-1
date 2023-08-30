@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MSIA.WebFresher052023.Application.Interface.Base
 {
-    public interface IBaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto>
+    public interface IBaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto>
     {
         #region Methods
         /// <summary>

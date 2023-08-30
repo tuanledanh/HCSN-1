@@ -14,12 +14,22 @@ namespace MSIA.WebFresher052023.Domain.Interface.Repository.Base
         Task<bool> InsertAsync(TEntity entity);
 
         /// <summary>
+        /// Hàm tạo mới nhiều bản ghi có sẵn
+        /// </summary>
+        /// <param name="entities">Thông tin mới tạo bản ghi</param>
+        /// <returns>True hoặc false tương ứng với tạo thành công hay thất bại</returns>
+        /// Created by: ldtuan (27/08/2023)
+        Task<bool> InsertMultiAsync(List<TEntity> entities);
+
+        /// <summary>
         /// Hàm cập nhật 1 bản ghi có sẵn
         /// </summary>
         /// <param name="entity">Thông tin mới muốn cập nhật vào bản ghi cũ</param>
         /// <returns>True hoặc false tương ứng với cập nhật thành công hay thất bại</returns>
         /// Created by: ldtuan (17/07/2023)
         Task<bool> UpdateAsync(TEntity entity);
+
+        Task<bool> UpdateMultiAsync(List<TEntity> entities);
 
         /// <summary>
         /// Hàm xóa 1 bản ghi có sẵn

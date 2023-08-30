@@ -9,7 +9,7 @@
   <div
     :class="[
       'input',
-      {'padding-2': padding_2},
+      { 'padding-2': padding_2 },
       { 'input--error': error },
       { 'input--search': search },
       { 'input--normal': normal },
@@ -34,7 +34,11 @@
       :tabindex="tabindex"
       @input="onSearchItem"
       @keydown="inputOnKeyDown"
-      :class="[{ 'text--right': right }]"
+      :class="[
+        { 'text-align--right': right },
+        { 'text-align--center': center },
+        { 'height-35': input_35 },
+      ]"
       @focus.stop="$emit('focus')"
       :maxlength="maxlength"
     />
@@ -54,6 +58,11 @@ import { formatMoneyToInt } from "../../../helpers/common/format/format";
 export default {
   name: "MISAInput",
   props: {
+    // Input có height 35px
+    input_35: {
+      type: Boolean,
+      default: false,
+    },
     // Khóa input
     disabled: {
       type: Boolean,
@@ -145,6 +154,11 @@ export default {
 
     // Input bên phải
     right: {
+      type: Boolean,
+      default: false,
+    },
+    // Input trung tâm
+    center: {
       type: Boolean,
       default: false,
     },

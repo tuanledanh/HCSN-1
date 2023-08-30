@@ -1,4 +1,4 @@
-﻿using Application.DTO.Depart;
+﻿using Application.DTO;
 using AutoMapper;
 using Domain.Entity;
 using Domain.Model;

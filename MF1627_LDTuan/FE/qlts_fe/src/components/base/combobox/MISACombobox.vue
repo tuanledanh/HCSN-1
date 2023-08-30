@@ -3,12 +3,17 @@
     v-if="label"
     :label="label"
     :required="required"
+    :medium="medium"
     @click="focusInput"
   ></MISALabel>
   <div v-click-outside="() => (isShowData = false)">
-    <div id="selectOption" :class="['selectOption', {'width-100per':self_adjust_size}, {'padding-2':self_adjust_size}]">
-      <div @click="isShowData = true">
+    <div
+      id="selectOption"
+      :class="['selectOption', { 'width-100per': self_adjust_size }]"
+    >
+      <div class="width-100per" @click="isShowData = true">
         <MISAInput
+          :input_35="input_35"
           combobox
           :normalGrid="self_adjust_size"
           :padding_2="self_adjust_size"
@@ -59,6 +64,11 @@ import axios from "axios";
 export default {
   name: "MISACombobox",
   props: {
+    // Height của input
+    input_35: {
+      type: Boolean,
+      default: false,
+    },
     // Nội dung của placeholder, truyền về cho input
     placeholder: {
       type: String,
@@ -110,6 +120,16 @@ export default {
     },
     // Width = 100% component cha chứa nó
     self_adjust_size: {
+      type: Boolean,
+      default: false,
+    },
+    // Padding cho combobox
+    padding: {
+      type: Boolean,
+      default: false,
+    },
+    // In đậm label
+    medium: {
       type: Boolean,
       default: false,
     },

@@ -1,6 +1,5 @@
-﻿using Application.DTO.Depart;
+﻿using Application.DTO;
 using AutoMapper;
-using Domain.Entity;
 using Domain.Exceptions;
 using MSIA.WebFresher052023.Application.Interface.Base;
 using MSIA.WebFresher052023.Domain.Entity.Base;
@@ -8,12 +7,13 @@ using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Manager.Base;
 using MSIA.WebFresher052023.Domain.Interface.Repository.Base;
 using MSIA.WebFresher052023.Domain.Model.Base;
+using MSIA.WebFresher052023.Domain.Result;
 
 namespace MSIA.WebFresher052023.Application.Service.Base
 {
-    public abstract class BaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> : BaseReadOnlyService<TEntity, TModel, TEntityDto,
-        TEntityCreateDto, TEntityUpdateDto>,
-        IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> where TModel : IHasKeyModel where TEntity : IHasKey
+    public abstract class BaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> : BaseReadOnlyService<TEntity, TModel, TEntityDto,
+        TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto>,
+        IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> where TModel : IHasKeyModel where TEntity : IHasKey
     {
         #region Fields
         protected readonly IBaseRepository<TEntity, TModel> _baseRepository;
@@ -42,6 +42,25 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             var entity = _mapper.Map<TEntity>(entityCreateDto);
             bool result = await _baseRepository.InsertAsync(entity);
             return result;
+        }
+
+        public virtual async Task<ApiResponse> InsertMultiAsync(List<TEntityCreateDto> entityCreateDtos)
+        {
+            var listModels = _mapper.Map<List<TModel>>(entityCreateDtos);
+            foreach (var model in listModels)
+            {
+                await _manager.CheckDuplicateCode(model.GetKey());
+            }
+            var listEntities = _mapper.Map<List<TEntity>>(listModels);
+            bool result = await _baseRepository.InsertMultiAsync(listEntities);
+            if (result)
+            {
+                return new ApiResponse { ErrorCode = 200, UserMessage = "Success" };
+            }
+            else
+            {
+                return new ApiResponse { UserMessage = "False" };
+            }
         }
 
         /// <summary>
@@ -84,38 +103,19 @@ namespace MSIA.WebFresher052023.Application.Service.Base
         public virtual async Task<bool> DeleteManyAsync(List<Guid> ids)
         {
             var entities = await _baseRepository.GetListByIdsAsync(ids);
-            var result = await _baseRepository.DeleteManyAsync(entities);
             if (ids.Count == 0 || entities.Count < ids.Count)
             {
                 throw new DataException();
             }
+            var result = await _baseRepository.DeleteManyAsync(entities);
             return result;
         }
-    }
 
-    //public virtual async Task<bool> DeleteManyAsync(List<Guid> ids)
-    //{
-    //    await _unitOfWork.BeginTransactionAsync();
-    //    try
-    //    {
-    //        var entities = await _baseRepository.GetListByIdsAsync(ids);
-    //        await _baseRepository.DeleteManyAsync(entities);
-    //        if (ids.Count == 0)
-    //        {
-    //            throw new Exception("Không được truyền danh sách rỗng");
-    //        }
-    //        if (entities.Count < ids.Count)
-    //        {
-    //            throw new Exception("Không thể xóa");
-    //        }
-    //        await _unitOfWork.CommitAsync();
-    //    }
-    //    catch (Exception)
-    //    {
-    //        await _unitOfWork.RollbackAsync();
-    //        throw;
-    //    }
-    //}
+        public virtual Task<ApiResponse> UpdateMultiAsync(List<TEntityUpdateMultiDto> entityUpdateMultiDtos)
+        {
+            throw new NotImplementedException();
+        }
+    }
     #endregion
 }
 

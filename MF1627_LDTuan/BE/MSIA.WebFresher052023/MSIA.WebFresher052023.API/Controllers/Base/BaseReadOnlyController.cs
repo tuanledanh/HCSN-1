@@ -9,15 +9,15 @@ using MySqlX.XDevAPI.Common;
 
 namespace MSIA.WebFresher052023.API.Controllers.Base
 {
-    public abstract class BaseReadOnlyController<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> : ControllerBase
+    public abstract class BaseReadOnlyController<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> : ControllerBase
     {
         #region Fields
-        protected readonly IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> _baseService;
+        protected readonly IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> _baseService;
         protected readonly IMapper _mapper;
         #endregion
 
         #region Constructor
-        protected BaseReadOnlyController(IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto> baseService, IMapper mapper)
+        protected BaseReadOnlyController(IBaseService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> baseService, IMapper mapper)
         {
             _baseService = baseService;
             _mapper = mapper;
@@ -45,7 +45,7 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
             var asset = await _baseService.GetAsync(code);
             if (asset == null)
             {
-                var error = new OperationResult { UserMessage = ErrorMessages.Conflict, ErrorCode=10000 };
+                var error = new ApiResponse { UserMessage = ErrorMessages.Conflict, ErrorCode=10000 };
                 return StatusCode(StatusCodes.Status400BadRequest, error);
             }
             else
@@ -69,7 +69,7 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
             }
             else
             {
-                var error = new OperationResult { UserMessage = ErrorMessages.Other };
+                var error = new ApiResponse { UserMessage = ErrorMessages.Other };
                 return StatusCode(StatusCodes.Status400BadRequest, error);
             }
         }
@@ -91,7 +91,7 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
             }
             else
             {
-                var error = new OperationResult { UserMessage = ErrorMessages.Other };
+                var error = new ApiResponse { UserMessage = ErrorMessages.Other };
                 return StatusCode(StatusCodes.Status400BadRequest, error);
             }
         }
@@ -113,7 +113,7 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
             }
             else
             {
-                var error = new OperationResult { UserMessage = ErrorMessages.Other };
+                var error = new ApiResponse { UserMessage = ErrorMessages.Other };
                 return StatusCode(StatusCodes.Status400BadRequest, error);
             }
         }
@@ -134,7 +134,7 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
             }
             else
             {
-                var error = new OperationResult { UserMessage = ErrorMessages.Other };
+                var error = new ApiResponse { UserMessage = ErrorMessages.Other };
                 return StatusCode(StatusCodes.Status400BadRequest, error);
             }
         }

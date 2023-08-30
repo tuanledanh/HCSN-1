@@ -11,7 +11,7 @@ namespace API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class FixedAssetCategoryController : BaseSearchPagingController<FixedAssetCategory, FixedAssetCategoryModel, FixedAssetCategoryDto, FixedAssetCategoryCreateDto, FixedAssetCategoryUpdateDto>
+    public class FixedAssetCategoryController : BaseSearchPagingController<FixedAssetCategory, FixedAssetCategoryModel, FixedAssetCategoryDto, FixedAssetCategoryCreateDto, FixedAssetCategoryUpdateDto, FixedAssetCategoryUpdateMultiDto>
     {
         public FixedAssetCategoryController(IFixedAssetCategoryService fixedAssetCategoryService, IMapper mapper) : base(fixedAssetCategoryService, mapper)
         {

@@ -79,6 +79,14 @@ namespace MSIA.WebFresher052023.Domain.Interface.Repository.Base
         /// <returns>tổng số bản ghi dạng int</returns>
         /// Created by: ldtuan (28/07/2023)
         Task<int> GetCountAsync();
+
+        /// <summary>
+        /// Lấy tổng số bản ghi theo danh sách ids truyền vào (phục vụ cho việc kiểm tra tồn tại id này trong db k)
+        /// </summary>
+        /// <param name="ids">Danh sách id truyền vào</param>
+        /// <returns>Tổng số bản ghi</returns>
+        /// Created by: ldtuan (30/08/2023)
+        Task<int> GetCountItemInListAsync(List<Guid> ids);
         #endregion
     }
 }

@@ -4,6 +4,7 @@
       'icon',
       { 'icon-reverse': reverse },
       'icon--resize',
+      {'icon--box-thin': add_box_thin},
       { 'icon--background': background },
       { 'icon--background-expand-narrow': background_expand_narrow },
       { 'icon--disabled': disabled },
@@ -80,6 +81,7 @@
         { 'icon-search': iconSearch },
         { 'icon-required': required },
         { 'icon-add': add },
+        { 'icon-add-box-black-thin': add_box_thin },
         { 'icon-export': exportIcon },
         { 'icon-delete': deleteIcon },
         { 'icon-notification': notification },
@@ -87,7 +89,9 @@
         { 'icon-question': question },
         { 'icon-user': user },
         { 'icon-drop-down': drop_down },
+        { 'icon-drop-down-large': drop_down_large },
         { 'icon-pull-up': pull_up },
+        { 'icon-pull-up-large': pull_up_large },
         { 'icon-home': home },
         { 'icon-overview': overview },
         { 'icon-asset': asset },
@@ -182,6 +186,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Icon thêm mới nhưng có box và viền mỏng
+    add_box_thin: {
+      type: Boolean,
+      default: false,
+    },
     // Icon thêm mới có border xung quanh
     add_box: {
       type: Boolean,
@@ -240,9 +249,19 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Icon xổ xuống nhưng icon này bự hơn
+    drop_down_large: {
+      type: Boolean,
+      default: false,
+    },
 
     // Icon tăng lên
     pull_up: {
+      type: Boolean,
+      default: false,
+    },
+    // Icon tăng lên nhưng icon này bự hơn
+    pull_up_large: {
       type: Boolean,
       default: false,
     },
@@ -529,6 +548,12 @@ export default {
   transform: scale(1.2);
 }
 
+.icon-drop-down-large {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -420px -330px;
+	width: 16px;
+	height: 19px;
+}
+
 .icon-drop-down-thin {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -158px -293px;
   width: 11px;
@@ -546,6 +571,12 @@ export default {
   width: 7px;
   height: 5px;
   transform: scale(1.2);
+}
+
+.icon-pull-up-large {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -332px -331px;
+	width: 17px;
+	height: 18px;
 }
 
 /*==================== Main content ====================*/
@@ -568,11 +599,12 @@ export default {
   transform: scale(1.2);
 }
 
-.icon-add-black {
-  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -467px -423px;
-  width: 10px;
-  height: 10px;
-  transform: scale(1.8);
+.icon-add-box-black-thin {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -204px -424px;
+  width: 8px;
+  height: 8px;
+  filter: invert(100%);
+  transform: scale(1.3);
 }
 
 .icon-export {
@@ -786,5 +818,12 @@ export default {
   width: 20px;
   height: 20px;
   border-radius: 50%;
+}
+
+.icon--box-thin{
+  width: 18px;
+  height: 18px;
+  border: 1px solid black;
+  border-radius: 4px;
 }
 </style>

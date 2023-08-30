@@ -1,4 +1,4 @@
-﻿using Application.DTO.FixedAssett;
+﻿using Application.DTO;
 using AutoMapper;
 using Domain.Entity;
 using Domain.Model;
@@ -17,6 +17,7 @@ namespace Application.AutoMapper
             CreateMap<FixedAssetUpdateDto, FixedAsset>();
             CreateMap<FixedAssetCreateDto, FixedAssetModel>();
             CreateMap<FixedAssetUpdateDto, FixedAssetModel>();
+            CreateMap<FixedAssetUpdateMultiDto, FixedAssetUpdateDto>();
         }
     }
 }

@@ -16,44 +16,103 @@
     <div class="popup__body">
       <div class="body__title font-weight--500">Thông tin chung</div>
       <div class="body__content border-radius-6">
-        <div class="content__row">
-          <div class="content__column">
-            <MISAInput
-              normalGrid
-              label="Mã chứng từ"
-              medium
-              required
-              maxlength="12"
-            ></MISAInput>
+        <div class="content--top">
+          <div class="content__row">
+            <div class="content__column">
+              <MISAInput
+                normalGrid
+                label="Mã chứng từ"
+                medium
+                required
+                maxlength="12"
+              ></MISAInput>
+            </div>
+            <div class="content__column">
+              <MISAInputDatePicker
+                label="Ngày chứng từ"
+                medium
+                required
+              ></MISAInputDatePicker>
+            </div>
+            <div class="content__column">
+              <MISAInputDatePicker
+                label="Ngày điều chuyển"
+                medium
+                required
+              ></MISAInputDatePicker>
+            </div>
+            <div class="content__column">
+              <MISAInput
+                normalGrid
+                label="Ghi chú"
+                medium
+                required
+                maxlength="4"
+              ></MISAInput>
+            </div>
           </div>
-          <div class="content__column">
-            <MISAInputDatePicker
-              label="Ngày chứng từ"
-              medium
-              required
-            ></MISAInputDatePicker>
-          </div>
-          <div class="content__column">
-            <MISAInputDatePicker
-              label="Ngày điều chuyển"
-              medium
-              required
-            ></MISAInputDatePicker>
-          </div>
-          <div class="content__column">
-            <MISAInput
-              normalGrid
-              label="Ghi chú"
-              medium
-              required
-              maxlength="4"
-            ></MISAInput>
+          <div class="content__row--bot">
+            <div class="checkbox" @click="showFormReceiver">
+              <input type="checkbox" />
+              <label class="font-weight--500">Chọn ban giao nhận</label>
+            </div>
           </div>
         </div>
-        <div class="content__row--bot">
-          <div class="checkbox">
-            <input type="checkbox" />
-            <label class="font-weight--500">Chọn ban giao nhận</label>
+        <div v-if="isCreateReceiver" class="content--bot">
+          <div class="content--bot__row">
+            <div class="content--bot__header row--bot">
+              <div>STT</div>
+              <div>Họ và tên</div>
+              <div class="content__column">Đại diện</div>
+              <div class="content__column">Chức vụ</div>
+            </div>
+            <div class="row--form">
+              <div
+                v-for="index in listReceivers"
+                :key="index"
+                class="content--bot__body row--bot"
+              >
+                <div>
+                  <div class="number border border-radius-4">{{ index }}</div>
+                </div>
+                <div>
+                  <MISAInput
+                    normalGrid
+                    medium
+                    maxlength="12"
+                    placeholder="Nhập họ và tên"
+                  ></MISAInput>
+                </div>
+                <div class="content__column">
+                  <MISAInput
+                    normalGrid
+                    medium
+                    maxlength="12"
+                    placeholder="Nhập đại diện"
+                  ></MISAInput>
+                </div>
+                <div class="content__column">
+                  <MISAInput
+                    normalGrid
+                    medium
+                    maxlength="12"
+                    placeholder="Nhập chức vụ"
+                  ></MISAInput>
+                </div>
+                <div class="content__column">
+                  <div class="combo-icon">
+                    <MISAIcon pull_up_large></MISAIcon>
+                    <MISAIcon drop_down_large></MISAIcon>
+                    <div @click="btnAddReceiver">
+                      <MISAIcon add_box_thin></MISAIcon>
+                    </div>
+                    <div @click="btnDeleteReceiver">
+                      <MISAIcon v-if="index > 1" deleteIcon></MISAIcon>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -78,6 +137,7 @@
             buttonSub
             basic
             large
+            @click="btnShowFormChooseAsset"
           ></MISAButton>
         </div>
       </div>
@@ -187,7 +247,8 @@
                 {{ asset.FixedAssetName }}
               </div>
               <div
-                id="cell" class="cell display--center-center border--right border--bottom"
+                id="cell"
+                class="cell display--center-center border--right border--bottom"
               >
                 <MISACombobox
                   :api="this.$_MISAApi.Department.Api"
@@ -242,13 +303,21 @@
       ></MISAButton>
     </div>
   </div>
+  <MISAAssetTransferChooseForm
+  @onCloseForm="onCloseForm"
+    v-if="isShowFormChooseAsset"
+  ></MISAAssetTransferChooseForm>
 </template>
 <script>
 import { rowOnClick } from "../../helpers/table/selectRow";
 import { rowOnCtrlClick } from "../../helpers/table/selectRow";
 import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
+import MISAAssetTransferChooseForm from "./AssetTransferChooseForm.vue";
 export default {
   name: "MISAAssetTransferForm",
+  components: {
+    MISAAssetTransferChooseForm,
+  },
   data() {
     return {
       // ----------------------------- Data -----------------------------
@@ -258,9 +327,15 @@ export default {
       selectedRows: [],
       // Index của bản ghi đầu tiên trong danh sách
       lastIndex: 0,
+      // Danh sách người nhận
+      listReceivers: 1,
+      // Hiển thị phần tạo người nhận
+      isCreateReceiver: false,
 
       // ----------------------------- Form -----------------------------
       isFormDisplay: false,
+      // Hiển thị form chọn tài sản
+      isShowFormChooseAsset: false,
 
       // ----------------------------- Paging -----------------------------
       pageLimitList: [],
@@ -301,6 +376,25 @@ export default {
     },
 
     //------------------------------------------- Click row -------------------------------------------
+    btnShowFormChooseAsset() {
+      this.isShowFormChooseAsset = true;
+    },
+
+    //------------------------------------------- Click row -------------------------------------------
+    btnAddReceiver() {
+      this.listReceivers++;
+    },
+
+    btnDeleteReceiver() {
+      this.listReceivers--;
+    },
+
+    showFormReceiver() {
+      this.isCreateReceiver = !this.isCreateReceiver;
+      this.listReceivers = 1;
+    },
+
+    //------------------------------------------- Click row -------------------------------------------
 
     /**
      * Thực hiện call hàm rowOnClick từ file js để bôi xanh 1 dòng nếu click vào dòng đó
@@ -323,13 +417,17 @@ export default {
       this.selectedRows = [];
       this.selectedRowsByCheckBox = [];
     },
-
+    
+    //------------------------------------------- Form-------------------------------------------
     /**
      * Đóng form, gửi thông tin về cho component cha để đóng nó
      * Author: LDTUAN (21/08/2023)
      */
     btnCloseForm() {
       this.$emit("onCloseForm");
+    },
+    onCloseForm() {
+      this.isShowFormChooseAsset = false;
     },
   },
 };
@@ -388,11 +486,16 @@ export default {
 .body__content {
   display: flex;
   flex-direction: column;
-  min-height: 150px;
   background-color: var(--background-color-asset-transfer-form);
   padding: 20px 20px 20px 28px;
   margin-top: 20px;
   box-sizing: border-box;
+}
+
+.content--top {
+  display: flex;
+  flex-direction: column;
+  min-height: 100px;
 }
 
 .content__row {
@@ -411,6 +514,56 @@ export default {
   display: flex;
   align-items: center;
   column-gap: 10px;
+}
+
+/* ------------------------------------------- Body content bot ------------------------------------------- */
+.content--bot__row {
+  display: flex;
+  flex-direction: column;
+  row-gap: 13px;
+}
+
+.row--form {
+  display: flex;
+  flex-direction: column;
+  row-gap: 13px;
+  max-height: 83px;
+  overflow-y: auto;
+}
+
+.content--bot__header {
+  margin-top: 20px;
+}
+
+.content--bot__header .content__column {
+  margin-left: 10px;
+}
+
+.row--bot {
+  display: grid;
+  grid-template-columns: 38px repeat(3, 1.5fr) 1fr;
+  column-gap: 15px;
+}
+
+.number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-color: #afafaf;
+}
+
+.combo-icon {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-left: 20px;
+  column-gap: 20px;
+}
+
+.content--bot__body .content__column {
+  margin-left: 10px;
 }
 
 /* ------------------------------------------- Body Action ------------------------------------------- */

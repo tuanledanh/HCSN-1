@@ -1,4 +1,4 @@
-﻿using Application.DTO.Depart;
+﻿using Application.DTO;
 using Application.Interface;
 using AutoMapper;
 using Domain.Entity;
@@ -10,7 +10,7 @@ using MSIA.WebFresher052023.Domain.Interface.Repository;
 
 namespace Application.Service
 {
-    public class DepartmentService : BaseService<Department, DepartmentModel, DepartmentDto, DepartmentCreateDto, DepartmentUpdateDto>, IDepartmentService
+    public class DepartmentService : BaseService<Department, DepartmentModel, DepartmentDto, DepartmentCreateDto, DepartmentUpdateDto, DepartmentUpdateMultiDto>, IDepartmentService
     {
         #region Fields
         private readonly IDepartmentManager _departmentManager; 

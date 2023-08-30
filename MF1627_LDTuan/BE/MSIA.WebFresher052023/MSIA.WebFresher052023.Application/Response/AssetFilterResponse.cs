@@ -1,4 +1,4 @@
-﻿using Application.DTO.FixedAssett;
+﻿using Application.DTO;
 using MSIA.WebFresher052023.Application.Response.Base;
 
 namespace MSIA.WebFresher052023.Application.Response

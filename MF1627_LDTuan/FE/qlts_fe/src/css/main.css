@@ -13,7 +13,10 @@ body{
     font-family: 'Roboto', sans-serif;
     font-size: 13px;
     font-weight: 400;
-    box-sizing: border-box;
+}
+
+*{
+  box-sizing: border-box;
 }
 
 input[type="checkbox"] {

@@ -1,23 +1,17 @@
-﻿using Application.DTO.FixedAssett;
+﻿using Application.DTO;
 using Application.Interface;
 using AutoMapper;
 using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Spreadsheet;
-using DocumentFormat.OpenXml.Vml.Office;
 using Domain.Entity;
-using Domain.Exceptions;
 using Domain.Model;
-using FastMember;
 using Microsoft.AspNetCore.Mvc;
 using MSIA.WebFresher052023.API.Controllers.Base;
-using System.Data;
-using static Dapper.SqlMapper;
 
 namespace API.Controllers
 {
     [Route("api/v1/[controller]")]
     [ApiController]
-    public class FixedAssetController : BaseController<FixedAsset, FixedAssetModel, FixedAssetDto, FixedAssetCreateDto, FixedAssetUpdateDto>
+    public class FixedAssetController : BaseController<FixedAsset, FixedAssetModel, FixedAssetDto, FixedAssetCreateDto, FixedAssetUpdateDto, FixedAssetUpdateMultiDto>
     {
         private readonly IFixedAssetService _fixedAssetService;
 
@@ -65,6 +59,20 @@ namespace API.Controllers
                     return result;
                 }
             }
+        }
+
+        [HttpPost("insertMulti")]
+        public async Task<ActionResult> InsertMulti([FromBody] List<FixedAssetCreateDto> fixedAssetCreateDtos)
+        {
+            var result = await _fixedAssetService.InsertMultiAsync(fixedAssetCreateDtos);
+            return StatusCode(StatusCodes.Status200OK, result);
+        }
+
+        [HttpPut("updateMulti")]
+        public async Task<ActionResult> UpdateMulti([FromBody] List<FixedAssetUpdateMultiDto> fixedAssetUpdateMultipleDtos)
+        {
+            var result = await _fixedAssetService.UpdateMultiAsync(fixedAssetUpdateMultipleDtos);
+            return StatusCode(StatusCodes.Status200OK, result);
         }
     }
 }

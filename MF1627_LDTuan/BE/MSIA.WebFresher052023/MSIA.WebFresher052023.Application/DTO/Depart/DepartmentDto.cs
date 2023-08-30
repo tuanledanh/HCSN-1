@@ -1,4 +1,4 @@
-﻿namespace Application.DTO.Depart
+﻿namespace Application.DTO
 {
     public class DepartmentDto
     {
