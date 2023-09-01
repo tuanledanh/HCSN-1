@@ -35,6 +35,9 @@ namespace Domain.Model
         /// Created by: ldtuan (28/08/2023)
         public string Description { get; set; }
 
+        public List<FixedAssetModel>? FixedAssets { get; set; }
+        public List<TransferAssetDetailModel>? TransferAssetDetail { get; set; }
+
         /// <summary>
         /// Nhận được giá trị của thuộc tính khóa trong một đối tượng cụ thể 
         /// mà không cần truy cập trực tiếp vào thuộc tính đó, TEntity có thể xài để lấy đc id

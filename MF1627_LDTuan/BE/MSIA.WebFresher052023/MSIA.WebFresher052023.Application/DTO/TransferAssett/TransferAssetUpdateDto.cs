@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MSIA.WebFresher052023.Domain.Entity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,29 +11,16 @@ namespace Application.DTO
     public class TransferAssetUpdateDto
     {
         #region Fields
-        /// <summary>
-        /// Mã chứng từ
-        /// </summary>
-        /// Created by: ldtuan (27/08/2023)
-        public string TransferAssetCode { get; set; }
+        // dữ liệu của chứng từ
+        [Required]
+        public TransferAsset? TransferAsset { get; set; }
 
-        /// <summary>
-        /// Ngày điều chuyển
-        /// </summary>
-        /// Created by: ldtuan (27/08/2023)
-        public DateTime TransferDate { get; set; }
+        // danh sách dữ liệu của tài sản thuộc chứng từ
+        [Required]
+        public List<TransferAssetDetailUpdateDto>? ListTransferAssetDetail { get; set; }
 
-        /// <summary>
-        /// Ngày chứng từ
-        /// </summary>
-        /// Created by: ldtuan (27/08/2023)
-        public DateTime TransactionDate { get; set; }
-
-        /// <summary>
-        /// Lý do điều chuyển
-        /// </summary>
-        /// Created by: ldtuan (27/08/2023)
-        public string Description { get; set; }
+        // danh sách dữ liệu của ban giao nhận
+        public List<ReceiverUpdateDto>? ListReceiver { get; set; }
         #endregion
     }
 }

@@ -6,6 +6,7 @@ using Domain.Model;
 using MSIA.WebFresher052023.Application.Service.Base;
 using MSIA.WebFresher052023.Domain.Entity;
 using MSIA.WebFresher052023.Domain.Entity.Base;
+using MSIA.WebFresher052023.Domain.Enum;
 using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Manager;
 using MSIA.WebFresher052023.Domain.Interface.Repository;
@@ -36,46 +37,38 @@ namespace Application.Service
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Thêm mới chứng từ, bên người nhận, danh sách chi tiết chứng từ
+        /// </summary>
+        /// <param name="transferAssetCreateDto">Thông tin chứng từ mới, danh sách bên người nhận và chi tiết chứng từ cần thêm mới</param>
+        /// Created by: ldtuan (30/08/2023)
         public override async Task<bool> InsertAsync(TransferAssetCreateDto transferAssetCreateDto)
         {
-            // Check tài sản điều chuyển, chi tiết tài sản điều chuyển, bên giao nhận xem có null không
-            if (transferAssetCreateDto.TransferAsset == null || transferAssetCreateDto.ListTransferAssetDetail == null)
-            {
-                throw new NotFoundException();
-            }
+            #region Validate
+            // ======================================================= VALIDATE START =======================================================
+            // 1.Check tài sản điều chuyển, chi tiết tài sản điều chuyển, bên giao nhận xem có null không
+            _transferAssetManager.CheckNullRequest(transferAssetCreateDto.TransferAsset, transferAssetCreateDto.ListTransferAssetDetail);
 
             var transferAssetDto = transferAssetCreateDto.TransferAsset;
             await _transferAssetManager.CheckDuplicateCode(transferAssetDto.TransferAssetCode);
-            // Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
-            if (transferAssetDto.TransferDate < transferAssetDto.TransactionDate)
-            {
-                throw new Exception();
-            }
+            // 2.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
+            _transferAssetManager.CheckDate(transferAssetDto);
 
-            var listTransferAssetDetailDtos = transferAssetCreateDto.ListTransferAssetDetail;
+            var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(transferAssetCreateDto.ListTransferAssetDetail);
 
-            // Kiểm tra xem các tài sản có bị trùng và có tồn tại trong db không
-            var uniqueFixedAsset = listTransferAssetDetailDtos.Select(transfer => transfer.FixedAssetId).Distinct().ToList();
-            var fixedAssetInDB = await _fixedAssetRepository.GetCountItemInListAsync(uniqueFixedAsset);
-            if(uniqueFixedAsset.Count != listTransferAssetDetailDtos.Count || fixedAssetInDB != listTransferAssetDetailDtos.Count)
-            {
-                throw new DataException();
-            }
+            // 3.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
+            await _transferAssetManager.CheckExistAsset(listTransferAssetDetails);
+            // ======================================================= VALIDATE END  =======================================================
+            #endregion
 
-            // Kiểm tra xem các phòng ban mới và cũ có tồn tại trong db hay không
-            // Select many để gộp 2 tập hợp con old và new lại
-            var uniqueDepartment = listTransferAssetDetailDtos.SelectMany(transfer => new[] { transfer.OldDepartmentId, transfer.NewDepartmentId }).Distinct().ToList();
-            var departmentsInDB = await _departmentRepository.GetCountItemInListAsync(uniqueDepartment);
-            if (uniqueDepartment.Count != departmentsInDB)
-            {
-                throw new DataException();
-            }
-
-            // Bắt đầu insert
+            #region Create-Update-Delete
+            // ======================================================= CREATE START  =======================================================
+            // 1.Bắt đầu thêm mới
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                // Thêm mới tài sản điều chuyển
+                // 1.1.Thêm mới tài sản điều chuyển
                 var transferAsset = _mapper.Map<TransferAsset>(transferAssetDto);
                 transferAsset.CreatedDate = DateTime.Now;
                 transferAsset.ModifiedDate = DateTime.Now;
@@ -83,7 +76,7 @@ namespace Application.Service
 
                 await _transferAssetRepository.InsertAsync(transferAsset);
 
-                // Thêm nhiều bên giao nhận
+                // 1.2.Thêm nhiều bên giao nhận
                 var listReceiverDtos = transferAssetCreateDto.ListReceiver;
                 if (listReceiverDtos != null)
                 {
@@ -93,9 +86,8 @@ namespace Application.Service
                     await _receiverRepository.InsertMultiAsync(receivers);
                 }
 
-                // Thêm chi tiết điều chuyển tài sản
-                List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map<List<TransferAssetDetail>>(listTransferAssetDetailDtos);
-                List<TransferAssetDetail> transferAssetDetails = InitializeEntities(transferAssetDetailsRaw, transferAsset);
+                // 1.3.Thêm chi tiết điều chuyển tài sản
+                List<TransferAssetDetail> transferAssetDetails = InitializeEntities(listTransferAssetDetails, transferAsset);
 
                 await _transferAssetDetailRepository.InsertMultiAsync(transferAssetDetails);
 
@@ -107,11 +99,155 @@ namespace Application.Service
                 await _unitOfWork.RollbackAsync();
                 return false;
             }
+            // ======================================================= CREATE END  ======================================================= 
+            #endregion
         }
 
+        /// <summary>
+        /// Hàm cập nhật chứng từ, sửa đổi bên người nhận và danh sách chi tiết chứng từ
+        /// </summary>
+        /// <param name="transferAssetId">Id của chứng từ cần cập nhật</param>
+        /// <param name="transferAssetUpdateDto">Thông tin chứng từ mới, danh sách bên người nhận và chi tiết chứng từ cần sửa đổi</param>
+        /// <exception cref="DataException">Lỗi dữ liệu truyền vào</exception>
+        /// Created by: ldtuan (30/08/2023)
+        public override async Task<bool> UpdateAsync(Guid transferAssetId, TransferAssetUpdateDto transferAssetUpdateDto)
+        {
+            #region Validate
+            // ======================================================= VALIDATE START =======================================================
+            // 1.Kiểm tra xem trong db có tồn tại chứng từ này hay không
+            var oldTransferAsset = await _transferAssetRepository.GetAsync(transferAssetId) ?? throw new DataException();
+            if (transferAssetUpdateDto == null) throw new DataException();
+
+            // 2.Check tài sản điều chuyển, chi tiết tài sản điều chuyển, bên giao nhận xem có null không
+            _transferAssetManager.CheckNullRequest(transferAssetUpdateDto.TransferAsset, transferAssetUpdateDto.ListTransferAssetDetail);
+
+            var transferAssetDto = transferAssetUpdateDto.TransferAsset;
+            await _transferAssetManager.CheckDuplicateCode(transferAssetDto.TransferAssetCode, oldTransferAsset.TransferAssetCode);
+            // 3.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
+            _transferAssetManager.CheckDate(transferAssetDto);
+
+            // 4.Sau khi check không null thì bắt đầu lấy danh sách tài sản điều chuyển và bên người nhận
+            var listTransferAssetDeatilDtos = transferAssetUpdateDto.ListTransferAssetDetail.ToList();
+            var listReceiverDtos = transferAssetUpdateDto.ListReceiver.ToList();
+
+            // 5.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
+            var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(listTransferAssetDeatilDtos);
+            await _transferAssetManager.CheckExistAsset(listTransferAssetDetails);
+
+            // 6.Kiểm tra xem danh sách chi tiết chứng từ có tồn tại trong db hay không, áp dụng với cập nhật và xóa
+            var listTransferAssetDetailIds = listTransferAssetDeatilDtos
+                .Where(transfer => transfer.Flag == ActionMode.Update || transfer.Flag == ActionMode.Delete)
+                .Select(transfer => transfer.TransferAssetDetailId)
+                .Distinct()
+                .ToList();
+            var listTransferAssetDetailInDB = await _transferAssetDetailRepository.GetListByIdsAsync(listTransferAssetDetailIds);
+            if (listTransferAssetDetailInDB.Count != listTransferAssetDetailIds.Count)
+            {
+                throw new DataException();
+            }
+            // ======================================================= VALIDATE END  =======================================================
+            #endregion
+
+            #region Create-Update-Delete
+            // ======================================================= CREATE-UPDATE-DELETE START  =======================================================
+            // 1.Danh sách tài sản điều chuyển create-update-delete
+            var transferDtosCreate = listTransferAssetDeatilDtos.Where(transfer => transfer.Flag == ActionMode.Create).ToList();
+            var transferDtosUpdate = listTransferAssetDeatilDtos.Where(transfer => transfer.Flag == ActionMode.Update).ToList();
+            var transferDtosDelete = listTransferAssetDeatilDtos.Where(transfer => transfer.Flag == ActionMode.Delete).ToList();
+
+            // 2.Danh sách người nhận create-update-delete
+            List<ReceiverUpdateDto> receiverDtosCreate = new();
+            List<ReceiverUpdateDto> receiverDtosUpdate = new();
+            List<ReceiverUpdateDto> receiverDtosDelete = new();
+            if (listReceiverDtos != null)
+            {
+                receiverDtosCreate = listReceiverDtos.Where(receiver => receiver.Flag == ActionMode.Create).ToList();
+                receiverDtosUpdate = listReceiverDtos.Where(receiver => receiver.Flag == ActionMode.Update).ToList();
+                receiverDtosDelete = listReceiverDtos.Where(receiver => receiver.Flag == ActionMode.Delete).ToList();
+            }
+
+            // 3.Bắt đầu thêm-sửa-xóa
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                // Cập nhật chứng từ
+                var transferAsset = _mapper.Map(transferAssetDto, oldTransferAsset);
+                transferAsset.SetKey(transferAssetId);
+                transferAsset.ModifiedDate = DateTime.Now;
+
+                await _transferAssetRepository.UpdateAsync(transferAsset);
+
+                // 3.1.Thêm người nhận và chi tiết chứng từ
+                if (transferDtosCreate != null)
+                {
+                    List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map<List<TransferAssetDetail>>(transferDtosCreate);
+                    List<TransferAssetDetail> transferAssetDetails = InitializeEntities(transferAssetDetailsRaw, transferAsset);
+
+                    await _transferAssetDetailRepository.InsertMultiAsync(transferAssetDetails);
+                }
+
+                if (receiverDtosCreate != null)
+                {
+                    List<Receiver> receiversRaw = _mapper.Map<List<Receiver>>(receiverDtosCreate);
+                    List<Receiver> receivers = InitializeEntities(receiversRaw, transferAsset);
+
+                    await _receiverRepository.InsertMultiAsync(receivers);
+                }
+
+                // 3.2.Sửa người nhận và chi tiết chứng từ
+                if (transferDtosUpdate != null)
+                {
+                    List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map<List<TransferAssetDetail>>(transferDtosUpdate);
+                    List<TransferAssetDetail> transferAssetDetails = InitializeEntities(transferAssetDetailsRaw);
+
+                    await _transferAssetDetailRepository.UpdateMultiAsync(transferAssetDetails);
+                }
+
+                if (receiverDtosUpdate != null)
+                {
+                    List<Receiver> receiversRaw = _mapper.Map<List<Receiver>>(receiverDtosUpdate);
+                    List<Receiver> receivers = InitializeEntities(receiversRaw);
+
+                    await _receiverRepository.UpdateMultiAsync(receivers);
+                }
+
+                // 3.3.Xóa người nhận và chi tiết chứng từ
+                if (transferDtosDelete != null)
+                {
+                    List<TransferAssetDetail> transferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(transferDtosDelete);
+
+                    await _transferAssetDetailRepository.DeleteManyAsync(transferAssetDetails);
+                }
+
+                if (receiverDtosDelete != null)
+                {
+                    List<Receiver> receivers = _mapper.Map<List<Receiver>>(receiverDtosDelete);
+
+                    await _receiverRepository.DeleteManyAsync(receivers);
+                }
+
+                await _unitOfWork.CommitAsync();
+                return true;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                return false;
+            }
+            // ======================================================= CREATE-UPDATE-DELETE END  =======================================================
+            #endregion
+        }
+
+        /// <summary>
+        /// Thêm ngày tạo, ngày sửa, id cho danh sách bản ghi truyền vào
+        /// </summary>
+        /// <param name="entitiesRaw">Danh sách bản ghi</param>
+        /// <param name="transferAsset">Chứng từ tài sản</param>
+        /// <returns>Danh sách sau khi sửa 1 vài thuộc tính</returns>
+        /// Created by: ldtuan (30/08/2023)
         private static List<T> InitializeEntities<T>(List<T> entitiesRaw, TransferAsset? transferAsset) where T : BaseEntity, IHasKey
         {
-            List<T> entities = new List<T>();
+            List<T> entities = new();
 
             foreach (var entity in entitiesRaw)
             {
@@ -130,6 +266,26 @@ namespace Application.Service
                         transferAssetDetail.TransferAssetId = transferAsset.TransferAssetId;
                     }
                 }
+                entities.Add(entity);
+            }
+
+            return entities;
+        }
+
+        /// <summary>
+        /// Thêm ngày sửa cho danh sách bản ghi truyền vào (trường hợp update)
+        /// </summary>
+        /// <param name="entitiesRaw">Danh sách bản ghi</param>
+        /// <returns>Danh sách sau khi sửa 1 vài thuộc tính</returns>
+        /// Created by: ldtuan (31/08/2023)
+        private static List<T> InitializeEntities<T>(List<T> entitiesRaw) where T : BaseEntity
+        {
+            List<T> entities = new();
+
+            foreach (var entity in entitiesRaw)
+            {
+                entity.ModifiedDate = DateTime.Now;
+
                 entities.Add(entity);
             }
 
