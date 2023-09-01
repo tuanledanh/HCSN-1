@@ -1,4 +1,7 @@
-﻿namespace Application.DTO
+﻿using MSIA.WebFresher052023.Application.DTO;
+using MSIA.WebFresher052023.Domain.Model;
+
+namespace Application.DTO
 {
     public class TransferAssetDto
     {
@@ -31,6 +34,18 @@
         /// </summary>
         /// Created by: ldtuan (27/08/2023)
         public string Description { get; set; }
+
+        /// <summary>
+        /// Nguyên giá của tài sản trong chứng từ
+        /// </summary>
+        /// Created by: ldtuan (01/09/2023)
+        public int? Cost { get; set; }
+
+        /// <summary>
+        /// Danh sách tài sản cùng phòng ban từ chi tiết chứng từ
+        /// </summary>
+        /// Created by: ldtuan (01/09/2023)
+        public List<FixedAssetTransferDto>? FixedAssetTranfers { get; set; }
         #endregion
     }
 }

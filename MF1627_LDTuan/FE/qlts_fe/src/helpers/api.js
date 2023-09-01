@@ -24,6 +24,13 @@ const baseDepartmentAxios = axios.create({
   baseURL: baseDepartmentApi,
 });
 
+// Tên url của chứng từ điều chuyển tài sản
+const baseTransferAssetApi = baseURL + "TransferAsset";
+// Tạo axios cho chứng từ điều chuyển tài sản
+const baseTransferAssetAxios = axios.create({
+  baseURL: baseTransferAssetApi,
+});
+
 // Các api của tài sản
 const MISAApi = {
   FixedAsset: {
@@ -79,6 +86,24 @@ const MISAApi = {
     // Api lấy tất cả bản ghi
     GetAll: () => baseDepartmentAxios.get(""),
   },
+  TransferAsset:{
+    Api: baseTransferAssetApi,
+    /**
+     * Api filter, lọc, phân trang
+     * @param {Int16Array} pageNumber số trang đang ở
+     * @param {Int16Array} pageLimit số bản ghi tối đa mỗi trang
+     * @param {string} filterName mã code để tìm kiếm
+     * @returns 
+     */
+    Filter: (pageNumber, pageLimit, filterName) =>
+      baseTransferAssetAxios.get("", {
+        params: {
+          pageNumber,
+          pageLimit,
+          filterName
+        },
+      }),
+  }
 };
 
 export default MISAApi;

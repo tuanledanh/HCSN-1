@@ -1,8 +1,9 @@
-﻿using Domain.Model;
+﻿using Application.DTO;
+using Domain.Model;
 
-namespace MSIA.WebFresher052023.Domain.Model
+namespace MSIA.WebFresher052023.Application.DTO
 {
-    public class FixedAssetTransferModel
+    public class FixedAssetTransferDto
     {
         /// <summary>
         /// Id của tài sản
@@ -52,6 +53,6 @@ namespace MSIA.WebFresher052023.Domain.Model
         /// Created by: ldtuan (27/08/2023)
         public string Description { get; set; }
 
-        public TransferAssetModel TransferAsset { get; set; }
+        public TransferAssetDto TransferAsset { get; set; }
     }
 }

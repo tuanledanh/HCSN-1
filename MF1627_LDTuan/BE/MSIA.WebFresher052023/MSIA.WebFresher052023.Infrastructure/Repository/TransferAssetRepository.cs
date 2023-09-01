@@ -19,6 +19,7 @@ namespace Infrastructure.Repository
         }
         #endregion
 
+        #region Methods
         /// <summary>
         /// Hàm chung cho việc lấy object theo mã code
         /// </summary>
@@ -26,7 +27,7 @@ namespace Infrastructure.Repository
         /// <param name="code">Mã code cần kiểm tra</param>
         /// <returns>Một đối tượng</returns>
         /// Created by: ldtuan (20/07/2023)
-        public override async Task<TransferAssetModel> FindByCodeAsync(string code)
+        public override async Task<TransferAssetModel?> FindByCodeAsync(string code)
         {
             var tableName = TableName;
             string procedureName = "Proc_Get" + tableName + "ByCode";
@@ -40,7 +41,7 @@ namespace Infrastructure.Repository
                     procedureName,
                     (fixedAssetTransferModel, transferAssetModel) =>
                     {
-                        fixedAssetTransferModel.TransferAssetModel = transferAssetModel;
+                        fixedAssetTransferModel.TransferAsset = transferAssetModel;
                         return fixedAssetTransferModel;
                     },
                     dynamicParams,
@@ -52,11 +53,19 @@ namespace Infrastructure.Repository
                                                 // và mọi thứ khác từ cột đó trở đi sẽ được ánh xạ tới tham số đầu vào thứ hai transferAssetModel
                     transaction: _unitOfWork.Transaction
                 );
-            var transferAsset = new TransferAssetModel();
-            transferAsset = results.FirstOrDefault().TransferAssetModel;
-            transferAsset.FixedAssetTranfers = new List<FixedAssetTransferModel>();
-            transferAsset.FixedAssetTranfers.AddRange(results);
-            return transferAsset;
+            if (results != null && results.Any())
+            {
+                var transferAsset = new TransferAssetModel();
+                transferAsset = results.FirstOrDefault().TransferAsset;
+                transferAsset.FixedAssetTranfers = new List<FixedAssetTransferModel>();
+                transferAsset.FixedAssetTranfers.AddRange(results);
+                return transferAsset;
+            }
+            else
+            {
+                return null;
+            }
         }
+        #endregion
     }
 }

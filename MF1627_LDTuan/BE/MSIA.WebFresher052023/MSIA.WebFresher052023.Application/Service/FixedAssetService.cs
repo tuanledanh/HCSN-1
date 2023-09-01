@@ -64,12 +64,7 @@ namespace Application.Service
             int totalPages = Convert.ToInt32(Math.Ceiling((double)totalRecords / (double)pageLimit));
 
             entities = await _assetRepository.GetFilterSearchAsync(pageNumber, pageLimit, filterName, departmentIdString, assetTypeIdString);
-            List<FixedAssetDto> entitiesDto = new List<FixedAssetDto>();
-            foreach (var entity in entities)
-            {
-                entitiesDto.Add(_mapper.Map<FixedAssetDto>(entity));
-            }
-
+            List<FixedAssetDto> entitiesDto = _mapper.Map<List<FixedAssetDto>>(entities);
             var filterData = new BaseFilterResponse<FixedAssetDto>(totalPages, totalRecords, entitiesDto);
             return filterData;
         }

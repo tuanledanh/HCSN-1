@@ -93,55 +93,55 @@
           <div class="body-data relative">
             <div
               class="body--row row"
-              v-for="asset in assets"
-              :key="asset.FixedAssetId"
-              :class="{ 'row--selected': selectedRows.includes(asset) }"
-              @click.exact.stop="callRowOnClick(asset)"
-              @click.ctrl.stop="callRowOnCtrlClick(asset)"
+              v-for="transferAsset in transferAssets"
+              :key="transferAsset.TransferAssetId"
+              :class="{ 'row--selected': selectedRows.includes(transferAsset) }"
+              @click.exact.stop="callRowOnClick(transferAsset)"
+              @click.ctrl.stop="callRowOnCtrlClick(transferAsset)"
             >
               <div
                 class="cell display--center-center border--right border--bottom"
-                @click.stop="callRowOnClickByCheckBox(asset)"
+                @click.stop="callRowOnClickByCheckBox(transferAsset)"
               >
                 <input
                   type="checkbox"
-                  :checked="selectedRowsByCheckBox.includes(asset)"
+                  :checked="selectedRowsByCheckBox.includes(transferAsset)"
                 />
               </div>
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ assets.indexOf(asset) + 1 }}
+                {{ transferAssets.indexOf(transferAsset) + 1 }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ transferAsset.TransferAssetCode }}
               </div>
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ asset.FixedAssetName }}
+                {{ transferAsset.TransferDate }}
               </div>
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ asset.FixedAssetName }}
+                {{ transferAsset.TransactionDate }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ transferAsset.Cost }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ transferAsset.FixedtransferAssetName }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ transferAsset.Description }}
               </div>
               <div class="cell display--center-center border--bottom">
                 <div class="icon-function">
@@ -377,7 +377,7 @@ export default {
     return {
       // ----------------------------- Data -----------------------------
       // Danh sách bản ghi
-      assets: [],
+      transferAssets: [],
       // Danh sách các bản ghi đã chọn
       selectedRows: [],
       // Index của bản ghi đầu tiên trong danh sách
@@ -438,9 +438,10 @@ export default {
   methods: {
     // load data tạm thời
     loadData() {
-      this.$_MISAApi.FixedAsset.Filter(1, 15, null, null, null)
+      this.$_MISAApi.TransferAsset.Filter(1, 20, null)
         .then((res) => {
-          this.assets = res.data.Data;
+          this.transferAssets = res.data.Data;
+          console.log(this.transferAssets);
         })
         .catch((res) => {
           console.log(res);
@@ -455,15 +456,15 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     callRowOnClick(asset) {
-      rowOnClick.call(this, asset);
+      rowOnClick.call(this, asset, 'transferAssets');
     },
 
     callRowOnClickByCheckBox(asset) {
-      rowOnClickByCheckBox.call(this, asset);
+      rowOnClickByCheckBox.call(this, asset, 'transferAssets');
     },
 
     callRowOnCtrlClick(asset) {
-      rowOnCtrlClick.call(this, asset);
+      rowOnCtrlClick.call(this, asset, 'transferAssets');
     },
 
     btnUncheckedAll() {

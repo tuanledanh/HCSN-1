@@ -36,6 +36,16 @@ namespace Domain.Model
         /// Created by: ldtuan (28/08/2023)
         public string Description { get; set; }
 
+        /// <summary>
+        /// Nguyên giá của tài sản trong chứng từ
+        /// </summary>
+        /// Created by: ldtuan (01/09/2023)
+        public int? Cost { get; set; }
+
+        /// <summary>
+        /// Danh sách tài sản cùng phòng ban từ chi tiết chứng từ
+        /// </summary>
+        /// Created by: ldtuan (01/09/2023)
         public List<FixedAssetTransferModel>? FixedAssetTranfers { get; set; }
 
         /// <summary>

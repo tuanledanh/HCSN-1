@@ -1,8 +1,11 @@
 ﻿using Application.DTO;
 using Application.Interface;
 using AutoMapper;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.Exceptions;
 using Domain.Model;
+using MSIA.WebFresher052023.Application.DTO;
+using MSIA.WebFresher052023.Application.Response.Base;
 using MSIA.WebFresher052023.Application.Service.Base;
 using MSIA.WebFresher052023.Domain.Entity;
 using MSIA.WebFresher052023.Domain.Entity.Base;
@@ -37,6 +40,41 @@ namespace Application.Service
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Gọi đến hàm GetAsync ở repository để xử lý lấy thông tin của bản ghi
+        /// </summary>
+        /// <param name="code">Mã code của bản ghi</param>
+        /// <returns>Một bản ghi</returns>
+        /// Created by: ldtuan (12/07/2023)
+        public override async Task<TransferAssetDto> GetAsync(string code)
+        {
+            var transferAsset = await _baseReadOnlyRepository.FindByCodeAsync(code);
+            var transferAssetDto = _mapper.Map<TransferAssetDto>(transferAsset);
+
+            var transferDetails = transferAsset.FixedAssetTranfers;
+            var transferDetailDtos = _mapper.Map<List<FixedAssetTransferDto>>(transferDetails);
+            transferAssetDto.FixedAssetTranfers = new List<FixedAssetTransferDto>();
+            transferAssetDto.FixedAssetTranfers.AddRange(transferDetailDtos);
+
+            return transferAssetDto;
+        }
+
+        public async Task<BaseFilterResponse<TransferAssetDto>> GetAllCustomAsync(int? pageNumber, int? pageLimit, string filterName)
+        {
+            List<TransferAssetModel> entities;
+            pageNumber = pageNumber.HasValue ? pageNumber : 1;
+            pageLimit = pageLimit.HasValue ? pageLimit : 20;
+            filterName = string.IsNullOrEmpty(filterName) ? "" : filterName;
+
+            int totalRecords = await _transferAssetRepository.GetCountAsync();
+            int totalPages = Convert.ToInt32(Math.Ceiling((double)totalRecords / (double)pageLimit));
+
+            entities = await _transferAssetRepository.GetFilterAsync(pageNumber, pageLimit, filterName);
+            List<TransferAssetDto> entitiesDto = _mapper.Map<List<TransferAssetDto>>(entities);
+            var filterData = new BaseFilterResponse<TransferAssetDto>(totalPages, totalRecords, entitiesDto);
+            return filterData;
+        }
 
         /// <summary>
         /// Thêm mới chứng từ, bên người nhận, danh sách chi tiết chứng từ
