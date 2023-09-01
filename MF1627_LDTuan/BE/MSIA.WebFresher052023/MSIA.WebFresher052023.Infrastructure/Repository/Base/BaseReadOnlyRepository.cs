@@ -80,19 +80,12 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         /// Created by: ldtuan (17/07/2023)
         public virtual async Task<TModel?> FindByCodeAsync(string code)
         {
-            var entity = await GetByCodeAsync<TModel>(code);
-            return entity;
-        }
-
-        /// <summary>
-        /// Lấy thông tin của bản ghi dựa vào mã, dùng để check trùng
-        /// </summary>
-        /// <param name="code">Mã của bản ghi</param>
-        /// <returns>Một bản ghi</returns>
-        /// Created by: ldtuan (17/07/2023)
-        public virtual async Task<TEntity?> GetByCodeAsync(string code)
-        {
-            var entity = await GetByCodeAsync<TEntity>(code);
+            var tableName = TableName;
+            string procedureName = "Proc_Get" + tableName + "ByCode";
+            var paramName = "p_Code";
+            var dynamicParams = new DynamicParameters();
+            dynamicParams.Add(paramName, code);
+            var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TModel>(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entity;
         }
 
@@ -129,25 +122,6 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             };
             var entities = await _unitOfWork.Connection.QueryAsync<TModel>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entities.ToList();
-        }
-
-
-        /// <summary>
-        /// Hàm chung cho việc lấy object theo mã code
-        /// </summary>
-        /// <typeparam name="T">Loại đối tượng muốn trả về</typeparam>
-        /// <param name="code">Mã code cần kiểm tra</param>
-        /// <returns>Một đối tượng</returns>
-        /// Created by: ldtuan (20/07/2023)
-        public virtual async Task<T?> GetByCodeAsync<T>(string code)
-        {
-            var tableName = TableName;
-            string procedureName = "Proc_Get" + tableName + "ByCode";
-            var paramName = "p_Code";
-            var dynamicParams = new DynamicParameters();
-            dynamicParams.Add(paramName, code);
-            var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<T>(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
-            return entity;
         }
 
         /// <summary>
