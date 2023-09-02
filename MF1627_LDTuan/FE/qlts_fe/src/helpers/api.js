@@ -103,6 +103,8 @@ const MISAApi = {
           filterName
         },
       }),
+      // Api lấy bản ghi bằng mã code
+    GetByCode: (code) => baseTransferAssetAxios.get(`/${code}`),
   }
 };
 

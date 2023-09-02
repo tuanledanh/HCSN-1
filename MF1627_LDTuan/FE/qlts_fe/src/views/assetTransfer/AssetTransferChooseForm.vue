@@ -41,7 +41,7 @@
                 Tên tài sản
               </div>
               <div
-                class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
+                class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
               >
                 Bộ phận sử dụng
               </div>
@@ -51,12 +51,12 @@
                 Nguyên giá
               </div>
               <div
-                class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
+                class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
               >
                 Giá trị còn lại
               </div>
               <div
-                class="header cell display--center-center font-weight--700 border--right border--bottom"
+                class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
               >
                 Năm theo dõi
               </div>
@@ -88,33 +88,57 @@
                 <div
                   class="cell display--center-left border--right border--bottom padding--left-10"
                 >
-                  {{ asset.FixedAssetName }}
+                  {{ asset.FixedAssetCode }}
                 </div>
                 <div
                   class="cell display--center-left border--right border--bottom padding--left-10"
                 >
-                  {{ asset.FixedAssetName }}
-                </div>
-                <div
-                  class="cell display--center-right border--right border--bottom padding--right-10"
-                >
-                  {{ asset.FixedAssetName }}
-                </div>
-                <div
-                  class="cell display--center-right border--right border--bottom padding--right-10"
-                >
-                  {{ asset.FixedAssetName }}
+                  <el-tooltip
+                    v-if="asset.FixedAssetName.length > 20"
+                    :visible="visible"
+                    placement="right"
+                  >
+                    <template #content>
+                      <span>{{ asset.FixedAssetName }}</span>
+                    </template>
+                    <span>{{ truncateText(asset.FixedAssetName, 20) }}</span>
+                  </el-tooltip>
+                  <span v-else>{{
+                    truncateText(asset.FixedAssetName, 20)
+                  }}</span>
                 </div>
                 <div
                   class="cell display--center-left border--right border--bottom padding--left-10"
                 >
-                  {{ asset.FixedAssetName }}
+                  <el-tooltip
+                    v-if="asset.DepartmentName.length > 20"
+                    :visible="visible"
+                    placement="right"
+                  >
+                    <template #content>
+                      <span>{{ asset.DepartmentName }}</span>
+                    </template>
+                    <span>{{ truncateText(asset.DepartmentName, 20) }}</span>
+                  </el-tooltip>
+                  <span v-else>{{
+                    truncateText(asset.DepartmentName, 20)
+                  }}</span>
+                </div>
+                <div
+                  class="cell display--center-right border--right border--bottom padding--right-10"
+                >
+                  {{ formatMoney(asset.Cost) }}
+                </div>
+                <div
+                  class="cell display--center-right border--right border--bottom padding--right-10"
+                >
+                  {{ AssetDepreciation(asset.Cost, asset.LifeTime) }}
                 </div>
                 <div
                   id="cell"
-                  class="cell display--center-center border--right border--bottom"
+                  class="cell display--center-right border--right border--bottom padding--right-10"
                 >
-                  {{ asset.FixedAssetName }}
+                  {{ asset.TrackedYear }}
                 </div>
               </div>
             </div>
@@ -137,20 +161,19 @@
           <div class="content__row--child">
             <div class="content__column">
               <MISACombobox
-                  :api="this.$_MISAApi.Department.Api"
-                  propText="DepartmentName"
-                  propValue="DepartmentId"
-                  label="Bộ phận sử dụng mới"
-                  required
-                  placeholder="Bộ phận sử dụng"
-                  @filter="getDepartmentFilter"
-                  :inputChange="inputDepartmentNameChange"
-                  isDisplay
-                  self_adjust_size
-                  medium
-                  padding
-                  input_35
-                ></MISACombobox>
+                :api="this.$_MISAApi.Department.Api"
+                propText="DepartmentName"
+                propValue="DepartmentId"
+                label="Bộ phận sử dụng mới"
+                required
+                placeholder="Bộ phận sử dụng"
+                @filter="getDepartmentFilter"
+                isDisplay
+                self_adjust_size
+                medium
+                padding
+                input_35
+              ></MISACombobox>
             </div>
             <div class="content__column">
               <MISAInput
@@ -180,16 +203,36 @@
       </div>
     </div>
   </div>
+
+  <!-- ======================================================= TOAST ======================================================= -->
+  <div v-if="isShowToastValidate" class="blur">
+    <MISAToast typeToast="warning" :content="toast_content_warning + '.'"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="btnCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
 </template>
 <script>
 import { rowOnClick } from "../../helpers/table/selectRow";
 import { rowOnCtrlClick } from "../../helpers/table/selectRow";
 import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
+
+import { truncateText } from "../../helpers/common/format/format";
+import { formatMoney } from "../../helpers/common/format/format";
+import { AssetDepreciation } from "../../helpers/common/format/format";
+
 export default {
   name: "AssetTransferChooseForm",
   data() {
     return {
-      // ----------------------------- Data -----------------------------
+      // ----------------------------- DATA -----------------------------
       // Danh sách bản ghi
       assets: [],
       // Danh sách các bản ghi đã chọn
@@ -201,10 +244,10 @@ export default {
       // Hiển thị phần tạo người nhận
       isCreateReceiver: false,
 
-      // ----------------------------- Form -----------------------------
+      // ----------------------------- FORM -----------------------------
       isFormDisplay: false,
 
-      // ----------------------------- Paging -----------------------------
+      // ----------------------------- PAGING -----------------------------
       pageLimitList: [],
       // Tổng bản ghi
       totalRecords: 0,
@@ -213,27 +256,34 @@ export default {
       // Trang hiện tại
       currentPage: 1,
 
-      // ----------------------------- Checkbox -----------------------------
+      // ----------------------------- CHECKBOX -----------------------------
       // Tick ô checkbox input
       isCheckboxChecked: false,
       // Danh sách các bản ghi đã chọn
       selectedRowsByCheckBox: [],
 
-      // ----------------------------- Toast -----------------------------
-      isShowToastDelete: false,
-      toast_content_delete: null,
+      // ----------------------------- TOAST -----------------------------
+      isShowToastValidate: false,
+      toast_content_warning: null,
 
-      // ----------------------------- Tab index -----------------------------
+      // ----------------------------- TAB INDEX -----------------------------
       buttonFocus: null,
+
+      // ----------------------------- COMBOBOX -----------------------------
+      departmentFilter: null,
     };
   },
   created() {
     this.loadData();
   },
   methods: {
+    AssetDepreciation,
+    formatMoney,
+    truncateText,
+
     // load data tạm thời
     loadData() {
-      this.$_MISAApi.FixedAsset.Filter(1, 5, null, null, null)
+      this.$_MISAApi.FixedAsset.Filter(1, 15, null, null, null)
         .then((res) => {
           this.assets = res.data.Data;
         })
@@ -242,7 +292,7 @@ export default {
         });
     },
 
-    //------------------------------------------- Click row -------------------------------------------
+    //------------------------------------------- CLICK ROW -------------------------------------------
 
     /**
      * Thực hiện call hàm rowOnClick từ file js để bôi xanh 1 dòng nếu click vào dòng đó
@@ -266,10 +316,50 @@ export default {
       this.selectedRowsByCheckBox = [];
     },
 
+    //------------------------------------------- SAVE DATA -------------------------------------------
+    btnSaveAsset() {
+      if (!this.departmentFilter || this.selectedRowsByCheckBox.length <= 0) {
+        this.isShowToastValidate = true;
+      } else {
+        let departmentName = this.departmentFilter.DepartmentName;
+        const containsDepartment = this.selectedRowsByCheckBox.some(
+          (asset) => asset.DepartmentName === departmentName
+        );
+        if (containsDepartment) {
+          this.isShowToastValidate = true;
+        } else {
+          const assetsWithNewDepartment = this.selectedRowsByCheckBox.map(
+            (asset) => ({
+              ...asset,
+              newDepartmentName: departmentName,
+            })
+          );
+          this.$emit("loadData", assetsWithNewDepartment);
+          this.btnCloseForm();
+        }
+      }
+    },
+
     /**
      * Đóng form, gửi thông tin về cho component cha để đóng nó
      * Author: LDTUAN (21/08/2023)
      */
+
+    //------------------------------------------- COMBOBOX -------------------------------------------
+    /**
+     * Thực hiện filter theo phòng ban
+     * @param {object} item phòng ban
+     * Author: LDTUAN (02/08/2023)
+     */
+    getDepartmentFilter(item) {
+      this.departmentFilter = item;
+    },
+
+    //------------------------------------------- TOAST -------------------------------------------
+    btnCloseToastWarning() {
+      this.isShowToastValidate = false;
+    },
+
     btnCloseForm() {
       this.$emit("onCloseForm");
     },
@@ -449,6 +539,8 @@ export default {
 
 /* ------------------------------------------- Table ------------------------------------------- */
 .table {
+  flex: 1;
+  max-height: 390px;
   display: flex;
   flex-direction: column;
   border-spacing: unset;
@@ -507,7 +599,7 @@ export default {
 }
 
 /* ------------------------------------------- Hr ------------------------------------------- */
-.hr{
+.hr {
   height: 8px;
   border-color: var(--background-color-table-expand-narrow);
   background-color: var(--background-color-default);

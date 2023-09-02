@@ -43,10 +43,16 @@ namespace Domain.Model
         public int? Cost { get; set; }
 
         /// <summary>
+        /// Giá tài sản còn lại
+        /// </summary>
+        /// Created by: ldtuan (17/07/2023)
+        public decimal RemainingCost { get; set; }
+
+        /// <summary>
         /// Danh sách tài sản cùng phòng ban từ chi tiết chứng từ
         /// </summary>
         /// Created by: ldtuan (01/09/2023)
-        public List<FixedAssetTransferModel>? FixedAssetTranfers { get; set; }
+        public List<FixedAssetTransferModel>? FixedAssetTransfers { get; set; }
 
         /// <summary>
         /// Nhận được giá trị của thuộc tính khóa trong một đối tượng cụ thể 

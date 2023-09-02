@@ -29,6 +29,12 @@ namespace MSIA.WebFresher052023.Domain.Model
         public decimal Cost { get; set; }
 
         /// <summary>
+        /// Giá tài sản còn lại
+        /// </summary>
+        /// Created by: ldtuan (17/07/2023)
+        public decimal RemainingCost { get; set; }
+
+        /// <summary>
         /// Id của chi tiết tài sản điều chuyển
         /// </summary>
         /// Created by: ldtuan (27/08/2023)
@@ -41,10 +47,22 @@ namespace MSIA.WebFresher052023.Domain.Model
         public Guid OldDepartmentId { get; set; }
 
         /// <summary>
+        /// Tên phòng ban hiện tại của tài sản
+        /// </summary>
+        /// Created by: ldtuan (02/09/2023)
+        public string OldDepartmentName { get; set; }
+
+        /// <summary>
         /// Phòng ban cần chuyển tài sản đến
         /// </summary>
         /// Created by: ldtuan (27/08/2023)
         public Guid NewDepartmentId { get; set; }
+
+        /// <summary>
+        /// Tên phòng ban cần chuyển đến
+        /// </summary>
+        /// Created by: ldtuan (02/09/2023)
+        public string NewDepartmentName { get; set; }
 
         /// <summary>
         /// Lý do điều chuyển

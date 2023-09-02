@@ -52,10 +52,10 @@ namespace Application.Service
             var transferAsset = await _baseReadOnlyRepository.FindByCodeAsync(code);
             var transferAssetDto = _mapper.Map<TransferAssetDto>(transferAsset);
 
-            var transferDetails = transferAsset.FixedAssetTranfers;
+            var transferDetails = transferAsset.FixedAssetTransfers;
             var transferDetailDtos = _mapper.Map<List<FixedAssetTransferDto>>(transferDetails);
-            transferAssetDto.FixedAssetTranfers = new List<FixedAssetTransferDto>();
-            transferAssetDto.FixedAssetTranfers.AddRange(transferDetailDtos);
+            transferAssetDto.FixedAssetTransfers = new List<FixedAssetTransferDto>();
+            transferAssetDto.FixedAssetTransfers.AddRange(transferDetailDtos);
 
             return transferAssetDto;
         }

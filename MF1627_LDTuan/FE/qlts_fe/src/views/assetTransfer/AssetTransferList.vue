@@ -121,22 +121,22 @@
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ transferAsset.TransferDate }}
+                {{ formatDate(transferAsset.TransferDate) }}
               </div>
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ transferAsset.TransactionDate }}
+                {{ formatDate(transferAsset.TransactionDate) }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ transferAsset.Cost }}
+                {{ formatMoney(Math.round(transferAsset.Cost)) }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ transferAsset.FixedtransferAssetName }}
+                {{ formatMoney(Math.round(transferAsset.RemainingCost)) }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
@@ -280,7 +280,7 @@
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ asset.FixedAssetCode }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
@@ -290,27 +290,55 @@
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatMoney(Math.round(asset.Cost)) }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatMoney(Math.round(asset.RemainingCost)) }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                <el-tooltip
+                  v-if="asset.OldDepartmentName.length > 20"
+                  :visible="visible"
+                  placement="right"
+                >
+                  <template #content>
+                    <span>{{ asset.OldDepartmentName }}</span>
+                  </template>
+                  <span>{{
+                    truncateText(asset.OldDepartmentName, 20)
+                  }}</span>
+                </el-tooltip>
+                <span v-else>{{
+                  truncateText(asset.OldDepartmentName, 20)
+                }}</span>
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                <el-tooltip
+                  v-if="asset.NewDepartmentName.length > 20"
+                  :visible="visible"
+                  placement="right"
+                >
+                  <template #content>
+                    <span>{{ asset.NewDepartmentName }}</span>
+                  </template>
+                  <span>{{
+                    truncateText(asset.NewDepartmentName, 20)
+                  }}</span>
+                </el-tooltip>
+                <span v-else>{{
+                  truncateText(asset.NewDepartmentName, 20)
+                }}</span>
               </div>
               <div
                 class="cell display--center-left border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ asset.Description }}
               </div>
             </div>
           </div>
@@ -362,6 +390,10 @@ import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
 import { showToastDelete } from "../../helpers/table/toastMessage";
 import { closeToastWarning } from "../../helpers/table/toastMessage";
 import { checkTabIndex } from "../../helpers/tabIndex/tabIndex";
+
+import { formatMoney } from "../../helpers/common/format/format";
+import { formatDate } from "../../helpers/common/format/format";
+import { truncateText } from "../../helpers/common/format/format";
 export default {
   name: "AssetTransferList",
   components: {
@@ -378,6 +410,8 @@ export default {
       // ----------------------------- Data -----------------------------
       // Danh sách bản ghi
       transferAssets: [],
+      // Danh sách chi tiết bản ghi
+      assets: [],
       // Danh sách các bản ghi đã chọn
       selectedRows: [],
       // Index của bản ghi đầu tiên trong danh sách
@@ -436,12 +470,32 @@ export default {
     this.$_emitter.emit("onDisplayContent");
   },
   methods: {
-    // load data tạm thời
+    formatDate,
+    formatMoney,
+    truncateText,
+    
+    /**
+     * Lấy dữ liệu của chứng từ
+     * Author: LDTUAN (02/09/2023)
+     */
     loadData() {
       this.$_MISAApi.TransferAsset.Filter(1, 20, null)
         .then((res) => {
           this.transferAssets = res.data.Data;
-          console.log(this.transferAssets);
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    },
+
+    /**
+     * Lấy dữ liệu của chi tiết chứng từ
+     * Author: LDTUAN (02/09/2023)
+     */
+    loadDataDetail(code) {
+      this.$_MISAApi.TransferAsset.GetByCode(code)
+        .then((res) => {
+          this.assets = res.data.FixedAssetTransfers;
         })
         .catch((res) => {
           console.log(res);
@@ -455,16 +509,17 @@ export default {
      * @param {object} asset thông tin tài sản
      * Author: LDTUAN (02/08/2023)
      */
-    callRowOnClick(asset) {
-      rowOnClick.call(this, asset, 'transferAssets');
+    callRowOnClick(transferAsset) {
+      rowOnClick.call(this, transferAsset, "transferAssets");
+      this.loadDataDetail(transferAsset.TransferAssetCode);
     },
 
-    callRowOnClickByCheckBox(asset) {
-      rowOnClickByCheckBox.call(this, asset, 'transferAssets');
+    callRowOnClickByCheckBox(transferAsset) {
+      rowOnClickByCheckBox.call(this, transferAsset, "transferAssets");
     },
 
-    callRowOnCtrlClick(asset) {
-      rowOnCtrlClick.call(this, asset, 'transferAssets');
+    callRowOnCtrlClick(transferAsset) {
+      rowOnCtrlClick.call(this, transferAsset, "transferAssets");
     },
 
     btnUncheckedAll() {
@@ -632,6 +687,10 @@ export default {
      */
     this.initialHeightAfterResize = this.$refs.resizableTable.clientHeight;
     this.tableTopHeightFix = this.$refs.tableTop.clientHeight;
+    // Gọi hàm btnCollapseTable() hai lần để lấy đúng độ rộng của table khi lần đầu hiển thị
+    for (let i = 0; i < 2; i++) {
+      this.btnCollapseTable();
+    }
   },
   beforeUnmount() {
     document.removeEventListener("mouseup", this.handleMouseUp);

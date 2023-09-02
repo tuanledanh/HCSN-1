@@ -15,7 +15,7 @@ namespace Application.AutoMapper
             CreateMap<TransferAsset, TransferAssetDto>();
             CreateMap<TransferAsset, TransferAssetModel>();
             CreateMap<TransferAssetModel, TransferAssetDto>()
-                .ForMember(dest => dest.FixedAssetTranfers, opt => opt.Ignore());
+                .ForMember(dest => dest.FixedAssetTransfers, opt => opt.Ignore());
             CreateMap<TransferAssetCreateDto, TransferAsset>();
             CreateMap<TransferAssetUpdateDto, TransferAsset>();
             CreateMap<TransferAssetCreateDto, TransferAssetModel>();

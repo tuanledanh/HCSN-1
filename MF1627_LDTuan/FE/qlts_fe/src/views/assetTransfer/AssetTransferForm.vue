@@ -224,7 +224,7 @@
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ asset.FixedAssetCode }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
@@ -234,17 +234,27 @@
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatMoney(Math.round(asset.Cost)) }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ AssetDepreciation(asset.Cost, asset.LifeTime) }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                <el-tooltip
+                  v-if="asset.DepartmentName.length > 20"
+                  :visible="visible"
+                  placement="right"
+                >
+                  <template #content>
+                    <span>{{ asset.DepartmentName }}</span>
+                  </template>
+                  <span>{{ truncateText(asset.DepartmentName, 20) }}</span>
+                </el-tooltip>
+                <span v-else>{{ truncateText(asset.DepartmentName, 20) }}</span>
               </div>
               <div
                 id="cell"
@@ -256,7 +266,7 @@
                   propValue="DepartmentId"
                   placeholder="Bộ phận sử dụng"
                   @filter="getDepartmentFilter"
-                  :inputChange="inputDepartmentNameChange"
+                  :newDepartment="asset.newDepartmentName"
                   isDisplay
                   self_adjust_size
                 ></MISACombobox>
@@ -304,8 +314,9 @@
     </div>
   </div>
   <MISAAssetTransferChooseForm
-  @onCloseForm="onCloseForm"
+    @onCloseForm="onCloseForm"
     v-if="isShowFormChooseAsset"
+    @loadData="loadData"
   ></MISAAssetTransferChooseForm>
 </template>
 <script>
@@ -313,6 +324,10 @@ import { rowOnClick } from "../../helpers/table/selectRow";
 import { rowOnCtrlClick } from "../../helpers/table/selectRow";
 import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
 import MISAAssetTransferChooseForm from "./AssetTransferChooseForm.vue";
+
+import { formatMoney } from "../../helpers/common/format/format";
+import { truncateText } from "../../helpers/common/format/format";
+import { AssetDepreciation } from "../../helpers/common/format/format";
 export default {
   name: "MISAAssetTransferForm",
   components: {
@@ -358,29 +373,32 @@ export default {
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
+
+      // ----------------------------- COMBOBOX -----------------------------
     };
   },
   created() {
     this.loadData();
   },
   methods: {
+    AssetDepreciation,
+    formatMoney,
+    truncateText,
+
     // load data tạm thời
-    loadData() {
-      this.$_MISAApi.FixedAsset.Filter(1, 5, null, null, null)
-        .then((res) => {
-          this.assets = res.data.Data;
-        })
-        .catch((res) => {
-          console.log(res);
-        });
+    loadData(items) {
+      if (!this.assets || this.assets.length <= 0) {
+        this.assets = items;
+      } else {
+        this.assets = this.assets.concat(items);
+      }
+      console.log(this.assets);
     },
 
-    //------------------------------------------- Click row -------------------------------------------
-    btnShowFormChooseAsset() {
-      this.isShowFormChooseAsset = true;
-    },
+    //------------------------------------------- COMBOBOX -------------------------------------------
+    
 
-    //------------------------------------------- Click row -------------------------------------------
+    //------------------------------------------- RECEIVER -------------------------------------------
     btnAddReceiver() {
       this.listReceivers++;
     },
@@ -417,7 +435,7 @@ export default {
       this.selectedRows = [];
       this.selectedRowsByCheckBox = [];
     },
-    
+
     //------------------------------------------- Form-------------------------------------------
     /**
      * Đóng form, gửi thông tin về cho component cha để đóng nó
@@ -426,6 +444,11 @@ export default {
     btnCloseForm() {
       this.$emit("onCloseForm");
     },
+
+    btnShowFormChooseAsset() {
+      this.isShowFormChooseAsset = true;
+    },
+
     onCloseForm() {
       this.isShowFormChooseAsset = false;
     },
@@ -597,6 +620,8 @@ export default {
 
 /* ------------------------------------------- Table ------------------------------------------- */
 .table {
+  flex: 1;
+  max-height: 435px;
   display: flex;
   flex-direction: column;
   border-spacing: unset;

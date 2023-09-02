@@ -109,6 +109,11 @@ export default {
       type: String,
       default: "",
     },
+    // Giá trị nhận từ component cha, truyền về để search
+    newDepartment: {
+      type: String,
+      default: null,
+    },
     tabindex: {
       type: Number,
       default: 0,
@@ -156,6 +161,9 @@ export default {
       canDelete: false,
     };
   },
+  updated() {
+    
+  },
   watch: {
     /**
      * Theo dõi sự thay đổi của input text và gán lại giá trị
@@ -185,10 +193,9 @@ export default {
       });
       if (itemFilter != null && itemFilter.length > 0) {
         this.itemFilter = itemFilter;
+      } else {
+        this.$emit("filter", "");
       }
-      // else {
-      //   this.$emit("filter", "");
-      // }
       if (this.keyCode != "Enter" && this.inputChange == null) {
         this.isShowData = true;
       } else {
@@ -239,6 +246,10 @@ export default {
   mounted() {},
   created() {
     this.loadData();
+    if (this.newDepartment !== null) {
+      this.inputText = this.newDepartment;
+      this.canDelete = true;
+    }
   },
   methods: {
     /**

@@ -57,8 +57,8 @@ namespace Infrastructure.Repository
             {
                 var transferAsset = new TransferAssetModel();
                 transferAsset = results.FirstOrDefault().TransferAsset;
-                transferAsset.FixedAssetTranfers = new List<FixedAssetTransferModel>();
-                transferAsset.FixedAssetTranfers.AddRange(results);
+                transferAsset.FixedAssetTransfers = new List<FixedAssetTransferModel>();
+                transferAsset.FixedAssetTransfers.AddRange(results);
                 return transferAsset;
             }
             else

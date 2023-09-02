@@ -42,10 +42,16 @@ namespace Application.DTO
         public int? Cost { get; set; }
 
         /// <summary>
+        /// Giá tài sản còn lại
+        /// </summary>
+        /// Created by: ldtuan (17/07/2023)
+        public decimal RemainingCost { get; set; }
+
+        /// <summary>
         /// Danh sách tài sản cùng phòng ban từ chi tiết chứng từ
         /// </summary>
         /// Created by: ldtuan (01/09/2023)
-        public List<FixedAssetTransferDto>? FixedAssetTranfers { get; set; }
+        public List<FixedAssetTransferDto>? FixedAssetTransfers { get; set; }
         #endregion
     }
 }
