@@ -41,7 +41,7 @@ const MISAApi = {
      * @param {string} filterName mã code để tìm kiếm
      * @param {string} departId id của phòng ban
      * @param {string} aTypeId id của loại tài sản
-     * @returns 
+     * @returns
      */
     Filter: (pageNumber, pageLimit, filterName, departId, aTypeId) =>
       baseAssetAxios.get("", {
@@ -86,26 +86,30 @@ const MISAApi = {
     // Api lấy tất cả bản ghi
     GetAll: () => baseDepartmentAxios.get(""),
   },
-  TransferAsset:{
+  TransferAsset: {
     Api: baseTransferAssetApi,
+    // Api lấy mã code mới
+    GetNewCode: () => baseTransferAssetAxios.get("/GetNewCode"),
     /**
      * Api filter, lọc, phân trang
      * @param {Int16Array} pageNumber số trang đang ở
      * @param {Int16Array} pageLimit số bản ghi tối đa mỗi trang
      * @param {string} filterName mã code để tìm kiếm
-     * @returns 
+     * @returns
      */
     Filter: (pageNumber, pageLimit, filterName) =>
       baseTransferAssetAxios.get("", {
         params: {
           pageNumber,
           pageLimit,
-          filterName
+          filterName,
         },
       }),
-      // Api lấy bản ghi bằng mã code
+    // Api tạo bản ghi mới
+    Create: (transferAssetData) => baseTransferAssetAxios.post("", transferAssetData),
+    // Api lấy bản ghi bằng mã code
     GetByCode: (code) => baseTransferAssetAxios.get(`/${code}`),
-  }
+  },
 };
 
 export default MISAApi;

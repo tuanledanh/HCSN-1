@@ -179,6 +179,7 @@
               <MISAInput
                 normalGrid
                 label="Ghi chú"
+                v-model="description"
                 medium
                 required
                 maxlength="4"
@@ -243,6 +244,8 @@ export default {
       listReceivers: 1,
       // Hiển thị phần tạo người nhận
       isCreateReceiver: false,
+      // Lý do điều chuyển
+      description: null,
 
       // ----------------------------- FORM -----------------------------
       isFormDisplay: false,
@@ -322,6 +325,8 @@ export default {
         this.isShowToastValidate = true;
       } else {
         let departmentName = this.departmentFilter.DepartmentName;
+        let departmentId = this.departmentFilter.DepartmentId;
+        let description = this.description;
         const containsDepartment = this.selectedRowsByCheckBox.some(
           (asset) => asset.DepartmentName === departmentName
         );
@@ -332,6 +337,8 @@ export default {
             (asset) => ({
               ...asset,
               newDepartmentName: departmentName,
+              newDepartmentId: departmentId,
+              description: description
             })
           );
           this.$emit("loadData", assetsWithNewDepartment);

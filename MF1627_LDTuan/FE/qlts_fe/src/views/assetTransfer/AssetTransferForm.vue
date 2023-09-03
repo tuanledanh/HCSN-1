@@ -22,6 +22,7 @@
               <MISAInput
                 normalGrid
                 label="Mã chứng từ"
+                v-model="transferAsset.TransferAssetCode"
                 medium
                 required
                 maxlength="12"
@@ -30,6 +31,7 @@
             <div class="content__column">
               <MISAInputDatePicker
                 label="Ngày chứng từ"
+                v-model="transferAsset.TransactionDate"
                 medium
                 required
               ></MISAInputDatePicker>
@@ -37,6 +39,7 @@
             <div class="content__column">
               <MISAInputDatePicker
                 label="Ngày điều chuyển"
+                v-model="transferAsset.TransferDate"
                 medium
                 required
               ></MISAInputDatePicker>
@@ -45,6 +48,7 @@
               <MISAInput
                 normalGrid
                 label="Ghi chú"
+                v-model="transferAsset.Description"
                 medium
                 required
                 maxlength="4"
@@ -68,12 +72,14 @@
             </div>
             <div class="row--form">
               <div
-                v-for="index in listReceivers"
+                v-for="(receiver, index) in receivers"
                 :key="index"
                 class="content--bot__body row--bot"
               >
                 <div>
-                  <div class="number border border-radius-4">{{ index }}</div>
+                  <div class="number border border-radius-4">
+                    {{ index + 1 }}
+                  </div>
                 </div>
                 <div>
                   <MISAInput
@@ -81,6 +87,7 @@
                     medium
                     maxlength="12"
                     placeholder="Nhập họ và tên"
+                    v-model="receiver.ReceiverFullName"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
@@ -89,6 +96,7 @@
                     medium
                     maxlength="12"
                     placeholder="Nhập đại diện"
+                    v-model="receiver.ReceiverDelegate"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
@@ -97,6 +105,7 @@
                     medium
                     maxlength="12"
                     placeholder="Nhập chức vụ"
+                    v-model="receiver.ReceiverPosition"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
@@ -107,7 +116,7 @@
                       <MISAIcon add_box_thin></MISAIcon>
                     </div>
                     <div @click="btnDeleteReceiver">
-                      <MISAIcon v-if="index > 1" deleteIcon></MISAIcon>
+                      <MISAIcon v-if="index > 0" deleteIcon></MISAIcon>
                     </div>
                   </div>
                 </div>
@@ -265,7 +274,7 @@
                   propText="DepartmentName"
                   propValue="DepartmentId"
                   placeholder="Bộ phận sử dụng"
-                  @filter="getDepartmentFilter"
+                  @filter="getNewDepartment(asset, $event)"
                   :newDepartment="asset.newDepartmentName"
                   isDisplay
                   self_adjust_size
@@ -274,7 +283,12 @@
               <div
                 class="cell display--center-left border--right border--bottom"
               >
-                <MISAInput normalGrid medium padding_2></MISAInput>
+                <MISAInput
+                  normalGrid
+                  medium
+                  padding_2
+                  v-model="asset.description"
+                ></MISAInput>
               </div>
               <div class="cell display--center-center border--bottom">
                 <div class="icon-function">
@@ -308,7 +322,7 @@
       <MISAButton
         buttonMain
         textButton="Lưu"
-        @click="btnSaveAsset"
+        @click="btnSaveTransferAsset"
         :tabindex="16"
       ></MISAButton>
     </div>
@@ -328,6 +342,7 @@ import MISAAssetTransferChooseForm from "./AssetTransferChooseForm.vue";
 import { formatMoney } from "../../helpers/common/format/format";
 import { truncateText } from "../../helpers/common/format/format";
 import { AssetDepreciation } from "../../helpers/common/format/format";
+import { DateFormat } from "../../helpers/common/format/format";
 export default {
   name: "MISAAssetTransferForm",
   components: {
@@ -336,14 +351,18 @@ export default {
   data() {
     return {
       // ----------------------------- Data -----------------------------
-      // Danh sách bản ghi
+      // Toàn bộ dữ liệu của chứng từ điều chuyển
+      transferData: {},
+      // Chứng từ tài sản
+      transferAsset: {},
+      // Danh sách bản ghi tài sản
       assets: [],
+      // Danh sách người nhận
+      receivers: [],
       // Danh sách các bản ghi đã chọn
       selectedRows: [],
       // Index của bản ghi đầu tiên trong danh sách
       lastIndex: 0,
-      // Danh sách người nhận
-      listReceivers: 1,
       // Hiển thị phần tạo người nhận
       isCreateReceiver: false,
 
@@ -378,6 +397,7 @@ export default {
     };
   },
   created() {
+    this.loadAssetCode();
     this.loadData();
   },
   methods: {
@@ -385,31 +405,98 @@ export default {
     formatMoney,
     truncateText,
 
-    // load data tạm thời
+    //------------------------------------------- ADD-UPDATE CHỨNG TỪ -------------------------------------------
+    /**
+     * Thêm mới chứng từ
+     */
+    // TODO: validate
+    btnSaveTransferAsset() {
+      this.transferData.ListReceiver = this.receivers;
+      const transferAssetDetails = this.assets.map((asset) => ({
+        FixedAssetId: asset.FixedAssetId,
+        OldDepartmentId: asset.DepartmentId,
+        NewDepartmentId: asset.newDepartmentId,
+        Description: asset.description,
+      }));
+      this.transferData.ListTransferAssetDetail = transferAssetDetails;
+      this.transferData.TransferAsset = this.transferAsset;
+      console.log(this.transferData);
+      this.$_MISAApi.TransferAsset.Create(this.transferData)
+        .then((res) => {
+          console.log(res);
+          this.btnCloseForm();
+        })
+        .catch((res) => {
+          // this.$processErrorResponse(res);
+          // this.isShowToastValidateBE = true;
+          // this.toast_content_warning = res.response.data.UserMessage;
+          console.log(res);
+        });
+    },
+
+    //------------------------------------------- TRANSFER ASSET -------------------------------------------
+    /**
+     * Lấy mã code mới cho chứng từ
+     */
+    loadAssetCode() {
+      this.isLoading = true;
+      this.$_MISAApi.TransferAsset.GetNewCode()
+        .then((res) => {
+          this.transferAsset.TransferAssetCode = res.data;
+          this.transferAsset.TransferDate = DateFormat(this.$getCurrentDate());
+          this.transferAsset.TransactionDate = DateFormat(
+            this.$getCurrentDate()
+          );
+          this.isLoading = false;
+        })
+        .catch((res) => {
+          // this.$processErrorResponse(res);
+          // this.isShowToastValidateBE = true;
+          // this.toast_content_warning = res.response.data.UserMessage;
+          console.log(res);
+        });
+    },
+
+    //------------------------------------------- RECEIVER -------------------------------------------
+    btnAddReceiver() {
+      const newReceiver = {
+        ReceiverCode: "",
+        ReceiverFullName: "",
+        ReceiverDelegate: "",
+        ReceiverPosition: "",
+      };
+      this.receivers.push(newReceiver);
+    },
+
+    btnDeleteReceiver() {
+      if (this.receivers.length > 0) {
+        this.receivers.pop();
+      }
+    },
+
+    showFormReceiver() {
+      this.isCreateReceiver = !this.isCreateReceiver;
+      this.receivers = [];
+      this.btnAddReceiver();
+    },
+
+    //------------------------------------------- ASSET -------------------------------------------
+    // load data từ form chọn tài sản chứng từ
+    // TODO: làm thêm api lấy danh sách tài sản không chứa những tài sản đã chọn
     loadData(items) {
       if (!this.assets || this.assets.length <= 0) {
         this.assets = items;
       } else {
         this.assets = this.assets.concat(items);
       }
-      console.log(this.assets);
     },
 
     //------------------------------------------- COMBOBOX -------------------------------------------
-    
-
-    //------------------------------------------- RECEIVER -------------------------------------------
-    btnAddReceiver() {
-      this.listReceivers++;
-    },
-
-    btnDeleteReceiver() {
-      this.listReceivers--;
-    },
-
-    showFormReceiver() {
-      this.isCreateReceiver = !this.isCreateReceiver;
-      this.listReceivers = 1;
+    getNewDepartment(asset, item) {
+      if (item) {
+        asset.newDepartmentId = item.DepartmentId;
+        asset.newDepartmentName = item.DepartmentName;
+      }
     },
 
     //------------------------------------------- Click row -------------------------------------------
