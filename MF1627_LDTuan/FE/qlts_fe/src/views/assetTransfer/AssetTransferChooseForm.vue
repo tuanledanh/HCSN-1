@@ -168,6 +168,7 @@
                 required
                 placeholder="Bộ phận sử dụng"
                 @filter="getDepartmentFilter"
+                :inputChange="inputChange"
                 isDisplay
                 self_adjust_size
                 medium
@@ -274,6 +275,7 @@ export default {
 
       // ----------------------------- COMBOBOX -----------------------------
       departmentFilter: null,
+      inputChange: null,
     };
   },
   created() {
@@ -336,9 +338,9 @@ export default {
           const assetsWithNewDepartment = this.selectedRowsByCheckBox.map(
             (asset) => ({
               ...asset,
-              newDepartmentName: departmentName,
-              newDepartmentId: departmentId,
-              description: description
+              NewDepartmentName: departmentName,
+              NewDepartmentId: departmentId,
+              Description: description
             })
           );
           this.$emit("loadData", assetsWithNewDepartment);

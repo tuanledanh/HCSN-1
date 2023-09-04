@@ -49,7 +49,7 @@ namespace Application.Service
         /// Created by: ldtuan (12/07/2023)
         public override async Task<TransferAssetDto> GetAsync(string code)
         {
-            var transferAsset = await _baseReadOnlyRepository.FindByCodeAsync(code);
+            var transferAsset = await _transferAssetRepository.FindByCodeAsync(code);
             var transferAssetDto = _mapper.Map<TransferAssetDto>(transferAsset);
 
             var transferDetails = transferAsset.FixedAssetTransfers;
@@ -235,7 +235,13 @@ namespace Application.Service
                 // 3.2.Sửa người nhận và chi tiết chứng từ
                 if (transferDtosUpdate != null)
                 {
-                    List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map<List<TransferAssetDetail>>(transferDtosUpdate);
+                    transferDtosUpdate = transferDtosUpdate.Select(item =>
+                    {
+                        item.TransferAssetId = transferAsset.TransferAssetId;
+                        return item;
+                    }).ToList();
+
+                    List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map(transferDtosUpdate, listTransferAssetDetailInDB);
                     List<TransferAssetDetail> transferAssetDetails = InitializeEntities(transferAssetDetailsRaw);
 
                     await _transferAssetDetailRepository.UpdateMultiAsync(transferAssetDetails);

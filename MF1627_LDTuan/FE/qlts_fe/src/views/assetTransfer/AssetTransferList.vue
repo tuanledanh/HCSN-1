@@ -145,12 +145,8 @@
               </div>
               <div class="cell display--center-center border--bottom">
                 <div class="icon-function">
-                  <MISATooltip bottom content="Chỉnh sửa">
-                    <MISAIcon edit background></MISAIcon>
-                  </MISATooltip>
-                  <MISATooltip bottom content="Xóa">
+                    <MISAIcon edit background @click="btnEditTransferAsset(transferAsset)"></MISAIcon>
                     <MISAIcon deleteIcon background></MISAIcon>
-                  </MISATooltip>
                 </div>
               </div>
             </div>
@@ -361,6 +357,8 @@
   <MISAAssetTransferForm
     v-if="isFormDisplay"
     @onCloseForm="onCloseForm"
+    @reLoad="reLoad"
+    :transferAssetToUpdate="transferData"
   ></MISAAssetTransferForm>
   <div v-if="isShowToastDelete" class="blur">
     <MISAToast typeToast="warning" :content="toast_content_delete"
@@ -410,6 +408,8 @@ export default {
       // ----------------------------- Data -----------------------------
       // Danh sách bản ghi
       transferAssets: [],
+      // Dữ liệu của 1 chứng từ, để chuyển sang cho AssetTransferForm và update
+      transferData: null,
       // Danh sách chi tiết bản ghi
       assets: [],
       // Danh sách các bản ghi đã chọn
@@ -488,6 +488,10 @@ export default {
         });
     },
 
+    reLoad(){
+      this.loadData();
+    },
+
     /**
      * Lấy dữ liệu của chi tiết chứng từ
      * Author: LDTUAN (02/09/2023)
@@ -549,7 +553,6 @@ export default {
       if (!this.initialHeightFix) {
         this.initialHeightFix = this.$refs.resizableTable.clientHeight;
       }
-      console.log(this.initialHeightFix);
       event.preventDefault(); // Ngăn chặn chọn văn bản khi kéo
       document.addEventListener("mousemove", this.resizing);
       document.addEventListener("mouseup", this.stopResize);
@@ -663,14 +666,29 @@ export default {
       checkTabIndex.call(this, event, index);
     },
 
-    //------------------------------------------- Tab index -------------------------------------------
+    //------------------------------------------- FORM -------------------------------------------
+    /**
+     * Mở form thêm chứng từ
+     */
     btnAddDocument() {
       this.isFormDisplay = true;
     },
 
+    /**
+     * Đóng form thêm chứng từ
+     */
     onCloseForm() {
       this.isFormDisplay = false;
+      this.transferData = null;
     },
+
+    /**
+     * Truyền dữ liệu và mở form thêm chứng từ để sửa đổi
+     */
+     btnEditTransferAsset(transferAsset){
+          this.btnAddDocument();
+          this.transferData = transferAsset;
+     },
   },
   mounted() {
     /**

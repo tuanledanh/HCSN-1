@@ -29,6 +29,12 @@ namespace MSIA.WebFresher052023.Domain.Model
         public decimal Cost { get; set; }
 
         /// <summary>
+        /// Số năm sử dụng
+        /// </summary>
+        /// Created by: ldtuan (17/07/2023)
+        public int LifeTime { get; set; }
+
+        /// <summary>
         /// Giá tài sản còn lại
         /// </summary>
         /// Created by: ldtuan (17/07/2023)

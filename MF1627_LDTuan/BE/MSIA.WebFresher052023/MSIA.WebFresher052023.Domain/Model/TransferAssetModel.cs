@@ -45,7 +45,7 @@ namespace Domain.Model
         /// <summary>
         /// Giá tài sản còn lại
         /// </summary>
-        /// Created by: ldtuan (17/07/2023)
+        /// Created by: ldtuan (02/09/2023)
         public decimal RemainingCost { get; set; }
 
         /// <summary>
@@ -53,6 +53,12 @@ namespace Domain.Model
         /// </summary>
         /// Created by: ldtuan (01/09/2023)
         public List<FixedAssetTransferModel>? FixedAssetTransfers { get; set; }
+
+        /// <summary>
+        /// Danh sách người nhận
+        /// </summary>
+        /// Created by: ldtuan (03/09/2023)
+        public List<ReceiverTransferModel>? ReceiverTransfers { get; set; }
 
         /// <summary>
         /// Nhận được giá trị của thuộc tính khóa trong một đối tượng cụ thể 

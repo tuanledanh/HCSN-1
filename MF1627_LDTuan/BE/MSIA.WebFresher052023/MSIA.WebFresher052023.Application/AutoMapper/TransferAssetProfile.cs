@@ -23,6 +23,7 @@ namespace Application.AutoMapper
 
             CreateMap<FixedAssetTransferModel, FixedAssetTransferDto>()
                 .ForMember(dest => dest.TransferAsset, opt => opt.Ignore());
+            CreateMap<ReceiverTransferModel, ReceiverTransferDto>();
         }
     }
 }

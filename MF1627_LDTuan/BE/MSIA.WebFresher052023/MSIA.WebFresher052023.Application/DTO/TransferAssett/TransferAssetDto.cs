@@ -52,6 +52,12 @@ namespace Application.DTO
         /// </summary>
         /// Created by: ldtuan (01/09/2023)
         public List<FixedAssetTransferDto>? FixedAssetTransfers { get; set; }
+
+        /// <summary>
+        /// Danh sách người nhận
+        /// </summary>
+        /// Created by: ldtuan (03/09/2023)
+        public List<ReceiverTransferDto>? ReceiverTransfers { get; set; }
         #endregion
     }
 }
