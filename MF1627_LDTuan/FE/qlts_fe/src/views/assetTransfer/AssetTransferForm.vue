@@ -497,142 +497,248 @@ export default {
         Description: oldTransferAsset.Description,
       };
 
-      // 4.Phân chia danh sách add-update-delete chi tiết chứng từ mới nhất
-      let listDetail = this.assets;
-      /*******************************/
-      // 4.1.Danh sách add (các đối tượng của danh sách này không chứa thuộc tính TransferAssetDetailId)
-      let listDetailAdd = listDetail
-        .filter(
-          (asset) =>
-            !Object.prototype.hasOwnProperty.call(
-              asset,
-              "TransferAssetDetailId"
-            )
-        )
-        .map((asset) => ({
-          Flag: 0,
-          FixedAssetId: asset.FixedAssetId,
-          OldDepartmentId: asset.DepartmentId,
-          NewDepartmentId: asset.NewDepartmentId,
-          Description: asset.description,
-        }));
+      // // 4.Phân chia danh sách add-update-delete chi tiết chứng từ mới nhất
+      // let listDetail = this.assets;
+      // /*******************************/
+      // // 4.1.Danh sách add (các đối tượng của danh sách này không chứa thuộc tính TransferAssetDetailId)
+      // let listDetailAdd = listDetail
+      //   .filter(
+      //     (asset) =>
+      //       !Object.prototype.hasOwnProperty.call(
+      //         asset,
+      //         "TransferAssetDetailId"
+      //       )
+      //   )
+      //   .map((asset) => ({
+      //     Flag: 0,
+      //     FixedAssetId: asset.FixedAssetId,
+      //     OldDepartmentId: asset.DepartmentId,
+      //     NewDepartmentId: asset.NewDepartmentId,
+      //     Description: asset.description,
+      //   }));
 
-      // 4.2.Danh sách update-delete (các đối tượng của danh sách này chứa thuộc tính TransferAssetDetailId)
-      let listDetailUD = listDetail.filter((asset) =>
-        Object.prototype.hasOwnProperty.call(asset, "TransferAssetDetailId")
-      );
-      /*******************************/
-      // 4.2.1.Danh sách delete (là những object không tồn tại trong danh sách mới nhưng có trong danh sách cũ)
-      let listDetailDelete = this.oldAssets
-        .filter((oldAsset) => {
-          return !listDetailUD.find(
-            (newAsset) =>
-              newAsset.TransferAssetDetailId === oldAsset.TransferAssetDetailId
-          );
-        })
-        .map((asset) => ({
-          Flag: 2,
-          TransferAssetDetailId: asset.TransferAssetDetailId,
-          FixedAssetId: asset.FixedAssetId,
-          OldDepartmentId: asset.DepartmentId,
-          NewDepartmentId: asset.NewDepartmentId,
-          Description: asset.description,
-        }));
-      // 4.2.2.Danh sách update (là những object tồn tại cả trong danh sách mới và trong danh sách cũ)
-      let listDetailUpdate = this.oldAssets
-        .filter((oldAsset) => {
-          return listDetailUD.find(
-            (newAsset) =>
-              newAsset.TransferAssetDetailId === oldAsset.TransferAssetDetailId
-          );
-        })
-        .map((asset) => ({
-          Flag: 1,
-          TransferAssetDetailId: asset.TransferAssetDetailId,
-          FixedAssetId: asset.FixedAssetId,
-          OldDepartmentId: asset.DepartmentId,
-          NewDepartmentId: asset.NewDepartmentId,
-          Description: asset.description,
-        }));
+      // // 4.2.Danh sách update-delete (các đối tượng của danh sách này chứa thuộc tính TransferAssetDetailId)
+      // let listDetailUD = listDetail.filter((asset) =>
+      //   Object.prototype.hasOwnProperty.call(asset, "TransferAssetDetailId")
+      // );
+      // /*******************************/
+      // // 4.2.1.Danh sách delete (là những object không tồn tại trong danh sách mới nhưng có trong danh sách cũ)
+      // let listDetailDelete = this.oldAssets
+      //   .filter((oldAsset) => {
+      //     return !listDetailUD.find(
+      //       (newAsset) =>
+      //         newAsset.TransferAssetDetailId === oldAsset.TransferAssetDetailId
+      //     );
+      //   })
+      //   .map((asset) => ({
+      //     Flag: 2,
+      //     TransferAssetDetailId: asset.TransferAssetDetailId,
+      //     FixedAssetId: asset.FixedAssetId,
+      //     OldDepartmentId: asset.DepartmentId,
+      //     NewDepartmentId: asset.NewDepartmentId,
+      //     Description: asset.description,
+      //   }));
+      // // 4.2.2.Danh sách update (là những object tồn tại cả trong danh sách mới và trong danh sách cũ)
+      // let listDetailUpdate = this.oldAssets
+      //   .filter((oldAsset) => {
+      //     return listDetailUD.find(
+      //       (newAsset) =>
+      //         newAsset.TransferAssetDetailId === oldAsset.TransferAssetDetailId
+      //     );
+      //   })
+      //   .map((asset) => ({
+      //     Flag: 1,
+      //     TransferAssetDetailId: asset.TransferAssetDetailId,
+      //     FixedAssetId: asset.FixedAssetId,
+      //     OldDepartmentId: asset.DepartmentId,
+      //     NewDepartmentId: asset.NewDepartmentId,
+      //     Description: asset.description,
+      //   }));
 
-      // 5.Nối các list add-update-delete lại với nhau
-      let listTransferAssetDetail = [
-        ...listDetailAdd,
-        ...listDetailDelete,
-        ...listDetailUpdate,
+      // // 5.Nối các list add-update-delete lại với nhau
+      // let listTransferAssetDetail = [
+      //   ...listDetailAdd,
+      //   ...listDetailDelete,
+      //   ...listDetailUpdate,
+      // ];
+
+      // // 4.Phân chia danh sách add-update-delete chi tiết chứng từ mới nhất
+      // let listReceiver = this.receivers;
+      // /*******************************/
+      // // 4.1.Danh sách add (các đối tượng của danh sách này không chứa thuộc tính TransferAssetDetailId)
+      // let listReceiverAdd = listReceiver
+      //   .filter(
+      //     (receiver) =>
+      //       !Object.prototype.hasOwnProperty.call(receiver, "ReceiverId")
+      //   )
+      //   .map((receiver) => ({
+      //     Flag: 0,
+      //     ReceiverCode: receiver.ReceiverCode,
+      //     ReceiverFullname: receiver.ReceiverFullname,
+      //     ReceiverDelegate: receiver.ReceiverDelegate,
+      //     ReceiverPosition: receiver.ReceiverPosition,
+      //   }));
+
+      // // 4.2.Danh sách update-delete (các đối tượng của danh sách này chứa thuộc tính TransferAssetDetailId)
+      // let listReceiverUD = listReceiver.filter(
+      //   (receiver) =>
+      //     receiver.ReceiverId !== null &&
+      //     receiver.ReceiverId !== "" &&
+      //     typeof receiver.ReceiverId !== "undefined" &&
+      //     Object.prototype.hasOwnProperty.call(receiver, "ReceiverId")
+      // );
+      // /*******************************/
+      // // 4.2.1.Danh sách delete (là những object không tồn tại trong danh sách mới nhưng có trong danh sách cũ)
+      // let listReceiverDelete = this.oldReceivers
+      //   .filter((oldReceiver) => {
+      //     return !listReceiverUD.find(
+      //       (newReceiver) => newReceiver.ReceiverId === oldReceiver.ReceiverId
+      //     );
+      //   })
+      //   .map((receiver) => ({
+      //     Flag: 2,
+      //     ReceiverId: receiver.ReceiverId,
+      //     ReceiverCode: receiver.ReceiverCode,
+      //     ReceiverFullname: receiver.ReceiverFullname,
+      //     ReceiverDelegate: receiver.ReceiverDelegate,
+      //     ReceiverPosition: receiver.ReceiverPosition,
+      //   }));
+      // // 4.2.2.Danh sách update (là những object tồn tại cả trong danh sách mới và trong danh sách cũ)
+      // let listReceiverUpdate = this.oldReceivers
+      //   .filter((oldReceiver) => {
+      //     return listReceiverUD.find(
+      //       (newReceiver) =>
+      //         newReceiver.TransferAssetDetailId ===
+      //         oldReceiver.TransferAssetDetailId
+      //     );
+      //   })
+      //   .map((receiver) => ({
+      //     Flag: 1,
+      //     ReceiverId: receiver.ReceiverId,
+      //     ReceiverCode: receiver.ReceiverCode,
+      //     ReceiverFullname: receiver.ReceiverFullname,
+      //     ReceiverDelegate: receiver.ReceiverDelegate,
+      //     ReceiverPosition: receiver.ReceiverPosition,
+      //   }));
+
+      // // 5.Nối các list add-update-delete lại với nhau
+      // let listReceiverFinal = [
+      //   ...listReceiverAdd,
+      //   ...listReceiverDelete,
+      //   ...listReceiverUpdate,
+      // ];
+      let selectedFieldsDetail = [
+        "FixedAssetId",
+        "OldDepartmentId",
+        "NewDepartmentId",
+        "Description",
+      ];
+      let selectedFieldsReceiver = [
+        "ReceiverCode",
+        "ReceiverFullname",
+        "ReceiverDelegate",
+        "ReceiverPosition",
       ];
 
-      // 4.Phân chia danh sách add-update-delete chi tiết chứng từ mới nhất
-      let listReceiver = this.receivers;
-      /*******************************/
-      // 4.1.Danh sách add (các đối tượng của danh sách này không chứa thuộc tính TransferAssetDetailId)
-      let listReceiverAdd = listReceiver
-        .filter(
-          (receiver) =>
-            !Object.prototype.hasOwnProperty.call(receiver, "ReceiverId")
-        )
-        .map((receiver) => ({
-          Flag: 0,
-          ReceiverCode: receiver.ReceiverCode,
-          ReceiverFullname: receiver.ReceiverFullname,
-          ReceiverDelegate: receiver.ReceiverDelegate,
-          ReceiverPosition: receiver.ReceiverPosition,
-        }));
+      // Chuyển DepartmentName và DepartmentId thành OldDepartmentName và OldDepartmentId trong this.assets
+      let assets = this.assets;
+      assets.forEach((asset) => {
+        asset.OldDepartmentName = asset.DepartmentName;
+        asset.OldDepartmentId = asset.DepartmentId;
+      });
 
-      // 4.2.Danh sách update-delete (các đối tượng của danh sách này chứa thuộc tính TransferAssetDetailId)
-      let listReceiverUD = listReceiver.filter(
-        (receiver) =>
-          receiver.ReceiverId !== null &&
-          receiver.ReceiverId !== "" &&
-          typeof receiver.ReceiverId !== "undefined" &&
-          Object.prototype.hasOwnProperty.call(receiver, "ReceiverId")
+      // Tương tự, chuyển DepartmentName và DepartmentId thành OldDepartmentName và OldDepartmentId trong this.oldAssets
+      let oldAssets = this.oldAssets;
+      oldAssets.forEach((oldAsset) => {
+        oldAsset.OldDepartmentName = oldAsset.DepartmentName;
+        oldAsset.OldDepartmentId = oldAsset.DepartmentId;
+      });
+      let listTransferAssetDetail = this.createAddUpdateDeleteList(
+        assets,
+        "TransferAssetDetailId",
+        oldAssets,
+        selectedFieldsDetail
       );
-      /*******************************/
-      // 4.2.1.Danh sách delete (là những object không tồn tại trong danh sách mới nhưng có trong danh sách cũ)
-      let listReceiverDelete = this.oldReceivers
-        .filter((oldReceiver) => {
-          return !listReceiverUD.find(
-            (newReceiver) => newReceiver.ReceiverId === oldReceiver.ReceiverId
-          );
-        })
-        .map((receiver) => ({
-          Flag: 2,
-          ReceiverId: receiver.ReceiverId,
-          ReceiverCode: receiver.ReceiverCode,
-          ReceiverFullname: receiver.ReceiverFullname,
-          ReceiverDelegate: receiver.ReceiverDelegate,
-          ReceiverPosition: receiver.ReceiverPosition,
-        }));
-      // 4.2.2.Danh sách update (là những object tồn tại cả trong danh sách mới và trong danh sách cũ)
-      let listReceiverUpdate = this.oldReceivers
-        .filter((oldReceiver) => {
-          return listReceiverUD.find(
-            (newReceiver) =>
-              newReceiver.TransferAssetDetailId ===
-              oldReceiver.TransferAssetDetailId
-          );
-        })
-        .map((receiver) => ({
-          Flag: 1,
-          ReceiverId: receiver.ReceiverId,
-          ReceiverCode: receiver.ReceiverCode,
-          ReceiverFullname: receiver.ReceiverFullname,
-          ReceiverDelegate: receiver.ReceiverDelegate,
-          ReceiverPosition: receiver.ReceiverPosition,
-        }));
 
-      // 5.Nối các list add-update-delete lại với nhau
-      let listReceiverFinal = [
-        ...listReceiverAdd,
-        ...listReceiverDelete,
-        ...listReceiverUpdate,
-      ];
+      // Sử dụng hàm createAddUpdateDeleteList cho listReceiver
+      let listReceiverFinal = this.createAddUpdateDeleteList(
+        this.receivers,
+        "ReceiverId",
+        this.oldReceivers,
+        selectedFieldsReceiver
+      );
       this.UpdateTransferAsset(
         transferAssetId,
         newTransferAsset,
         listTransferAssetDetail,
         listReceiverFinal
       );
+    },
+
+    createAddUpdateDeleteList(sourceList, idField, oldList, selectedFields) {
+      // 1. Danh sách add
+      let listAdd = sourceList
+        .filter((item) => !Object.prototype.hasOwnProperty.call(item, idField))
+        .map((item) => {
+          let newItem = {
+            Flag: 0,
+          };
+
+          // Chọn các thuộc tính quan trọng từ selectedFields
+          for (const field of selectedFields) {
+            newItem[field] = item[field];
+          }
+
+          return newItem;
+        });
+
+      // 2. Danh sách update-delete
+      let listUD = sourceList.filter(
+        (item) =>
+          item[idField] !== null &&
+          item[idField] !== "" &&
+          typeof item[idField] !== "undefined" &&
+          Object.prototype.hasOwnProperty.call(item, idField)
+      );
+
+      let listDelete = oldList
+        .filter((oldItem) => {
+          return !listUD.find(
+            (newItem) => newItem[idField] === oldItem[idField]
+          );
+        })
+        .map((item) => {
+          let newItem = {
+            Flag: 2,
+            [idField]: item[idField],
+          };
+          for (const field of selectedFields) {
+            newItem[field] = item[field];
+          }
+
+          return newItem;
+        });
+
+      let listUpdate = oldList
+        .filter((oldItem) => {
+          return listUD.find(
+            (newItem) => newItem[idField] === oldItem[idField]
+          );
+        })
+        .map((item) => {
+          let newItem = {
+            Flag: 1,
+            [idField]: item[idField],
+          };
+          for (const field of selectedFields) {
+            newItem[field] = item[field];
+          }
+
+          return newItem;
+        });
+
+      // 3. Nối các danh sách lại với nhau
+      return [...listAdd, ...listDelete, ...listUpdate];
     },
 
     /**
