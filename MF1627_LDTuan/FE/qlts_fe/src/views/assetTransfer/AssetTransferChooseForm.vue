@@ -180,7 +180,7 @@
               <MISAInput
                 normalGrid
                 label="Ghi chú"
-                v-model="description"
+                v-model="Description"
                 medium
                 required
                 maxlength="4"
@@ -294,7 +294,7 @@ export default {
 
     // load data tạm thời
     loadData() {
-      console.log(this.selectedRowsByCheckBox);
+      console.log(this.existFixedAsset);
       var dataFilter = {
         pageNumber: 1,
         pageLimit: 20,
@@ -340,7 +340,7 @@ export default {
       } else {
         let departmentName = this.departmentFilter.DepartmentName;
         let departmentId = this.departmentFilter.DepartmentId;
-        let description = this.description;
+        let description = this.Description;
         const containsDepartment = this.selectedRowsByCheckBox.some(
           (asset) => asset.DepartmentName === departmentName
         );
@@ -356,7 +356,7 @@ export default {
             })
           );
           this.$emit("loadData", assetsWithNewDepartment);
-          console.log(this.selectedRowsByCheckBox);
+          console.log(this.existFixedAsset);
           this.btnCloseForm();
         }
       }

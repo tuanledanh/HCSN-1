@@ -289,12 +289,16 @@
                   normalGrid
                   medium
                   padding_2
-                  v-model="asset.description"
+                  v-model="asset.Description"
                 ></MISAInput>
               </div>
               <div class="cell display--center-center border--bottom">
                 <div class="icon-function">
-                    <MISAIcon deleteIcon background @click="btnDeleteAsset(asset)"></MISAIcon>
+                  <MISAIcon
+                    deleteIcon
+                    background
+                    @click="btnDeleteAsset(asset)"
+                  ></MISAIcon>
                 </div>
               </div>
             </div>
@@ -423,7 +427,6 @@ export default {
     },
   },
   created() {
-    this.loadData();
     /**
      * Kiểm tra thực hiện thêm, sửa, hay sao chép để thực hiện thao tác tương ứng
      * Author: LDTUAN (02/08/2023)
@@ -724,7 +727,7 @@ export default {
 
     btnDeleteReceiver(receiver) {
       const index = this.receivers.indexOf(receiver);
-      if(index !== -1){
+      if (index !== -1) {
         this.receivers.splice(index, 1);
       }
     },
@@ -749,9 +752,9 @@ export default {
       }
     },
 
-    btnDeleteAsset(asset){
+    btnDeleteAsset(asset) {
       const index = this.assets.indexOf(asset);
-      if(index !== -1){
+      if (index !== -1) {
         this.assets.splice(index, 1);
       }
     },
@@ -798,8 +801,15 @@ export default {
     },
 
     btnShowFormChooseAsset() {
-      this.isShowFormChooseAsset = true;
+      this.assets.forEach((asset) => {
+        if (!Object.prototype.hasOwnProperty.call(asset, "DepartmentCode")) {
+          asset.DepartmentCode = "raw";
+          asset.FixedAssetCategoryCode = "raw";
+          asset.FixedAssetCategoryName = "raw";
+        }
+      });
       this.existFixedAsset = this.assets;
+      this.isShowFormChooseAsset = true;
     },
 
     onCloseForm() {
