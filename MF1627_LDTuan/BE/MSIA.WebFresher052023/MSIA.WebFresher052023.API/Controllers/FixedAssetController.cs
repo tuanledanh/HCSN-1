@@ -6,6 +6,7 @@ using Domain.Entity;
 using Domain.Model;
 using Microsoft.AspNetCore.Mvc;
 using MSIA.WebFresher052023.API.Controllers.Base;
+using MSIA.WebFresher052023.Application.DTO.FixedAssett;
 
 namespace API.Controllers
 {
@@ -32,6 +33,21 @@ namespace API.Controllers
         public async Task<IActionResult> GetList([FromQuery] int? pageNumber, [FromQuery] int? pageLimit, [FromQuery] string? filterName, [FromQuery] string? departId, [FromQuery] string? aTypeId)
         {
             var assetList = await _fixedAssetService.GetAllCustomAsync(pageNumber, pageLimit, filterName, departId, aTypeId);
+            return StatusCode(StatusCodes.Status200OK, assetList);
+        }
+
+        /// <summary>
+        /// Lấy danh sách tài sản có loại những bản ghi đã chọn để hiện thị trên form chọn tài sản cho chứng từ
+        /// </summary>
+        /// <param name="pageNumber">Số trang</param>
+        /// <param name="pageLimit">Số lượng tối đa bản ghi mỗi trang</param>
+        /// <param name="dtos">Danh sách truyền vào để loại những bản ghi đó ra</param>
+        /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
+        /// Created by: ldtuan (05/09/2023)
+        [HttpPost("FilterForTransfer")]
+        public async Task<IActionResult> FilterForTransfer([FromBody] FixedAssetForTransferDto dtos)
+        {
+            var assetList = await _fixedAssetService.FilterFixedAssetForTransfer(dtos.pageNumber, dtos.pageLimit, dtos.FixedAssetDtos);
             return StatusCode(StatusCodes.Status200OK, assetList);
         }
 

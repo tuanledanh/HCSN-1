@@ -241,7 +241,7 @@ namespace Application.Service
                         return item;
                     }).ToList();
 
-                    List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map(transferDtosUpdate, listTransferAssetDetailInDB);
+                    List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map<List<TransferAssetDetail>>(transferDtosUpdate);
                     List<TransferAssetDetail> transferAssetDetails = InitializeEntities(transferAssetDetailsRaw);
 
                     await _transferAssetDetailRepository.UpdateMultiAsync(transferAssetDetails);

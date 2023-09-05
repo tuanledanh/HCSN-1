@@ -53,6 +53,8 @@ const MISAApi = {
           aTypeId,
         },
       }),
+    // Api chọn tài sản theo phòng ban mới nhất từ chứng từ và bỏ những tài sản đã được chọn
+    FilterForTransfer: (data) => baseAssetAxios.post("/FilterForTransfer", data),
     // Api của tài sản
     Api: baseAssetApi,
     // Api lấy mã code mới
@@ -107,6 +109,8 @@ const MISAApi = {
       }),
     // Api tạo bản ghi mới
     Create: (transferAssetData) => baseTransferAssetAxios.post("", transferAssetData),
+    // Api cập nhật
+    Update: (id, transferAssetData) => baseTransferAssetAxios.put(`/${id}`, transferAssetData),
     // Api lấy bản ghi bằng mã code
     GetByCode: (code) => baseTransferAssetAxios.get(`/${code}`),
   },

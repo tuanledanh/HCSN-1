@@ -4,6 +4,7 @@ using Domain.Model;
 using Microsoft.Extensions.Configuration;
 using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Repository;
+using MSIA.WebFresher052023.Domain.Model;
 using MSIA.WebFresher052023.Infrastructure.Repository.Base;
 using System.Data;
 using static Dapper.SqlMapper;
@@ -44,6 +45,41 @@ namespace Infrastructure.Repository
             };
             var entities = await _unitOfWork.Connection.QueryAsync<FixedAssetModel>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entities.ToList();
+        }
+
+        /// <summary>
+        /// Lấy danh sách tài sản có loại những bản ghi đã chọn để hiện thị trên form chọn tài sản cho chứng từ
+        /// </summary>
+        /// <param name="pageNumber">Số trang</param>
+        /// <param name="pageLimit">Số lượng tối đa bản ghi mỗi trang</param>
+        /// <param name="ids">Danh sách id truyền vào để loại những bản ghi có id đó ra</param>
+        /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
+        /// Created by: ldtuan (05/09/2023)
+        public async Task<FixedAssetForTransferModel> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, string ids)
+        {
+            var procedureName = "Proc_FilterFixedAssetForTransfer";
+            //var parameters = new
+            //{
+            //    p_PageNumber = pageNumber,
+            //    p_PageLimit = pageLimit,
+            //    p_List = ids
+            //};
+
+            var parameters = new DynamicParameters();
+            parameters.Add("p_PageNumber", pageNumber);
+            parameters.Add("p_PageLimit", pageLimit);
+            parameters.Add("p_List", ids);
+
+            parameters.Add("p_Count", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            var entities = await _unitOfWork.Connection.QueryAsync<FixedAssetModel>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
+            var total = parameters.Get<int>("p_Count");
+            var fixedAssetForTransferModel = new FixedAssetForTransferModel
+            {
+                TotalRecords = total,
+                FixedAssetModels = entities.ToList()
+            };
+            return fixedAssetForTransferModel;
         }
 
         /// <summary>

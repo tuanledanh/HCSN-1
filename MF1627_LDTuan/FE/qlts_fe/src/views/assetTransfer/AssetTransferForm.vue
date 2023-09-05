@@ -115,7 +115,7 @@
                     <div @click="btnAddReceiver">
                       <MISAIcon add_box_thin></MISAIcon>
                     </div>
-                    <div @click="btnDeleteReceiver">
+                    <div @click="btnDeleteReceiver(receiver)">
                       <MISAIcon v-if="index > 0" deleteIcon></MISAIcon>
                     </div>
                   </div>
@@ -294,9 +294,7 @@
               </div>
               <div class="cell display--center-center border--bottom">
                 <div class="icon-function">
-                  <MISATooltip bottom content="Xóa">
-                    <MISAIcon deleteIcon background></MISAIcon>
-                  </MISATooltip>
+                    <MISAIcon deleteIcon background @click="btnDeleteAsset(asset)"></MISAIcon>
                 </div>
               </div>
             </div>
@@ -333,6 +331,7 @@
     @onCloseForm="onCloseForm"
     v-if="isShowFormChooseAsset"
     @loadData="loadData"
+    :existFixedAsset="existFixedAsset"
   ></MISAAssetTransferChooseForm>
 </template>
 <script>
@@ -381,6 +380,8 @@ export default {
       isFormDisplay: false,
       // Hiển thị form chọn tài sản
       isShowFormChooseAsset: false,
+      // Danh sách bản ghi đã tồn tại trong form này
+      existFixedAsset: null,
 
       // ----------------------------- Paging -----------------------------
       pageLimitList: [],
@@ -470,12 +471,21 @@ export default {
       listReceiverFinal
     ) {
       let transfer = {
-        TransferAssetId: transferAssetId,
         TransferAsset: newTransferAsset,
         ListTransferAssetDetail: listTransferAssetDetail,
         ListReceiver: listReceiverFinal,
       };
-      console.log(transfer);
+      this.$_MISAApi.TransferAsset.Update(transferAssetId, transfer)
+        .then(() => {
+          this.btnCloseForm();
+          this.$emit("reLoad");
+        })
+        .catch((res) => {
+          // this.$processErrorResponse(res);
+          // this.isShowToastValidateBE = true;
+          // this.toast_content_warning = res.response.data.UserMessage;
+          console.log(res);
+        });
     },
 
     /**
@@ -496,137 +506,6 @@ export default {
         TransactionDate: oldTransferAsset.TransactionDate,
         Description: oldTransferAsset.Description,
       };
-
-      // // 4.Phân chia danh sách add-update-delete chi tiết chứng từ mới nhất
-      // let listDetail = this.assets;
-      // /*******************************/
-      // // 4.1.Danh sách add (các đối tượng của danh sách này không chứa thuộc tính TransferAssetDetailId)
-      // let listDetailAdd = listDetail
-      //   .filter(
-      //     (asset) =>
-      //       !Object.prototype.hasOwnProperty.call(
-      //         asset,
-      //         "TransferAssetDetailId"
-      //       )
-      //   )
-      //   .map((asset) => ({
-      //     Flag: 0,
-      //     FixedAssetId: asset.FixedAssetId,
-      //     OldDepartmentId: asset.DepartmentId,
-      //     NewDepartmentId: asset.NewDepartmentId,
-      //     Description: asset.description,
-      //   }));
-
-      // // 4.2.Danh sách update-delete (các đối tượng của danh sách này chứa thuộc tính TransferAssetDetailId)
-      // let listDetailUD = listDetail.filter((asset) =>
-      //   Object.prototype.hasOwnProperty.call(asset, "TransferAssetDetailId")
-      // );
-      // /*******************************/
-      // // 4.2.1.Danh sách delete (là những object không tồn tại trong danh sách mới nhưng có trong danh sách cũ)
-      // let listDetailDelete = this.oldAssets
-      //   .filter((oldAsset) => {
-      //     return !listDetailUD.find(
-      //       (newAsset) =>
-      //         newAsset.TransferAssetDetailId === oldAsset.TransferAssetDetailId
-      //     );
-      //   })
-      //   .map((asset) => ({
-      //     Flag: 2,
-      //     TransferAssetDetailId: asset.TransferAssetDetailId,
-      //     FixedAssetId: asset.FixedAssetId,
-      //     OldDepartmentId: asset.DepartmentId,
-      //     NewDepartmentId: asset.NewDepartmentId,
-      //     Description: asset.description,
-      //   }));
-      // // 4.2.2.Danh sách update (là những object tồn tại cả trong danh sách mới và trong danh sách cũ)
-      // let listDetailUpdate = this.oldAssets
-      //   .filter((oldAsset) => {
-      //     return listDetailUD.find(
-      //       (newAsset) =>
-      //         newAsset.TransferAssetDetailId === oldAsset.TransferAssetDetailId
-      //     );
-      //   })
-      //   .map((asset) => ({
-      //     Flag: 1,
-      //     TransferAssetDetailId: asset.TransferAssetDetailId,
-      //     FixedAssetId: asset.FixedAssetId,
-      //     OldDepartmentId: asset.DepartmentId,
-      //     NewDepartmentId: asset.NewDepartmentId,
-      //     Description: asset.description,
-      //   }));
-
-      // // 5.Nối các list add-update-delete lại với nhau
-      // let listTransferAssetDetail = [
-      //   ...listDetailAdd,
-      //   ...listDetailDelete,
-      //   ...listDetailUpdate,
-      // ];
-
-      // // 4.Phân chia danh sách add-update-delete chi tiết chứng từ mới nhất
-      // let listReceiver = this.receivers;
-      // /*******************************/
-      // // 4.1.Danh sách add (các đối tượng của danh sách này không chứa thuộc tính TransferAssetDetailId)
-      // let listReceiverAdd = listReceiver
-      //   .filter(
-      //     (receiver) =>
-      //       !Object.prototype.hasOwnProperty.call(receiver, "ReceiverId")
-      //   )
-      //   .map((receiver) => ({
-      //     Flag: 0,
-      //     ReceiverCode: receiver.ReceiverCode,
-      //     ReceiverFullname: receiver.ReceiverFullname,
-      //     ReceiverDelegate: receiver.ReceiverDelegate,
-      //     ReceiverPosition: receiver.ReceiverPosition,
-      //   }));
-
-      // // 4.2.Danh sách update-delete (các đối tượng của danh sách này chứa thuộc tính TransferAssetDetailId)
-      // let listReceiverUD = listReceiver.filter(
-      //   (receiver) =>
-      //     receiver.ReceiverId !== null &&
-      //     receiver.ReceiverId !== "" &&
-      //     typeof receiver.ReceiverId !== "undefined" &&
-      //     Object.prototype.hasOwnProperty.call(receiver, "ReceiverId")
-      // );
-      // /*******************************/
-      // // 4.2.1.Danh sách delete (là những object không tồn tại trong danh sách mới nhưng có trong danh sách cũ)
-      // let listReceiverDelete = this.oldReceivers
-      //   .filter((oldReceiver) => {
-      //     return !listReceiverUD.find(
-      //       (newReceiver) => newReceiver.ReceiverId === oldReceiver.ReceiverId
-      //     );
-      //   })
-      //   .map((receiver) => ({
-      //     Flag: 2,
-      //     ReceiverId: receiver.ReceiverId,
-      //     ReceiverCode: receiver.ReceiverCode,
-      //     ReceiverFullname: receiver.ReceiverFullname,
-      //     ReceiverDelegate: receiver.ReceiverDelegate,
-      //     ReceiverPosition: receiver.ReceiverPosition,
-      //   }));
-      // // 4.2.2.Danh sách update (là những object tồn tại cả trong danh sách mới và trong danh sách cũ)
-      // let listReceiverUpdate = this.oldReceivers
-      //   .filter((oldReceiver) => {
-      //     return listReceiverUD.find(
-      //       (newReceiver) =>
-      //         newReceiver.TransferAssetDetailId ===
-      //         oldReceiver.TransferAssetDetailId
-      //     );
-      //   })
-      //   .map((receiver) => ({
-      //     Flag: 1,
-      //     ReceiverId: receiver.ReceiverId,
-      //     ReceiverCode: receiver.ReceiverCode,
-      //     ReceiverFullname: receiver.ReceiverFullname,
-      //     ReceiverDelegate: receiver.ReceiverDelegate,
-      //     ReceiverPosition: receiver.ReceiverPosition,
-      //   }));
-
-      // // 5.Nối các list add-update-delete lại với nhau
-      // let listReceiverFinal = [
-      //   ...listReceiverAdd,
-      //   ...listReceiverDelete,
-      //   ...listReceiverUpdate,
-      // ];
       let selectedFieldsDetail = [
         "FixedAssetId",
         "OldDepartmentId",
@@ -843,9 +722,10 @@ export default {
       this.receivers.push(newReceiver);
     },
 
-    btnDeleteReceiver() {
-      if (this.receivers.length > 0) {
-        this.receivers.pop();
+    btnDeleteReceiver(receiver) {
+      const index = this.receivers.indexOf(receiver);
+      if(index !== -1){
+        this.receivers.splice(index, 1);
       }
     },
 
@@ -866,6 +746,13 @@ export default {
         this.assets = items;
       } else {
         this.assets = this.assets.concat(items);
+      }
+    },
+
+    btnDeleteAsset(asset){
+      const index = this.assets.indexOf(asset);
+      if(index !== -1){
+        this.assets.splice(index, 1);
       }
     },
 
@@ -912,6 +799,7 @@ export default {
 
     btnShowFormChooseAsset() {
       this.isShowFormChooseAsset = true;
+      this.existFixedAsset = this.assets;
     },
 
     onCloseForm() {

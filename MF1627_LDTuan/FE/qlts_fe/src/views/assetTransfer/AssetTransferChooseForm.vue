@@ -232,6 +232,12 @@ import { AssetDepreciation } from "../../helpers/common/format/format";
 
 export default {
   name: "AssetTransferChooseForm",
+  props:{
+    existFixedAsset:{
+      type: Object,
+      default: null,
+    }
+  },
   data() {
     return {
       // ----------------------------- DATA -----------------------------
@@ -288,7 +294,13 @@ export default {
 
     // load data tạm thời
     loadData() {
-      this.$_MISAApi.FixedAsset.Filter(1, 15, null, null, null)
+      console.log(this.selectedRowsByCheckBox);
+      var dataFilter = {
+        pageNumber: 1,
+        pageLimit: 20,
+        FixedAssetDtos: this.existFixedAsset
+      };
+      this.$_MISAApi.FixedAsset.FilterForTransfer(dataFilter)
         .then((res) => {
           this.assets = res.data.Data;
         })
@@ -344,6 +356,7 @@ export default {
             })
           );
           this.$emit("loadData", assetsWithNewDepartment);
+          console.log(this.selectedRowsByCheckBox);
           this.btnCloseForm();
         }
       }
