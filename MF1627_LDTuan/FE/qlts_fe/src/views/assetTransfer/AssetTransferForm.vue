@@ -50,7 +50,6 @@
                 label="Ghi chú"
                 v-model="transferAsset.Description"
                 medium
-                required
                 maxlength="4"
               ></MISAInput>
             </div>
@@ -473,9 +472,13 @@ export default {
       listTransferAssetDetail,
       listReceiverFinal
     ) {
+      var listDetail = listTransferAssetDetail.map((item) => ({
+        ...item,
+        Description: item.Description ?? "",
+      }));
       let transfer = {
         TransferAsset: newTransferAsset,
-        ListTransferAssetDetail: listTransferAssetDetail,
+        ListTransferAssetDetail: listDetail,
         ListReceiver: listReceiverFinal,
       };
       this.$_MISAApi.TransferAsset.Update(transferAssetId, transfer)
@@ -507,7 +510,10 @@ export default {
         TransferAssetCode: oldTransferAsset.TransferAssetCode,
         TransferDate: oldTransferAsset.TransferDate,
         TransactionDate: oldTransferAsset.TransactionDate,
-        Description: oldTransferAsset.Description,
+        Description:
+          oldTransferAsset.Description === null
+            ? ""
+            : oldTransferAsset.Description,
       };
       let selectedFieldsDetail = [
         "FixedAssetId",
@@ -558,7 +564,7 @@ export default {
     },
 
     createAddUpdateDeleteList(sourceList, idField, oldList, selectedFields) {
-      // 1. Danh sách add
+      // 1.Danh sách add
       let listAdd = sourceList
         .filter((item) => !Object.prototype.hasOwnProperty.call(item, idField))
         .map((item) => {
@@ -574,7 +580,7 @@ export default {
           return newItem;
         });
 
-      // 2. Danh sách update-delete
+      // 2.Danh sách update-delete
       let listUD = sourceList.filter(
         (item) =>
           item[idField] !== null &&
@@ -619,7 +625,7 @@ export default {
           return newItem;
         });
 
-      // 3. Nối các danh sách lại với nhau
+      // 3.Nối các danh sách lại với nhau
       return [...listAdd, ...listDelete, ...listUpdate];
     },
 

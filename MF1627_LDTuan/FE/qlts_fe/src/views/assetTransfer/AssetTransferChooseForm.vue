@@ -294,7 +294,6 @@ export default {
 
     // load data tạm thời
     loadData() {
-      console.log(this.existFixedAsset);
       var dataFilter = {
         pageNumber: 1,
         pageLimit: 20,
@@ -356,7 +355,6 @@ export default {
             })
           );
           this.$emit("loadData", assetsWithNewDepartment);
-          console.log(this.existFixedAsset);
           this.btnCloseForm();
         }
       }

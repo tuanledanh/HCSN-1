@@ -40,6 +40,6 @@ namespace Application.DTO
         /// Lý do điều chuyển
         /// </summary>
         /// Created by: ldtuan (27/08/2023)
-        public string Description { get; set; }
+        public string? Description { get; set; }
     }
 }
