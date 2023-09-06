@@ -1,7 +1,5 @@
 ﻿using Application.DTO;
-using Application.DTO;
 using AutoMapper;
-using Domain.Entity;
 using Domain.Model;
 using MSIA.WebFresher052023.Domain.Entity;
 
@@ -15,7 +13,7 @@ namespace Application.AutoMapper
             CreateMap<TransferAssetDetail, TransferAssetDetailModel>();
             CreateMap<TransferAssetDetailModel, TransferAssetDetailDto>();
             CreateMap<TransferAssetDetailCreateDto, TransferAssetDetail>();
-            CreateMap<TransferAssetDetailUpdateDto, TransferAssetDetail>().ForMember(dest => dest.CreatedDate, opt => opt.Ignore());
+            CreateMap<TransferAssetDetailUpdateDto, TransferAssetDetail>();
             CreateMap<TransferAssetDetailCreateDto, TransferAssetDetailModel>();
             CreateMap<TransferAssetDetailUpdateDto, TransferAssetDetailModel>();
         }

@@ -262,7 +262,7 @@ export default {
      */
     onDeleteText() {
       this.inputText = "";
-      this.$emit("filter", "");
+      this.$emit("deleteDepartment", "");
       this.indexHover = -1;
       this.itemSelected = null;
       this.itemSelectedByClick = null;

@@ -1,7 +1,6 @@
 ﻿using Application.DTO;
 using Application.Interface;
 using AutoMapper;
-using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.Exceptions;
 using Domain.Model;
 using MSIA.WebFresher052023.Application.DTO;
@@ -209,9 +208,11 @@ namespace Application.Service
             try
             {
                 // Cập nhật chứng từ
+                DateTime? createdDate = oldTransferAsset.CreatedDate;
                 var transferAsset = _mapper.Map(transferAssetDto, oldTransferAsset);
                 transferAsset.SetKey(transferAssetId);
                 transferAsset.ModifiedDate = DateTime.Now;
+                transferAsset.CreatedDate = createdDate;
 
                 await _transferAssetRepository.UpdateAsync(transferAsset);
 
@@ -242,7 +243,7 @@ namespace Application.Service
                     }).ToList();
 
                     List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map<List<TransferAssetDetail>>(transferDtosUpdate);
-                    List<TransferAssetDetail> transferAssetDetails = InitializeEntities(transferAssetDetailsRaw);
+                    List<TransferAssetDetail> transferAssetDetails = InitializeEntities(transferAssetDetailsRaw, createdDate);
 
                     await _transferAssetDetailRepository.UpdateMultiAsync(transferAssetDetails);
                 }
@@ -250,7 +251,7 @@ namespace Application.Service
                 if (receiverDtosUpdate != null)
                 {
                     List<Receiver> receiversRaw = _mapper.Map<List<Receiver>>(receiverDtosUpdate);
-                    List<Receiver> receivers = InitializeEntities(receiversRaw);
+                    List<Receiver> receivers = InitializeEntities(receiversRaw, createdDate);
 
                     await _receiverRepository.UpdateMultiAsync(receivers);
                 }
@@ -322,13 +323,14 @@ namespace Application.Service
         /// <param name="entitiesRaw">Danh sách bản ghi</param>
         /// <returns>Danh sách sau khi sửa 1 vài thuộc tính</returns>
         /// Created by: ldtuan (31/08/2023)
-        private static List<T> InitializeEntities<T>(List<T> entitiesRaw) where T : BaseEntity
+        private static List<T> InitializeEntities<T>(List<T> entitiesRaw, DateTime? createdDate) where T : BaseEntity
         {
             List<T> entities = new();
 
             foreach (var entity in entitiesRaw)
             {
                 entity.ModifiedDate = DateTime.Now;
+                entity.CreatedDate = createdDate;
 
                 entities.Add(entity);
             }

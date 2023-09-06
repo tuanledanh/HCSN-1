@@ -276,6 +276,7 @@
                   :existCode="asset.NewDepartmentName"
                   :inputChange="inputChange"
                   @filter="getNewDepartment(asset, $event)"
+                  @deleteDepartment="deleteDepartment(asset, $event)"
                   :newDepartment="asset.NewDepartmentName"
                   isDisplay
                   self_adjust_size
@@ -368,7 +369,10 @@ export default {
       transferAsset: {},
       // Danh sách bản ghi tài sản
       assets: [],
+      // Danh sách bản ghi trước khi cập nhật (cái này sẽ có 1 vài field thay đổi theo assets để thực hiện cho việc cập nhật)
       oldAssets: [],
+      // Danh sách bản ghi từ db, các bản ghi này có giá trị không đổi, nó thể hiện đúng dữ liệu hiện có trong db
+      originalAssets: [],
       // Danh sách người nhận
       receivers: [],
       oldReceivers: [],
@@ -528,15 +532,15 @@ export default {
         "ReceiverPosition",
       ];
 
-      // Chuyển DepartmentName và DepartmentId thành OldDepartmentName và OldDepartmentId trong this.assets
+      // 4.Chuyển DepartmentName và DepartmentId thành OldDepartmentName và OldDepartmentId trong this.assets
       let assets = this.assets;
       assets.forEach((asset) => {
         asset.OldDepartmentName = asset.DepartmentName;
         asset.OldDepartmentId = asset.DepartmentId;
       });
 
-      // Tương tự, chuyển DepartmentName và DepartmentId thành OldDepartmentName và OldDepartmentId trong this.oldAssets
-      let oldAssets = this.oldAssets;
+      // 5.Tương tự, chuyển DepartmentName và DepartmentId thành OldDepartmentName và OldDepartmentId trong this.oldAssets
+      let oldAssets = [...this.oldAssets];
       oldAssets.forEach((oldAsset) => {
         oldAsset.OldDepartmentName = oldAsset.DepartmentName;
         oldAsset.OldDepartmentId = oldAsset.DepartmentId;
@@ -548,7 +552,85 @@ export default {
         selectedFieldsDetail
       );
 
-      // Sử dụng hàm createAddUpdateDeleteList cho listReceiver
+      // 6.Validate xem trong add và update coi có bản ghi nào có phòng ban giống nhau không, nếu có thì báo lỗi ngay
+      // var listAddUpdate = listTransferAssetDetail.filter(
+      //   (asset) => asset.Flag == 1 || asset.Flag == 0
+      // );
+      // 7.tạo enum cho flag
+      listTransferAssetDetail.forEach((asset) => {
+        if (
+          !asset.OldDepartmentId ||
+          asset.OldDepartmentId === null ||
+          asset.OldDepartmentId == "" ||
+          !asset.NewDepartmentId ||
+          asset.NewDepartmentId === null ||
+          asset.NewDepartmentId == "" ||
+          asset.OldDepartmentId === asset.NewDepartmentId
+        ) {
+          // 7.1ném ra toast lỗi ở đây
+          throw new Error(
+            "Exception: Các cặp giá trị oldDepartmentId và newDepartmentId trùng nhau"
+          );
+        }
+      });
+
+      // 8.Lọc các bản ghi không thay đổi dữ liệu (chỉ áp dụng với trường hợp update)
+      /******************************/
+      // 8.1.Lấy danh sách các bản ghi update (khi update có những description bằng null hoặc rỗng, thì quy hết về rỗng để so sánh)
+      var listUpdate = listTransferAssetDetail
+        .filter((asset) => asset.Flag == 1)
+        .map((item) => ({
+          ...item,
+          Description: item.Description ?? "",
+        }));
+      // 8.2.Lấy danh sách bản ghi nguyên thủy từ db
+      var originalAssets = this.originalAssets.map((item) => ({
+        ...item,
+        Description: item.Description ?? "",
+      }));
+
+      // 8.3.Tạo một danh sách ID trùng nhau
+      const commonIds = listUpdate
+        .filter((updateItem) =>
+          originalAssets.some(
+            (oldItem) =>
+              oldItem.TransferAssetDetailId === updateItem.TransferAssetDetailId
+          )
+        )
+        .map((item) => item.TransferAssetDetailId);
+
+      // 8.4.Lọc ra các bản ghi không thay đổi dựa vào newDepartmentId và description vì đây là 2 field duy nhất có thể thay đổi
+      const unchangedRecords = commonIds
+        .filter((transferAssetDetailId) => {
+          const updateItem = listUpdate.find(
+            (item) => item.TransferAssetDetailId === transferAssetDetailId
+          );
+          const oldItem = originalAssets.find(
+            (item) => item.TransferAssetDetailId === transferAssetDetailId
+          );
+
+          // 8.4.1Kiểm tra điều kiện thay đổi (ví dụ: NewDepartmentId và Description)
+          return (
+            updateItem.NewDepartmentId === oldItem.NewDepartmentId &&
+            updateItem.Description === oldItem.Description
+          );
+        })
+        .map((transferAssetDetailId) => {
+          const updateItem = listUpdate.find(
+            (item) => item.TransferAssetDetailId === transferAssetDetailId
+          );
+          return { ...updateItem };
+        });
+
+      // 8.5.Loại các bản ghi không thay đổi
+      const unchangedIds = unchangedRecords.map(
+        (record) => record.TransferAssetDetailId
+      );
+      listTransferAssetDetail = listTransferAssetDetail.filter(
+        (asset) => !unchangedIds.includes(asset.TransferAssetDetailId)
+      );
+
+      // 9.Sử dụng hàm createAddUpdateDeleteList cho listReceiver
       let listReceiverFinal = this.createAddUpdateDeleteList(
         this.receivers,
         "ReceiverId",
@@ -713,6 +795,7 @@ export default {
           // Cách viết ... là để sao chép dữ liệu, nếu viết this.a = this.b thì sẽ làm tham chiếu
           // Chúng sẽ cùng trỏ đến 1 địa chỉ nên 1 cái thay đổi dữ liệu thì cái kia đổi theo
           this.oldAssets = [...this.assets];
+          this.originalAssets = JSON.parse(JSON.stringify(this.assets));
           this.oldReceivers = [...this.receivers];
         })
         .catch((res) => {
@@ -766,10 +849,28 @@ export default {
     },
 
     //------------------------------------------- COMBOBOX -------------------------------------------
+    /**
+     * Cập nhật thông tin phòng ban cho tài sản
+     * @param {object} asset tài sản
+     * @param {string} item phòng ban
+     * Author: LDTUAN (06/09/2023)
+     */
     getNewDepartment(asset, item) {
       if (item) {
         asset.NewDepartmentId = item.DepartmentId;
         asset.NewDepartmentName = item.DepartmentName;
+      }
+    },
+
+    /**
+     * Khi xóa text thì cập nhật lại id = null
+     * @param {object} asset tài sản
+     * @param {string} item phòng ban
+     * Author: LDTUAN (06/09/2023)
+     */
+    deleteDepartment(asset, item) {
+      if (!item) {
+        asset.NewDepartmentId = null;
       }
     },
 
