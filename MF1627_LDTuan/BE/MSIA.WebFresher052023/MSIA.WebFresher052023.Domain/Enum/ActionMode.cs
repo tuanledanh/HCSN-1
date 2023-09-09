@@ -13,6 +13,10 @@
         /// <summary>
         /// Hành động xóa
         /// </summary>
-        Delete = 2
+        Delete = 2,
+        /// <summary>
+        /// Không thay đổi
+        /// </summary>
+        Unchage = 3
     }
 }

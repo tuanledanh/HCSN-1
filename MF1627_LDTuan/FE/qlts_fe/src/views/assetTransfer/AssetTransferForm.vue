@@ -55,9 +55,11 @@
             </div>
           </div>
           <div class="content__row--bot">
-            <div class="checkbox" @click="showFormReceiver">
-              <input type="checkbox" />
-              <label class="font-weight--500">Chọn ban giao nhận</label>
+            <div class="checkbox">
+              <div class="checkbox-combo" @click="showFormReceiver">
+                <input type="checkbox" :checked="receivers.length > 0"/>
+                <label class="font-weight--500">Chọn ban giao nhận</label>
+              </div>
             </div>
           </div>
         </div>
@@ -367,6 +369,7 @@ export default {
       transferData: {},
       // Chứng từ tài sản
       transferAsset: {},
+      originalTransferAsset: {},
       // Danh sách bản ghi tài sản
       assets: [],
       // Danh sách bản ghi trước khi cập nhật (cái này sẽ có 1 vài field thay đổi theo assets để thực hiện cho việc cập nhật)
@@ -504,6 +507,12 @@ export default {
      */
     updateTransferAssetHelper() {
       // 1. Lấy thông tin của chứng từ điều chuyển cũ
+      this.transferAsset.TransactionDate = DateFormat(
+        this.transferAsset.TransactionDate
+      );
+      this.transferAsset.TransferDate = DateFormat(
+        this.transferAsset.TransferDate
+      );
       let oldTransferAsset = this.transferAsset;
 
       // 2.Lấy id của chứng từ điều chuyển
@@ -519,6 +528,21 @@ export default {
             ? ""
             : oldTransferAsset.Description,
       };
+      // 3.1.Xem thông tin chứng từ có đổi gì không
+      const arePropertiesEqual =
+        this.originalTransferAsset.TransferAssetCode ===
+          newTransferAsset.TransferAssetCode &&
+        this.originalTransferAsset.TransferDate ===
+          newTransferAsset.TransferDate &&
+        this.originalTransferAsset.TransactionDate ===
+          newTransferAsset.TransactionDate &&
+        (this.originalTransferAsset.Description === null
+          ? ""
+          : this.originalTransferAsset.Description) ===
+          (newTransferAsset.Description === null
+            ? ""
+            : newTransferAsset.Description);
+
       let selectedFieldsDetail = [
         "FixedAssetId",
         "OldDepartmentId",
@@ -622,13 +646,15 @@ export default {
           return { ...updateItem };
         });
 
-      // 8.5.Loại các bản ghi không thay đổi
+      // 8.5.Sửa các flag thành 3
       const unchangedIds = unchangedRecords.map(
         (record) => record.TransferAssetDetailId
       );
-      listTransferAssetDetail = listTransferAssetDetail.filter(
-        (asset) => !unchangedIds.includes(asset.TransferAssetDetailId)
-      );
+      listTransferAssetDetail.forEach((asset) => {
+        if (unchangedIds.includes(asset.TransferAssetDetailId)) {
+          asset.Flag = 3;
+        }
+      });
 
       // 9.Sử dụng hàm createAddUpdateDeleteList cho listReceiver
       let listReceiverFinal = this.createAddUpdateDeleteList(
@@ -637,12 +663,48 @@ export default {
         this.oldReceivers,
         selectedFieldsReceiver
       );
-      this.UpdateTransferAsset(
-        transferAssetId,
-        newTransferAsset,
-        listTransferAssetDetail,
-        listReceiverFinal
+
+      // Nếu không thay đổi dữ liệu gì thì đóng form
+      var listAssetIdAdd = listTransferAssetDetail.filter(
+        (asset) => asset.Flag == 0
       );
+      var listAssetIdUpdate = listTransferAssetDetail.filter(
+        (asset) => asset.Flag == 1
+      );
+      var listAssetIdDelete = listTransferAssetDetail.filter(
+        (asset) => asset.Flag == 2
+      );
+      var listAssetIdUnchange = listTransferAssetDetail.filter(
+        (asset) => asset.Flag == 3
+      );
+      var listReceiverIdAdd = listReceiverFinal.filter(
+        (asset) => asset.Flag == 0
+      );
+      var listReceiverIdUpdate = listReceiverFinal.filter(
+        (asset) => asset.Flag == 1
+      );
+      var listReceiverIdDelete = listReceiverFinal.filter(
+        (asset) => asset.Flag == 2
+      );
+      if (
+        arePropertiesEqual &&
+        listAssetIdAdd == 0 &&
+        listAssetIdUpdate == 0 &&
+        listAssetIdDelete == 0 &&
+        listAssetIdUnchange != 0 &&
+        listReceiverIdAdd == 0 &&
+        listReceiverIdUpdate == 0 &&
+        listReceiverIdDelete == 0
+      ) {
+        this.btnCloseForm();
+      } else {
+        this.UpdateTransferAsset(
+          transferAssetId,
+          newTransferAsset,
+          listTransferAssetDetail,
+          listReceiverFinal
+        );
+      }
     },
 
     createAddUpdateDeleteList(sourceList, idField, oldList, selectedFields) {
@@ -725,6 +787,12 @@ export default {
         Description: asset.description,
       }));
       this.transferData.ListTransferAssetDetail = transferAssetDetails;
+      this.transferAsset.TransactionDate = DateFormat(
+        this.transferAsset.TransactionDate
+      );
+      this.transferAsset.TransferDate = DateFormat(
+        this.transferAsset.TransferDate
+      );
       this.transferData.TransferAsset = this.transferAsset;
       this.$_MISAApi.TransferAsset.Create(this.transferData)
         .then(() => {
@@ -780,6 +848,9 @@ export default {
             TransactionDate: DateFormat(res.data.TransactionDate),
             Description: res.data.Description,
           };
+          this.originalTransferAsset = JSON.parse(
+            JSON.stringify(this.transferAsset)
+          );
 
           this.loadData(res.data.FixedAssetTransfers);
           // Duyệt qua mảng assets và chuyển giá trị của olddpepartment sang department
@@ -1004,6 +1075,10 @@ export default {
 }
 
 .checkbox {
+  display: flex;
+  align-items: center;
+}
+.checkbox-combo {
   display: flex;
   align-items: center;
   column-gap: 10px;

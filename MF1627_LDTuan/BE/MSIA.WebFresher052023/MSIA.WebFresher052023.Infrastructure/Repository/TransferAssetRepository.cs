@@ -7,6 +7,8 @@ using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Repository;
 using MSIA.WebFresher052023.Domain.Model;
 using MSIA.WebFresher052023.Infrastructure.Repository.Base;
+using MySql.Data.MySqlClient;
+using Org.BouncyCastle.Crypto;
 using System.Data;
 
 namespace Infrastructure.Repository
@@ -37,6 +39,7 @@ namespace Infrastructure.Repository
             // Làm như này vẫn ok: QueryAsync<FixedAssetTransferModel> + bỏ splitOn
             // Nhưng làm như bên dưới thì có thể lấy được cả thông tin của transferAsset ra ngoài
             // Đây là cách map với bảng quan hệ 1 nhiều
+            
             var results = await _unitOfWork.Connection.QueryAsync<FixedAssetTransferModel, TransferAssetModel, ReceiverTransferModel, TransferAssetModel>(
                     procedureName,
                     (fixedAssetTransferModel, transferAssetModel, receiverTransferModel) =>
@@ -92,6 +95,52 @@ namespace Infrastructure.Repository
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Lấy chứng từ mới nhất trong những chứng từ mà tài sản có
+        /// </summary>
+        /// <param name="assetIds">Danh sách id của tài sản</param>
+        /// <returns>Chứng từ mới nhất trong đống tài sản</returns>
+        /// Created by: ldtuan (07/09/2023)
+        public async Task<List<TransferAsset>> GetNewestTransferAssetByAssetId(List<Guid> assetIds)
+        {
+            string listAssetId = "";
+            if (assetIds != null && assetIds.Count > 0)
+            {
+                listAssetId = string.Join(",", assetIds.Select(assetId => assetId.ToString()));
+            }
+
+            string procedureName = "Proc_GetNewestTransferAssetByAssetId";
+            var paramName = "p_List";
+            var dynamicParams = new DynamicParameters();
+            dynamicParams.Add(paramName, listAssetId);
+            
+            var transferAsset = await _unitOfWork.Connection.QueryAsync<TransferAsset>(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
+            return transferAsset.ToList();
+        }
+
+        /// <summary>
+        /// Truyền vào 1 danh sách chứng từ, tìm các tài sản trong chứng từ đó, rồi tìm tất cả các chứng từ có chứa các tài sản này
+        /// </summary>
+        /// <param name="transferAssetIds">Danh sách id chứng từ</param>
+        /// <returns>Danh sách chứng từ của các tài sản trong các chứng từ truyền vào</returns>
+        /// Created by: ldtuan (09/09/2023)
+        public async Task<List<TransferAssetDeleteModel>> GetAllTransferAssetOfAsset(List<Guid> transferAssetIds)
+        {
+            string listAssetId = "";
+            if (transferAssetIds != null && transferAssetIds.Count > 0)
+            {
+                listAssetId = string.Join(",", transferAssetIds.Select(transferAssetId => transferAssetId.ToString()));
+            }
+
+            string procedureName = "Proc_GetAllTransferAssetOfAsset";
+            var paramName = "p_List";
+            var dynamicParams = new DynamicParameters();
+            dynamicParams.Add(paramName, listAssetId);
+
+            var transferAsset = await _unitOfWork.Connection.QueryAsync<TransferAssetDeleteModel>(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
+            return transferAsset.ToList();
         }
         #endregion
     }

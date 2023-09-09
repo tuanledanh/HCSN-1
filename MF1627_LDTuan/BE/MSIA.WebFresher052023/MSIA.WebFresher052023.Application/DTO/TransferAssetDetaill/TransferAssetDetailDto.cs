@@ -21,6 +21,24 @@
         public Guid TransferAssetId { get; set; }
 
         /// <summary>
+        /// Mã chứng từ
+        /// </summary>
+        /// Created by: ldtuan (06/09/2023)
+        public string? TransferAssetCode { get; set; }
+
+        /// <summary>
+        /// Ngày chứng từ
+        /// </summary>
+        /// Created by: ldtuan (27/08/2023)
+        public DateTime? TransactionDate { get; set; }
+
+        /// <summary>
+        /// Ngày cập nhật
+        /// </summary>
+        /// Created by: ldtuan (27/08/2023)
+        public DateTime? ModifiedDate { get; set; }
+
+        /// <summary>
         /// Phòng ban hiện tại của tài sản
         /// </summary>
         /// Created by: ldtuan (27/08/2023)

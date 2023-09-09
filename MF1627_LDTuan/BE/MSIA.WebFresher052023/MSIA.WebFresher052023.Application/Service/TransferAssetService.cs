@@ -12,6 +12,7 @@ using MSIA.WebFresher052023.Domain.Enum;
 using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Manager;
 using MSIA.WebFresher052023.Domain.Interface.Repository;
+using MSIA.WebFresher052023.Domain.Service;
 
 namespace Application.Service
 {
@@ -20,21 +21,19 @@ namespace Application.Service
         #region Fields
         private readonly ITransferAssetRepository _transferAssetRepository;
         private readonly ITransferAssetManager _transferAssetManager;
+        private readonly ITransferAssetDetailManager _transferAssetDetailManager;
         private readonly IReceiverRepository _receiverRepository;
         private readonly ITransferAssetDetailRepository _transferAssetDetailRepository;
-        private readonly IDepartmentRepository _departmentRepository;
-        private readonly IFixedAssetRepository _fixedAssetRepository;
         #endregion
 
         #region Constructor
-        public TransferAssetService(ITransferAssetRepository transferAssetRepository, IReceiverRepository receiverRepository, ITransferAssetDetailRepository transferAssetDetailRepository, IDepartmentRepository departmentRepository, IFixedAssetRepository fixedAssetRepository, IMapper mapper, ITransferAssetManager transferAssetManager, IUnitOfWork unitOfWork) : base(transferAssetRepository, mapper, transferAssetManager, unitOfWork)
+        public TransferAssetService(ITransferAssetRepository transferAssetRepository, IReceiverRepository receiverRepository, ITransferAssetDetailRepository transferAssetDetailRepository, IMapper mapper, ITransferAssetManager transferAssetManager, ITransferAssetDetailManager transferAssetDetailManager, IUnitOfWork unitOfWork) : base(transferAssetRepository, mapper, transferAssetManager, unitOfWork)
         {
             _transferAssetRepository = transferAssetRepository;
             _transferAssetManager = transferAssetManager;
             _receiverRepository = receiverRepository;
             _transferAssetDetailRepository = transferAssetDetailRepository;
-            _departmentRepository = departmentRepository;
-            _fixedAssetRepository = fixedAssetRepository;
+            _transferAssetDetailManager = transferAssetDetailManager;
         }
         #endregion
 
@@ -89,13 +88,17 @@ namespace Application.Service
 
             var transferAssetDto = transferAssetCreateDto.TransferAsset;
             await _transferAssetManager.CheckDuplicateCode(transferAssetDto.TransferAssetCode);
-            // 2.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
-            _transferAssetManager.CheckDate(transferAssetDto);
 
             var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(transferAssetCreateDto.ListTransferAssetDetail);
 
-            // 3.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
-            await _transferAssetManager.CheckExistAsset(listTransferAssetDetails);
+            // 2.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
+            await _transferAssetManager.CheckExistAssetAsync(listTransferAssetDetails);
+
+            // 3.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
+            // Và ngày điều chuyển cũng phải lớn hơn các ngày điều chuyển của chứng từ mà tài sản hiện đang thuộc
+            var listAssetIds = listTransferAssetDetails.Select(transfer => transfer.FixedAssetId).Distinct().ToList();
+            await _transferAssetManager.CheckDateAsync(transferAssetDto, listAssetIds);
+
             // ======================================================= VALIDATE END  =======================================================
             #endregion
 
@@ -160,16 +163,19 @@ namespace Application.Service
 
             var transferAssetDto = transferAssetUpdateDto.TransferAsset;
             await _transferAssetManager.CheckDuplicateCode(transferAssetDto.TransferAssetCode, oldTransferAsset.TransferAssetCode);
-            // 3.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
-            _transferAssetManager.CheckDate(transferAssetDto);
 
-            // 4.Sau khi check không null thì bắt đầu lấy danh sách tài sản điều chuyển và bên người nhận
+            // 3.Sau khi check không null thì bắt đầu lấy danh sách tài sản điều chuyển và bên người nhận
             var listTransferAssetDeatilDtos = transferAssetUpdateDto.ListTransferAssetDetail.ToList();
             var listReceiverDtos = transferAssetUpdateDto.ListReceiver.ToList();
 
-            // 5.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
+            // 4.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
             var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(listTransferAssetDeatilDtos);
-            await _transferAssetManager.CheckExistAsset(listTransferAssetDetails);
+            await _transferAssetManager.CheckExistAssetAsync(listTransferAssetDetails);
+
+            // 5.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
+            // Và ngày điều chuyển cũng phải lớn hơn các ngày điều chuyển của chứng từ mà tài sản hiện đang thuộc
+            var listAssetIds = listTransferAssetDetails.Select(transfer => transfer.FixedAssetId).Distinct().ToList();
+            await _transferAssetManager.CheckDateAsync(transferAssetDto, listAssetIds);
 
             // 6.Kiểm tra xem danh sách chi tiết chứng từ có tồn tại trong db hay không, áp dụng với cập nhật và xóa
             var listTransferAssetDetailIds = listTransferAssetDeatilDtos
@@ -182,6 +188,13 @@ namespace Application.Service
             {
                 throw new DataException();
             }
+
+            // 7.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích xóa)
+            await CheckIfCanUpdateOrDelete(ActionMode.Delete, listTransferAssetDeatilDtos, oldTransferAsset.TransferAssetId);
+
+            // 8.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích cập nhật)
+            await CheckIfCanUpdateOrDelete(ActionMode.Update, listTransferAssetDeatilDtos, oldTransferAsset.TransferAssetId);
+
             // ======================================================= VALIDATE END  =======================================================
             #endregion
 
@@ -250,6 +263,12 @@ namespace Application.Service
 
                 if (receiverDtosUpdate != null)
                 {
+                    receiverDtosUpdate = receiverDtosUpdate.Select(item =>
+                    {
+                        item.TransferAssetId = transferAsset.TransferAssetId;
+                        return item;
+                    }).ToList();
+
                     List<Receiver> receiversRaw = _mapper.Map<List<Receiver>>(receiverDtosUpdate);
                     List<Receiver> receivers = InitializeEntities(receiversRaw, createdDate);
 
@@ -338,6 +357,37 @@ namespace Application.Service
             return entities;
         }
 
+        /// <summary>
+        /// Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không
+        /// </summary>
+        /// <param name="actionMode">Xét theo hành động để lấy bản ghi tương ứng</param>
+        /// <param name="list">Danh sách bản ghi cần lọc</param>
+        /// <param name="transferAssetId">Id của chứng từ</param>
+        /// <returns>Ném ra exception nếu có lỗi</returns>
+        private async Task CheckIfCanUpdateOrDelete(ActionMode actionMode, List<TransferAssetDetailUpdateDto> list, Guid transferAssetId)
+        {
+            List<Guid> ids = new();
+            if (actionMode == ActionMode.Update)
+            {
+                ids = list
+                .Where(transfer => transfer.Flag == actionMode || transfer.Flag == ActionMode.Unchage)
+                .Select(transfer => transfer.TransferAssetDetailId)
+                .Distinct()
+                .ToList();
+            }
+            else
+            {
+                ids = list
+                .Where(transfer => transfer.Flag == actionMode)
+                .Select(transfer => transfer.TransferAssetDetailId)
+                .Distinct()
+                .ToList();
+            }
+            if (ids != null && ids.Count > 0)
+            {
+                await _transferAssetDetailManager.CheckExistTransferBefore(ids, transferAssetId);
+            }
+        }
         #endregion
     }
 }

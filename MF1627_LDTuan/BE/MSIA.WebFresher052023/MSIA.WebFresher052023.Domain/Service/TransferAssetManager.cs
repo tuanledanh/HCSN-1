@@ -1,10 +1,8 @@
-﻿using Domain.Entity;
-using Domain.Exceptions;
+﻿using Domain.Exceptions;
 using Domain.Model;
 using MSIA.WebFresher052023.Domain.Entity;
 using MSIA.WebFresher052023.Domain.Interface.Manager;
 using MSIA.WebFresher052023.Domain.Interface.Repository;
-using System.Security.Cryptography.X509Certificates;
 
 namespace MSIA.WebFresher052023.Domain.Service
 {
@@ -12,10 +10,12 @@ namespace MSIA.WebFresher052023.Domain.Service
     {
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IFixedAssetRepository _fixedAssetRepository;
+        private readonly ITransferAssetRepository _transferAssetRepository;
         public TransferAssetManager(ITransferAssetRepository transferAssetRepository, IDepartmentRepository departmentRepository, IFixedAssetRepository fixedAssetRepository) : base(transferAssetRepository)
         {
             _departmentRepository = departmentRepository;
             _fixedAssetRepository = fixedAssetRepository;
+            _transferAssetRepository = transferAssetRepository;
         }
 
         /// <summary>
@@ -34,16 +34,29 @@ namespace MSIA.WebFresher052023.Domain.Service
         }
 
         /// <summary>
-        /// Kiểm tra ngày điều chuyển có lớn hơn ngày chứng từ hay không
+        /// Kiểm tra ngày điều chuyển có lớn hơn ngày chứng từ hay không, và ngày chứng điều chuyển cũng phải lớn hơn mọi ngày điều chuyển của các tài sản bên trong
         /// </summary>
         /// <param name="transferAsset">Chứng từ</param>
         /// <exception cref="DataException">Lỗi data truyền về</exception>
         /// Created by: ldtuan (30/08/2023)
-        public void CheckDate(TransferAsset? transferAsset)
+        public async Task CheckDateAsync(TransferAsset? transferAsset, List<Guid> listAssetIds)
         {
             if (transferAsset != null && transferAsset.TransferDate < transferAsset.TransactionDate)
             {
                 throw new DataException();
+            }
+            var transferList = await _transferAssetRepository.GetNewestTransferAssetByAssetId(listAssetIds);
+            if (transferList != null)
+            {
+                var newestTransfer = transferList.FirstOrDefault();
+                if (newestTransfer != null && newestTransfer.TransferAssetCode == transferAsset.TransferAssetCode)
+                {
+                    newestTransfer = transferList[1];
+                }
+                if (transferAsset.TransferDate < newestTransfer.TransferDate)
+                {
+                    throw new DataException();
+                }
             }
         }
 
@@ -53,7 +66,7 @@ namespace MSIA.WebFresher052023.Domain.Service
         /// <param name="listTransferAssetDetails">Danh sách chi tiết chứng từ</param>
         /// <exception cref="DataException">Lỗi dữ liệu truyền vào</exception>
         /// Created by: ldtuan (31/08/2023)
-        public async Task CheckExistAsset(List<TransferAssetDetail> listTransferAssetDetails)
+        public async Task CheckExistAssetAsync(List<TransferAssetDetail> listTransferAssetDetails)
         {
             // Kiểm tra xem các tài sản có bị trùng và có tồn tại trong db không
             var uniqueFixedAsset = listTransferAssetDetails.Select(transfer => transfer.FixedAssetId).Distinct().ToList();

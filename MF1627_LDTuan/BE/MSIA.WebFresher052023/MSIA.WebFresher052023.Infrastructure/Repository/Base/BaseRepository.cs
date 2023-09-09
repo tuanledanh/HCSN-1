@@ -29,6 +29,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         {
             var param = MapEntityToParams(entity);
             var sql = $"Proc_Insert{TableName}";
+            
             var affectedRow = await _unitOfWork.Connection.ExecuteAsync(sql, param, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return affectedRow > 0;
         }
@@ -36,6 +37,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         public virtual async Task<bool> InsertMultiAsync(List<TEntity> entities)
         {
             string sql = GenerateInsertQuery();
+            
             var affectedRow = await _unitOfWork.Connection.ExecuteAsync(sql, entities, transaction: _unitOfWork.Transaction);
             return affectedRow > 0;
         }
@@ -50,6 +52,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         {
             var param = MapEntityToParams(entity);
             var sql = $"Proc_Update{TableName}";
+            
             var affectedRow = await _unitOfWork.Connection.ExecuteAsync(sql, param, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return affectedRow > 0;
         }
@@ -57,6 +60,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         public virtual async Task<bool> UpdateMultiAsync(List<TEntity> entities)
         {
             string sql = GenerateUpdateQuery();
+            
             var affectedRow = await _unitOfWork.Connection.ExecuteAsync(sql, entities, transaction: _unitOfWork.Transaction);
             return affectedRow > 0;
         }
@@ -77,6 +81,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             var paramName = "p_Id";
             var dynamicParams = new DynamicParameters();
             dynamicParams.Add(paramName, entity.GetKey());
+            
             var affectedRow = await _unitOfWork.Connection.ExecuteAsync(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return affectedRow > 0;
         }
@@ -94,6 +99,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             var sql = $"delete from {tableName} where {tableId} in @listIds;";
             var param = new DynamicParameters();
             param.Add("listIds", entities.Select(x => x.GetKey()));
+            
             var affectedRow = await _unitOfWork.Connection.ExecuteAsync(sql, param, transaction: _unitOfWork.Transaction);
             return affectedRow > 0;
         }

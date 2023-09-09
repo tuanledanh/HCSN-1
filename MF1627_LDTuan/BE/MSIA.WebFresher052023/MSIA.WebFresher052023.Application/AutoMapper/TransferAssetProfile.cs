@@ -3,6 +3,7 @@ using AutoMapper;
 using Domain.Entity;
 using Domain.Model;
 using MSIA.WebFresher052023.Application.DTO;
+using MSIA.WebFresher052023.Application.DTO.TransferAssett;
 using MSIA.WebFresher052023.Domain.Entity;
 using MSIA.WebFresher052023.Domain.Model;
 
@@ -24,6 +25,8 @@ namespace Application.AutoMapper
             CreateMap<FixedAssetTransferModel, FixedAssetTransferDto>()
                 .ForMember(dest => dest.TransferAsset, opt => opt.Ignore());
             CreateMap<ReceiverTransferModel, ReceiverTransferDto>();
+
+            CreateMap<TransferAssetDeleteModel, TransferAssetDeleteDto>();
         }
     }
 }

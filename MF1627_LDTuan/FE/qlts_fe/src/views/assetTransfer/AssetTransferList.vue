@@ -42,55 +42,55 @@
         <!-- ------------------------Table start------------------------ -->
         <div :class="[{ table: !isResize }, { 'table-flex': isResize }]">
           <!-- ------------------------Header------------------------ -->
-          <div class="header--row row">
+          <div class="header--row row padding--right-5 border--top">
             <div
-              class="header cell display--center-center border--top border--right border--bottom"
+              class="header cell display--center-center border--right border--bottom"
             >
               <input type="checkbox" />
             </div>
             <div
-              class="header cell display--center-center font-weight--700 border--top border--right border--bottom"
+              class="header cell display--center-center font-weight--700 border--right border--bottom"
             >
               STT
             </div>
             <div
-              class="header cell display--center-left font-weight--700 border--top border--right border--bottom padding--left-10"
+              class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
             >
               Mã chứng từ
             </div>
             <div
-              class="header cell display--center-center font-weight--700 border--top border--right border--bottom"
+              class="header cell display--center-center font-weight--700 border--right border--bottom"
             >
               Ngày điều chuyển
             </div>
             <div
-              class="header cell display--center-center font-weight--700 border--top border--right border--bottom"
+              class="header cell display--center-center font-weight--700 border--right border--bottom"
             >
               Ngày chứng từ
             </div>
             <div
-              class="header cell display--center-right font-weight--700 border--top border--right border--bottom padding--right-10"
+              class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
             >
               Nguyên giá
             </div>
             <div
-              class="header cell display--center-right font-weight--700 border--top border--right border--bottom padding--right-10"
+              class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
             >
               Giá trị còn lại
             </div>
             <div
-              class="header cell display--center-left font-weight--700 border--top border--right border--bottom padding--left-10"
+              class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
             >
               Ghi chú
             </div>
-            <div
-              class="header cell display--center-center font-weight--700 border--top border--bottom"
+            <div id="1"
+              class="header cell display--center-center font-weight--700 border--bottom"
             >
               Chức năng
             </div>
           </div>
           <!-- ------------------------Body------------------------ -->
-          <div class="body-data relative">
+          <div class="body-data relative border--top">
             <div
               class="body--row row"
               v-for="transferAsset in transferAssets"
@@ -143,10 +143,10 @@
               >
                 {{ transferAsset.Description }}
               </div>
-              <div class="cell display--center-center border--bottom">
+              <div class="cell display--center-center border--bottom row-scroll">
                 <div class="icon-function">
                     <MISAIcon edit background @click="btnEditTransferAsset(transferAsset)"></MISAIcon>
-                    <MISAIcon deleteIcon background></MISAIcon>
+                    <MISAIcon deleteIcon background @click="btnDeleteTransferAsset(transferAsset)"></MISAIcon>
                 </div>
               </div>
             </div>
@@ -372,7 +372,7 @@
       <MISAButton
         buttonMain
         textButton="Xóa"
-        @click="btnDeleteAssets"
+        @click="btnDeleteMultiTransferAsset"
         :tabindex="1"
         ref="cancelForm"
         focus
@@ -504,6 +504,11 @@ export default {
         .catch((res) => {
           console.log(res);
         });
+    },
+
+    btnDeleteMultiTransferAsset(){
+      const transferAssetIds = this.selectedRowsByCheckBox.map(transfer => transfer.TransferAssetId);
+      console.log(transferAssetIds);
     },
 
     //------------------------------------------- Click row -------------------------------------------
@@ -689,6 +694,10 @@ export default {
           this.btnAddDocument();
           this.transferData = transferAsset;
      },
+
+     btnDeleteTransferAsset(transferAsset){
+        console.log(transferAsset);
+     },
   },
   mounted() {
     /**
@@ -829,6 +838,12 @@ export default {
   display: flex;
   column-gap: 8px;
 }
+
+.header--row{
+  background-color: var(--background-color-table-head);
+  border-color: var(--table-border-color);
+}
+
 .header {
   background-color: var(--background-color-table-head);
 }
@@ -851,6 +866,7 @@ export default {
 }
 .body-data {
   overflow-y: auto;
+  border-color: var(--table-border-color);
 }
 
 /* ------------------------------------------- Resize-bar ------------------------------------------- */

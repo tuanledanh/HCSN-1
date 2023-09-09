@@ -43,6 +43,7 @@ namespace Infrastructure.Repository
                 p_DepartmentId = departmentId,
                 p_FixedAssetCategoryId = assetTypeId
             };
+            
             var entities = await _unitOfWork.Connection.QueryAsync<FixedAssetModel>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entities.ToList();
         }
@@ -72,6 +73,7 @@ namespace Infrastructure.Repository
 
             parameters.Add("p_Count", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
+            
             var entities = await _unitOfWork.Connection.QueryAsync<FixedAssetModel>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             var total = parameters.Get<int>("p_Count");
             var fixedAssetForTransferModel = new FixedAssetForTransferModel
@@ -100,6 +102,7 @@ namespace Infrastructure.Repository
                 p_DepartmentId = departmentId,
                 p_FixedAssetCategoryId = assetTypeId
             };
+            
             var count = await _unitOfWork.Connection.ExecuteScalarAsync<int>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return count;
         }

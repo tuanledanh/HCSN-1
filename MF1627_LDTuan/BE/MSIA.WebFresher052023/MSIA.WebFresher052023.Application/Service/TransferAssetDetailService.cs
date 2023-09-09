@@ -1,6 +1,7 @@
 ﻿using Application.DTO;
 using Application.Interface;
 using AutoMapper;
+using Domain.Exceptions;
 using Domain.Model;
 using MSIA.WebFresher052023.Application.Service.Base;
 using MSIA.WebFresher052023.Domain.Entity;
@@ -14,13 +15,15 @@ namespace Application.Service
     {
         #region Fields
         private readonly ITransferAssetDetailRepository _transferAssetDetailRepository;
+        private readonly IFixedAssetRepository _fixedAssetRepository;
         private readonly ITransferAssetDetailManager _transferAssetDetailManager;
         #endregion
 
         #region Constructor
-        public TransferAssetDetailService(ITransferAssetDetailRepository transferAssetDetailRepository, IMapper mapper, ITransferAssetDetailManager transferAssetDetailManager, IUnitOfWork unitOfWork) : base(transferAssetDetailRepository, mapper, transferAssetDetailManager, unitOfWork)
+        public TransferAssetDetailService(ITransferAssetDetailRepository transferAssetDetailRepository, IFixedAssetRepository fixedAssetRepository, IMapper mapper, ITransferAssetDetailManager transferAssetDetailManager, IUnitOfWork unitOfWork) : base(transferAssetDetailRepository, mapper, transferAssetDetailManager, unitOfWork)
         {
             _transferAssetDetailRepository = transferAssetDetailRepository;
+            _fixedAssetRepository = fixedAssetRepository;
             _transferAssetDetailManager = transferAssetDetailManager;
         }
         #endregion
@@ -35,7 +38,7 @@ namespace Application.Service
             entity.SetKey(id);
             bool result = await _transferAssetDetailRepository.InsertAsync(entity);
             return result;
-        } 
+        }
         #endregion
     }
 }
