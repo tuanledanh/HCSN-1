@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTO
+﻿namespace Application.DTO
 {
     public class TransferAssetDetailDto
     {
@@ -26,6 +19,24 @@ namespace Application.DTO
         /// </summary>
         /// Created by: ldtuan (27/08/2023)
         public Guid TransferAssetId { get; set; }
+
+        /// <summary>
+        /// Mã chứng từ
+        /// </summary>
+        /// Created by: ldtuan (06/09/2023)
+        public string? TransferAssetCode { get; set; }
+
+        /// <summary>
+        /// Ngày chứng từ
+        /// </summary>
+        /// Created by: ldtuan (27/08/2023)
+        public DateTime? TransactionDate { get; set; }
+
+        /// <summary>
+        /// Ngày cập nhật
+        /// </summary>
+        /// Created by: ldtuan (27/08/2023)
+        public DateTime? ModifiedDate { get; set; }
 
         /// <summary>
         /// Phòng ban hiện tại của tài sản

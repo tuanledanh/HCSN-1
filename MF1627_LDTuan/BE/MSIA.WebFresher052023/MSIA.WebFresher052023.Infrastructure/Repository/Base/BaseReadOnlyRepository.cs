@@ -68,6 +68,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             var paramName = "p_Id";
             var dynamicParams = new DynamicParameters();
             dynamicParams.Add(paramName, id);
+            
             var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entity;
         }
@@ -80,19 +81,13 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         /// Created by: ldtuan (17/07/2023)
         public virtual async Task<TModel?> FindByCodeAsync(string code)
         {
-            var entity = await GetByCodeAsync<TModel>(code);
-            return entity;
-        }
-
-        /// <summary>
-        /// Lấy thông tin của bản ghi dựa vào mã, dùng để check trùng
-        /// </summary>
-        /// <param name="code">Mã của bản ghi</param>
-        /// <returns>Một bản ghi</returns>
-        /// Created by: ldtuan (17/07/2023)
-        public virtual async Task<TEntity?> GetByCodeAsync(string code)
-        {
-            var entity = await GetByCodeAsync<TEntity>(code);
+            var tableName = TableName;
+            string procedureName = "Proc_Get" + tableName + "ByCode";
+            var paramName = "p_Code";
+            var dynamicParams = new DynamicParameters();
+            dynamicParams.Add(paramName, code);
+            
+            var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TModel>(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entity;
         }
 
@@ -105,6 +100,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         {
             var tableName = TableName;
             string procedureName = "Proc_GetList" + tableName;
+            
             var entities = await _unitOfWork.Connection.QueryAsync<TModel>(procedureName, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entities.ToList();
         }
@@ -127,27 +123,9 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
                 p_PageLimit = pageLimit,
                 p_FilterName = filterName
             };
+            
             var entities = await _unitOfWork.Connection.QueryAsync<TModel>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entities.ToList();
-        }
-
-
-        /// <summary>
-        /// Hàm chung cho việc lấy object theo mã code
-        /// </summary>
-        /// <typeparam name="T">Loại đối tượng muốn trả về</typeparam>
-        /// <param name="code">Mã code cần kiểm tra</param>
-        /// <returns>Một đối tượng</returns>
-        /// Created by: ldtuan (20/07/2023)
-        public virtual async Task<T?> GetByCodeAsync<T>(string code)
-        {
-            var tableName = TableName;
-            string procedureName = "Proc_Get" + tableName + "ByCode";
-            var paramName = "p_Code";
-            var dynamicParams = new DynamicParameters();
-            dynamicParams.Add(paramName, code);
-            var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<T>(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
-            return entity;
         }
 
         /// <summary>
@@ -162,6 +140,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             var sql = $"select * from view_{tableName} where {TableId} in @listIds;";
             var param = new DynamicParameters();
             param.Add("listIds", ids);
+            
             var listEntities = await _unitOfWork.Connection.QueryAsync<TEntity>(sql, param, transaction: _unitOfWork.Transaction);
             return listEntities.ToList();
         }
@@ -175,6 +154,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         {
             var tableName = TableNameSnakeCase;
             var sql = $"select count(*) from view_{tableName}";
+            
             var count = await _unitOfWork.Connection.ExecuteScalarAsync<int>(sql, transaction: _unitOfWork.Transaction);
             return count;
         }
@@ -188,6 +168,7 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
         {
             var tableName = TableNameSnakeCase;
             var sql = $"select count(*) from view_{tableName} where {TableId} in @ids";
+            
             var count = await _unitOfWork.Connection.ExecuteScalarAsync<int>(sql, new { ids }, transaction: _unitOfWork.Transaction);
             return count;
         }

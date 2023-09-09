@@ -23,7 +23,7 @@ export const formatMoneyToInt = (price) => {
 };
 
 /**
- * Tính toán giá trị hao mòn
+ * Tính toán giá trị còn lại
  * @param {Int16Array} price tiền
  * @param {Int16Array} year năm
  * Author: LDTUAN (02/08/2023)
@@ -35,8 +35,25 @@ export const AssetDepreciation = (price, year) => {
   }
 };
 
+export const formatDate = (date) => {
+  if (date) {
+    // Create a Date object from the input date string in the local timezone
+    const localDate = new Date(date);
+
+    // Trích xuất thông tin ngày, tháng và năm từ localDate
+    const day = localDate.getDate().toString().padStart(2, '0'); // Đảm bảo luôn có 2 chữ số
+    const month = (localDate.getMonth() + 1).toString().padStart(2, '0'); // Lưu ý tháng bắt đầu từ 0
+    const year = localDate.getFullYear();
+
+    // Tạo chuỗi ngày/tháng/năm
+    const formattedDate = `${day}/${month}/${year}`;
+    return formattedDate;
+  }
+};
+
+
 /**
- * Data truyền về có nhiều dạng, ngày tháng năm giờ ....
+ * Data truyền về có nhiều dạng, ngày tháng năm giờ .... cái này xài cho datepicker
  * Format lại dạng duy nhất là ngày tháng năm
  * @param {date} date ngày tháng
  * Author: LDTUAN (02/08/2023)

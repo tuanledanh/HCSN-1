@@ -39,8 +39,12 @@
         <div class="calculator">
           <div v-if="quantity > 0" class="quantity">{{ quantity }}</div>
           <div v-if="price > 0" class="price">{{ price }}</div>
-          <div v-if="depreciation > 0" class="depreciation">{{ depreciation }}</div>
-          <div v-if="residualValue > 0" class="residualValue">{{ residualValue }}</div>
+          <div v-if="depreciation > 0" class="depreciation">
+            {{ depreciation }}
+          </div>
+          <div v-if="residualValue > 0" class="residualValue">
+            {{ residualValue }}
+          </div>
         </div>
       </div>
     </div>
@@ -189,8 +193,7 @@ export default {
 
 <style scoped>
 .paging {
-  border-top: 1px solid var(--background-color-table-expand-narrow);
-  border-bottom: 1px solid var(--background-color-table-expand-narrow);
+  /* border-top: 1px solid var(--background-color-table-expand-narrow); */
   background-color: #ffffff;
   height: 39px;
   width: 100%;

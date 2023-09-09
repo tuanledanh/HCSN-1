@@ -38,7 +38,7 @@ namespace MSIA.WebFresher052023.Domain.Entity
         /// Lý do điều chuyển
         /// </summary>
         /// Created by: ldtuan (27/08/2023)
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Nhận được giá trị của thuộc tính khóa trong một đối tượng cụ thể 

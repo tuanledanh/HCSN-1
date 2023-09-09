@@ -3,7 +3,7 @@
  * @param {object} asset thông tin tài sản
  * Author: LDTUAN (02/08/2023)
  */
-export function rowOnClick(asset) {
+export function rowOnClick(asset, assetType) {
   const index = this.selectedRows.indexOf(asset);
   if (index !== -1 && this.selectedRows.length == 1) {
     this.selectedRows = [];
@@ -14,17 +14,22 @@ export function rowOnClick(asset) {
   if (this.selectedRows.length == 0) {
     this.lastIndex = 0;
   } else {
-    this.lastIndex = this.assets.indexOf(asset);
+    if (assetType === 'assets') {
+      this.lastIndex = this.assets.indexOf(asset);
+    } else if (assetType === 'transferAssets') {
+      this.lastIndex = this.transferAssets.indexOf(asset);
+    }
   }
   this.selectedRowsByCheckBox = [];
 }
+
 
 /**
  * Chọn bản ghi bằng cách nhấn click vào ô checkbox
  * @param {object} asset bản ghi
  * Author: LDTUAN (09/08/2023)
  */
-export function rowOnClickByCheckBox(asset) {
+export function rowOnClickByCheckBox(asset, assetType) {
   const index = this.selectedRowsByCheckBox.indexOf(asset);
   if (index !== -1) {
     this.selectedRows.splice(index, 1);
@@ -36,7 +41,11 @@ export function rowOnClickByCheckBox(asset) {
   if (this.selectedRows.length == 0) {
     this.lastIndex = 0;
   } else {
-    this.lastIndex = this.assets.indexOf(asset);
+    if (assetType === 'assets') {
+      this.lastIndex = this.assets.indexOf(asset);
+    } else if (assetType === 'transferAssets') {
+      this.lastIndex = this.transferAssets.indexOf(asset);
+    }
   }
 }
 
@@ -45,7 +54,7 @@ export function rowOnClickByCheckBox(asset) {
  * @param {object} asset bản ghi
  * Author: LDTUAN (09/08/2023)
  */
-export function rowOnCtrlClick(asset) {
+export function rowOnCtrlClick(asset, assetType) {
   const index = this.selectedRows.indexOf(asset);
   const indexCheckbox = this.selectedRowsByCheckBox.indexOf(asset);
   if (index !== -1) {
@@ -59,6 +68,10 @@ export function rowOnCtrlClick(asset) {
   if (this.selectedRows.length == 0) {
     this.lastIndex = 0;
   } else {
-    this.lastIndex = this.assets.indexOf(asset);
+    if (assetType === 'assets') {
+      this.lastIndex = this.assets.indexOf(asset);
+    } else if (assetType === 'transferAssets') {
+      this.lastIndex = this.transferAssets.indexOf(asset);
+    }
   }
 }

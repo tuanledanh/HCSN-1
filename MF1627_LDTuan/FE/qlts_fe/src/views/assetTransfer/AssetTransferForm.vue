@@ -22,6 +22,7 @@
               <MISAInput
                 normalGrid
                 label="Mã chứng từ"
+                v-model="transferAsset.TransferAssetCode"
                 medium
                 required
                 maxlength="12"
@@ -30,6 +31,7 @@
             <div class="content__column">
               <MISAInputDatePicker
                 label="Ngày chứng từ"
+                v-model="transferAsset.TransactionDate"
                 medium
                 required
               ></MISAInputDatePicker>
@@ -37,6 +39,7 @@
             <div class="content__column">
               <MISAInputDatePicker
                 label="Ngày điều chuyển"
+                v-model="transferAsset.TransferDate"
                 medium
                 required
               ></MISAInputDatePicker>
@@ -45,21 +48,23 @@
               <MISAInput
                 normalGrid
                 label="Ghi chú"
+                v-model="transferAsset.Description"
                 medium
-                required
                 maxlength="4"
               ></MISAInput>
             </div>
           </div>
           <div class="content__row--bot">
-            <div class="checkbox" @click="showFormReceiver">
-              <input type="checkbox" />
-              <label class="font-weight--500">Chọn ban giao nhận</label>
+            <div class="checkbox">
+              <div class="checkbox-combo" @click="showFormReceiver">
+                <input type="checkbox" :checked="receivers.length > 0"/>
+                <label class="font-weight--500">Chọn ban giao nhận</label>
+              </div>
             </div>
           </div>
         </div>
         <div v-if="isCreateReceiver" class="content--bot">
-          <div class="content--bot__row">
+          <div v-if="receivers[0]" class="content--bot__row">
             <div class="content--bot__header row--bot">
               <div>STT</div>
               <div>Họ và tên</div>
@@ -68,12 +73,14 @@
             </div>
             <div class="row--form">
               <div
-                v-for="index in listReceivers"
+                v-for="(receiver, index) in receivers"
                 :key="index"
                 class="content--bot__body row--bot"
               >
                 <div>
-                  <div class="number border border-radius-4">{{ index }}</div>
+                  <div class="number border border-radius-4">
+                    {{ index + 1 }}
+                  </div>
                 </div>
                 <div>
                   <MISAInput
@@ -81,6 +88,7 @@
                     medium
                     maxlength="12"
                     placeholder="Nhập họ và tên"
+                    v-model="receiver.ReceiverFullname"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
@@ -89,6 +97,7 @@
                     medium
                     maxlength="12"
                     placeholder="Nhập đại diện"
+                    v-model="receiver.ReceiverDelegate"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
@@ -97,6 +106,7 @@
                     medium
                     maxlength="12"
                     placeholder="Nhập chức vụ"
+                    v-model="receiver.ReceiverPosition"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
@@ -106,8 +116,8 @@
                     <div @click="btnAddReceiver">
                       <MISAIcon add_box_thin></MISAIcon>
                     </div>
-                    <div @click="btnDeleteReceiver">
-                      <MISAIcon v-if="index > 1" deleteIcon></MISAIcon>
+                    <div @click="btnDeleteReceiver(receiver)">
+                      <MISAIcon v-if="index > 0" deleteIcon></MISAIcon>
                     </div>
                   </div>
                 </div>
@@ -201,8 +211,8 @@
           <div class="body-data relative">
             <div
               class="body--row row"
-              v-for="asset in assets"
-              :key="asset.FixedAssetId"
+              v-for="(asset, index) in assets"
+              :key="index"
               :class="{ 'row--selected': selectedRows.includes(asset) }"
               @click.exact.stop="callRowOnClick(asset)"
               @click.ctrl.stop="callRowOnCtrlClick(asset)"
@@ -224,7 +234,7 @@
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ asset.FixedAssetCode }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
@@ -234,17 +244,27 @@
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatMoney(Math.round(asset.Cost)) }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ AssetDepreciation(asset.Cost, asset.LifeTime) }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                <el-tooltip
+                  v-if="asset.DepartmentName.length > 20"
+                  :visible="visible"
+                  placement="right"
+                >
+                  <template #content>
+                    <span>{{ asset.DepartmentName }}</span>
+                  </template>
+                  <span>{{ truncateText(asset.DepartmentName, 20) }}</span>
+                </el-tooltip>
+                <span v-else>{{ truncateText(asset.DepartmentName, 20) }}</span>
               </div>
               <div
                 id="cell"
@@ -255,8 +275,11 @@
                   propText="DepartmentName"
                   propValue="DepartmentId"
                   placeholder="Bộ phận sử dụng"
-                  @filter="getDepartmentFilter"
-                  :inputChange="inputDepartmentNameChange"
+                  :existCode="asset.NewDepartmentName"
+                  :inputChange="inputChange"
+                  @filter="getNewDepartment(asset, $event)"
+                  @deleteDepartment="deleteDepartment(asset, $event)"
+                  :newDepartment="asset.NewDepartmentName"
                   isDisplay
                   self_adjust_size
                 ></MISACombobox>
@@ -264,13 +287,20 @@
               <div
                 class="cell display--center-left border--right border--bottom"
               >
-                <MISAInput normalGrid medium padding_2></MISAInput>
+                <MISAInput
+                  normalGrid
+                  medium
+                  padding_2
+                  v-model="asset.Description"
+                ></MISAInput>
               </div>
               <div class="cell display--center-center border--bottom">
                 <div class="icon-function">
-                  <MISATooltip bottom content="Xóa">
-                    <MISAIcon deleteIcon background></MISAIcon>
-                  </MISATooltip>
+                  <MISAIcon
+                    deleteIcon
+                    background
+                    @click="btnDeleteAsset(asset)"
+                  ></MISAIcon>
                 </div>
               </div>
             </div>
@@ -298,14 +328,16 @@
       <MISAButton
         buttonMain
         textButton="Lưu"
-        @click="btnSaveAsset"
+        @click="btnSaveTransferAsset"
         :tabindex="16"
       ></MISAButton>
     </div>
   </div>
   <MISAAssetTransferChooseForm
-  @onCloseForm="onCloseForm"
+    @onCloseForm="onCloseForm"
     v-if="isShowFormChooseAsset"
+    @loadData="loadData"
+    :existFixedAsset="existFixedAsset"
   ></MISAAssetTransferChooseForm>
 </template>
 <script>
@@ -313,22 +345,44 @@ import { rowOnClick } from "../../helpers/table/selectRow";
 import { rowOnCtrlClick } from "../../helpers/table/selectRow";
 import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
 import MISAAssetTransferChooseForm from "./AssetTransferChooseForm.vue";
+
+import { formatMoney } from "../../helpers/common/format/format";
+import { truncateText } from "../../helpers/common/format/format";
+import { AssetDepreciation } from "../../helpers/common/format/format";
+import { DateFormat } from "../../helpers/common/format/format";
 export default {
   name: "MISAAssetTransferForm",
   components: {
     MISAAssetTransferChooseForm,
   },
+  props: {
+    transferAssetToUpdate: {
+      type: Object,
+      default: null,
+    },
+    ty: {},
+  },
   data() {
     return {
       // ----------------------------- Data -----------------------------
-      // Danh sách bản ghi
+      // Toàn bộ dữ liệu của chứng từ điều chuyển
+      transferData: {},
+      // Chứng từ tài sản
+      transferAsset: {},
+      originalTransferAsset: {},
+      // Danh sách bản ghi tài sản
       assets: [],
+      // Danh sách bản ghi trước khi cập nhật (cái này sẽ có 1 vài field thay đổi theo assets để thực hiện cho việc cập nhật)
+      oldAssets: [],
+      // Danh sách bản ghi từ db, các bản ghi này có giá trị không đổi, nó thể hiện đúng dữ liệu hiện có trong db
+      originalAssets: [],
+      // Danh sách người nhận
+      receivers: [],
+      oldReceivers: [],
       // Danh sách các bản ghi đã chọn
       selectedRows: [],
       // Index của bản ghi đầu tiên trong danh sách
       lastIndex: 0,
-      // Danh sách người nhận
-      listReceivers: 1,
       // Hiển thị phần tạo người nhận
       isCreateReceiver: false,
 
@@ -336,6 +390,8 @@ export default {
       isFormDisplay: false,
       // Hiển thị form chọn tài sản
       isShowFormChooseAsset: false,
+      // Danh sách bản ghi đã tồn tại trong form này
+      existFixedAsset: null,
 
       // ----------------------------- Paging -----------------------------
       pageLimitList: [],
@@ -358,40 +414,535 @@ export default {
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
+
+      // ----------------------------- COMBOBOX -----------------------------
+      inputChange: null,
     };
   },
-  created() {
-    this.loadData();
+  computed: {
+    /**
+     * Kiểm trả xem chức năng user đang thực hiện là thêm mới hay cập nhật tài sản
+     * Author: LDTUAN (03/09/2023)
+     */
+    formMode() {
+      if (this.transferAssetToUpdate != null) {
+        return this.$_MISAEnum.FORM_MODE.UPDATE;
+      } else {
+        return this.$_MISAEnum.FORM_MODE.ADD;
+      }
+    },
   },
+  created() {
+    /**
+     * Kiểm tra thực hiện thêm, sửa, hay sao chép để thực hiện thao tác tương ứng
+     * Author: LDTUAN (02/08/2023)
+     */
+    switch (this.formMode) {
+      case this.$_MISAEnum.FORM_MODE.UPDATE:
+        this.loadTransferDataUpdate();
+        break;
+      case this.$_MISAEnum.FORM_MODE.ADD:
+        this.loadTransferAssetCode();
+        break;
+    }
+  },
+  mounted() {},
   methods: {
-    // load data tạm thời
-    loadData() {
-      this.$_MISAApi.FixedAsset.Filter(1, 5, null, null, null)
+    AssetDepreciation,
+    formatMoney,
+    truncateText,
+
+    //------------------------------------------- ADD-UPDATE CHỨNG TỪ -------------------------------------------
+    /**
+     * Lưu chứng từ
+     * Author: LDTUAN (04/09/2023)
+     */
+    // TODO: validate
+    btnSaveTransferAsset() {
+      switch (this.formMode) {
+        case this.$_MISAEnum.FORM_MODE.UPDATE:
+          this.updateTransferAssetHelper();
+          break;
+        case this.$_MISAEnum.FORM_MODE.ADD:
+          this.AddTransferAsset();
+          break;
+      }
+    },
+
+    /**
+     * Cập nhật chứng từ
+     * Author: LDTUAN (04/09/2023)
+     */
+    UpdateTransferAsset(
+      transferAssetId,
+      newTransferAsset,
+      listTransferAssetDetail,
+      listReceiverFinal
+    ) {
+      var listDetail = listTransferAssetDetail.map((item) => ({
+        ...item,
+        Description: item.Description ?? "",
+      }));
+      let transfer = {
+        TransferAsset: newTransferAsset,
+        ListTransferAssetDetail: listDetail,
+        ListReceiver: listReceiverFinal,
+      };
+      this.$_MISAApi.TransferAsset.Update(transferAssetId, transfer)
+        .then(() => {
+          this.btnCloseForm();
+          this.$emit("reLoad");
+        })
+        .catch((res) => {
+          // this.$processErrorResponse(res);
+          // this.isShowToastValidateBE = true;
+          // this.toast_content_warning = res.response.data.UserMessage;
+          console.log(res);
+        });
+    },
+
+    /**
+     * Chuẩn bị dữ liệu rồi trả về cho hàm UpdateTransferAsset gọi đến để thực hiện gọi đến api
+     * Author: LDTUAN (04/09/2023)
+     */
+    updateTransferAssetHelper() {
+      // 1. Lấy thông tin của chứng từ điều chuyển cũ
+      this.transferAsset.TransactionDate = DateFormat(
+        this.transferAsset.TransactionDate
+      );
+      this.transferAsset.TransferDate = DateFormat(
+        this.transferAsset.TransferDate
+      );
+      let oldTransferAsset = this.transferAsset;
+
+      // 2.Lấy id của chứng từ điều chuyển
+      let transferAssetId = oldTransferAsset.TransferAssetId;
+
+      // 3.Lấy thông tin của chứng từ điều chuyển mới
+      let newTransferAsset = {
+        TransferAssetCode: oldTransferAsset.TransferAssetCode,
+        TransferDate: oldTransferAsset.TransferDate,
+        TransactionDate: oldTransferAsset.TransactionDate,
+        Description:
+          oldTransferAsset.Description === null
+            ? ""
+            : oldTransferAsset.Description,
+      };
+      // 3.1.Xem thông tin chứng từ có đổi gì không
+      const arePropertiesEqual =
+        this.originalTransferAsset.TransferAssetCode ===
+          newTransferAsset.TransferAssetCode &&
+        this.originalTransferAsset.TransferDate ===
+          newTransferAsset.TransferDate &&
+        this.originalTransferAsset.TransactionDate ===
+          newTransferAsset.TransactionDate &&
+        (this.originalTransferAsset.Description === null
+          ? ""
+          : this.originalTransferAsset.Description) ===
+          (newTransferAsset.Description === null
+            ? ""
+            : newTransferAsset.Description);
+
+      let selectedFieldsDetail = [
+        "FixedAssetId",
+        "OldDepartmentId",
+        "NewDepartmentId",
+        "Description",
+      ];
+      let selectedFieldsReceiver = [
+        "ReceiverCode",
+        "ReceiverFullname",
+        "ReceiverDelegate",
+        "ReceiverPosition",
+      ];
+
+      // 4.Chuyển DepartmentName và DepartmentId thành OldDepartmentName và OldDepartmentId trong this.assets
+      let assets = this.assets;
+      assets.forEach((asset) => {
+        asset.OldDepartmentName = asset.DepartmentName;
+        asset.OldDepartmentId = asset.DepartmentId;
+      });
+
+      // 5.Tương tự, chuyển DepartmentName và DepartmentId thành OldDepartmentName và OldDepartmentId trong this.oldAssets
+      let oldAssets = [...this.oldAssets];
+      oldAssets.forEach((oldAsset) => {
+        oldAsset.OldDepartmentName = oldAsset.DepartmentName;
+        oldAsset.OldDepartmentId = oldAsset.DepartmentId;
+      });
+      let listTransferAssetDetail = this.createAddUpdateDeleteList(
+        assets,
+        "TransferAssetDetailId",
+        oldAssets,
+        selectedFieldsDetail
+      );
+
+      // 6.Validate xem trong add và update coi có bản ghi nào có phòng ban giống nhau không, nếu có thì báo lỗi ngay
+      // var listAddUpdate = listTransferAssetDetail.filter(
+      //   (asset) => asset.Flag == 1 || asset.Flag == 0
+      // );
+      // 7.tạo enum cho flag
+      listTransferAssetDetail.forEach((asset) => {
+        if (
+          !asset.OldDepartmentId ||
+          asset.OldDepartmentId === null ||
+          asset.OldDepartmentId == "" ||
+          !asset.NewDepartmentId ||
+          asset.NewDepartmentId === null ||
+          asset.NewDepartmentId == "" ||
+          asset.OldDepartmentId === asset.NewDepartmentId
+        ) {
+          // 7.1ném ra toast lỗi ở đây
+          throw new Error(
+            "Exception: Các cặp giá trị oldDepartmentId và newDepartmentId trùng nhau"
+          );
+        }
+      });
+
+      // 8.Lọc các bản ghi không thay đổi dữ liệu (chỉ áp dụng với trường hợp update)
+      /******************************/
+      // 8.1.Lấy danh sách các bản ghi update (khi update có những description bằng null hoặc rỗng, thì quy hết về rỗng để so sánh)
+      var listUpdate = listTransferAssetDetail
+        .filter((asset) => asset.Flag == 1)
+        .map((item) => ({
+          ...item,
+          Description: item.Description ?? "",
+        }));
+      // 8.2.Lấy danh sách bản ghi nguyên thủy từ db
+      var originalAssets = this.originalAssets.map((item) => ({
+        ...item,
+        Description: item.Description ?? "",
+      }));
+
+      // 8.3.Tạo một danh sách ID trùng nhau
+      const commonIds = listUpdate
+        .filter((updateItem) =>
+          originalAssets.some(
+            (oldItem) =>
+              oldItem.TransferAssetDetailId === updateItem.TransferAssetDetailId
+          )
+        )
+        .map((item) => item.TransferAssetDetailId);
+
+      // 8.4.Lọc ra các bản ghi không thay đổi dựa vào newDepartmentId và description vì đây là 2 field duy nhất có thể thay đổi
+      const unchangedRecords = commonIds
+        .filter((transferAssetDetailId) => {
+          const updateItem = listUpdate.find(
+            (item) => item.TransferAssetDetailId === transferAssetDetailId
+          );
+          const oldItem = originalAssets.find(
+            (item) => item.TransferAssetDetailId === transferAssetDetailId
+          );
+
+          // 8.4.1Kiểm tra điều kiện thay đổi (ví dụ: NewDepartmentId và Description)
+          return (
+            updateItem.NewDepartmentId === oldItem.NewDepartmentId &&
+            updateItem.Description === oldItem.Description
+          );
+        })
+        .map((transferAssetDetailId) => {
+          const updateItem = listUpdate.find(
+            (item) => item.TransferAssetDetailId === transferAssetDetailId
+          );
+          return { ...updateItem };
+        });
+
+      // 8.5.Sửa các flag thành 3
+      const unchangedIds = unchangedRecords.map(
+        (record) => record.TransferAssetDetailId
+      );
+      listTransferAssetDetail.forEach((asset) => {
+        if (unchangedIds.includes(asset.TransferAssetDetailId)) {
+          asset.Flag = 3;
+        }
+      });
+
+      // 9.Sử dụng hàm createAddUpdateDeleteList cho listReceiver
+      let listReceiverFinal = this.createAddUpdateDeleteList(
+        this.receivers,
+        "ReceiverId",
+        this.oldReceivers,
+        selectedFieldsReceiver
+      );
+
+      // Nếu không thay đổi dữ liệu gì thì đóng form
+      var listAssetIdAdd = listTransferAssetDetail.filter(
+        (asset) => asset.Flag == 0
+      );
+      var listAssetIdUpdate = listTransferAssetDetail.filter(
+        (asset) => asset.Flag == 1
+      );
+      var listAssetIdDelete = listTransferAssetDetail.filter(
+        (asset) => asset.Flag == 2
+      );
+      var listAssetIdUnchange = listTransferAssetDetail.filter(
+        (asset) => asset.Flag == 3
+      );
+      var listReceiverIdAdd = listReceiverFinal.filter(
+        (asset) => asset.Flag == 0
+      );
+      var listReceiverIdUpdate = listReceiverFinal.filter(
+        (asset) => asset.Flag == 1
+      );
+      var listReceiverIdDelete = listReceiverFinal.filter(
+        (asset) => asset.Flag == 2
+      );
+      if (
+        arePropertiesEqual &&
+        listAssetIdAdd == 0 &&
+        listAssetIdUpdate == 0 &&
+        listAssetIdDelete == 0 &&
+        listAssetIdUnchange != 0 &&
+        listReceiverIdAdd == 0 &&
+        listReceiverIdUpdate == 0 &&
+        listReceiverIdDelete == 0
+      ) {
+        this.btnCloseForm();
+      } else {
+        this.UpdateTransferAsset(
+          transferAssetId,
+          newTransferAsset,
+          listTransferAssetDetail,
+          listReceiverFinal
+        );
+      }
+    },
+
+    createAddUpdateDeleteList(sourceList, idField, oldList, selectedFields) {
+      // 1.Danh sách add
+      let listAdd = sourceList
+        .filter((item) => !Object.prototype.hasOwnProperty.call(item, idField))
+        .map((item) => {
+          let newItem = {
+            Flag: 0,
+          };
+
+          // Chọn các thuộc tính quan trọng từ selectedFields
+          for (const field of selectedFields) {
+            newItem[field] = item[field];
+          }
+
+          return newItem;
+        });
+
+      // 2.Danh sách update-delete
+      let listUD = sourceList.filter(
+        (item) =>
+          item[idField] !== null &&
+          item[idField] !== "" &&
+          typeof item[idField] !== "undefined" &&
+          Object.prototype.hasOwnProperty.call(item, idField)
+      );
+
+      let listDelete = oldList
+        .filter((oldItem) => {
+          return !listUD.find(
+            (newItem) => newItem[idField] === oldItem[idField]
+          );
+        })
+        .map((item) => {
+          let newItem = {
+            Flag: 2,
+            [idField]: item[idField],
+          };
+          for (const field of selectedFields) {
+            newItem[field] = item[field];
+          }
+
+          return newItem;
+        });
+
+      let listUpdate = oldList
+        .filter((oldItem) => {
+          return listUD.find(
+            (newItem) => newItem[idField] === oldItem[idField]
+          );
+        })
+        .map((item) => {
+          let newItem = {
+            Flag: 1,
+            [idField]: item[idField],
+          };
+          for (const field of selectedFields) {
+            newItem[field] = item[field];
+          }
+
+          return newItem;
+        });
+
+      // 3.Nối các danh sách lại với nhau
+      return [...listAdd, ...listDelete, ...listUpdate];
+    },
+
+    /**
+     * Thêm mới chứng từ
+     * Author: LDTUAN (04/09/2023)
+     *
+     */
+    AddTransferAsset() {
+      this.transferData.ListReceiver = this.receivers;
+      const transferAssetDetails = this.assets.map((asset) => ({
+        FixedAssetId: asset.FixedAssetId,
+        OldDepartmentId: asset.DepartmentId,
+        NewDepartmentId: asset.NewDepartmentId,
+        Description: asset.description,
+      }));
+      this.transferData.ListTransferAssetDetail = transferAssetDetails;
+      this.transferAsset.TransactionDate = DateFormat(
+        this.transferAsset.TransactionDate
+      );
+      this.transferAsset.TransferDate = DateFormat(
+        this.transferAsset.TransferDate
+      );
+      this.transferData.TransferAsset = this.transferAsset;
+      this.$_MISAApi.TransferAsset.Create(this.transferData)
+        .then(() => {
+          this.btnCloseForm();
+          this.$emit("reLoad");
+        })
+        .catch((res) => {
+          // this.$processErrorResponse(res);
+          // this.isShowToastValidateBE = true;
+          // this.toast_content_warning = res.response.data.UserMessage;
+          console.log(res);
+        });
+    },
+
+    //------------------------------------------- TRANSFER ASSET -------------------------------------------
+    /**
+     * Lấy mã code mới cho chứng từ
+     */
+    loadTransferAssetCode() {
+      this.isLoading = true;
+      this.$_MISAApi.TransferAsset.GetNewCode()
         .then((res) => {
-          this.assets = res.data.Data;
+          this.transferAsset.TransferAssetCode = res.data;
+          this.transferAsset.TransferDate = DateFormat(this.$getCurrentDate());
+          this.transferAsset.TransactionDate = DateFormat(
+            this.$getCurrentDate()
+          );
+          this.isLoading = false;
+        })
+        .catch((res) => {
+          // this.$processErrorResponse(res);
+          // this.isShowToastValidateBE = true;
+          // this.toast_content_warning = res.response.data.UserMessage;
+          console.log(res);
+        });
+    },
+
+    async loadTransferDataUpdate() {
+      var oldTransferAsset = this.transferAssetToUpdate;
+      await this.$_MISAApi.TransferAsset.GetByCode(
+        oldTransferAsset.TransferAssetCode
+      )
+        .then((res) => {
+          if (res.data.ReceiverTransfers[0]) {
+            this.receivers = res.data.ReceiverTransfers;
+            this.isCreateReceiver = true;
+          }
+
+          this.transferAsset = {
+            TransferAssetId: res.data.TransferAssetId,
+            TransferAssetCode: res.data.TransferAssetCode,
+            TransferDate: DateFormat(res.data.TransferDate),
+            TransactionDate: DateFormat(res.data.TransactionDate),
+            Description: res.data.Description,
+          };
+          this.originalTransferAsset = JSON.parse(
+            JSON.stringify(this.transferAsset)
+          );
+
+          this.loadData(res.data.FixedAssetTransfers);
+          // Duyệt qua mảng assets và chuyển giá trị của olddpepartment sang department
+          this.assets.forEach((asset) => {
+            asset.DepartmentName = asset.OldDepartmentName;
+            asset.DepartmentId = asset.OldDepartmentId;
+            // Sau khi chuyển giá trị, bạn có thể xoá thuộc tính olddpepartment nếu cần
+            delete asset.OldDepartmentName;
+            delete asset.OldDepartmentId;
+          });
+
+          // Lưu lại oldAssets và oldReceivers này để xài cho việc update-delete
+          // Cách viết ... là để sao chép dữ liệu, nếu viết this.a = this.b thì sẽ làm tham chiếu
+          // Chúng sẽ cùng trỏ đến 1 địa chỉ nên 1 cái thay đổi dữ liệu thì cái kia đổi theo
+          this.oldAssets = [...this.assets];
+          this.originalAssets = JSON.parse(JSON.stringify(this.assets));
+          this.oldReceivers = [...this.receivers];
         })
         .catch((res) => {
           console.log(res);
         });
     },
 
-    //------------------------------------------- Click row -------------------------------------------
-    btnShowFormChooseAsset() {
-      this.isShowFormChooseAsset = true;
-    },
-
-    //------------------------------------------- Click row -------------------------------------------
+    //------------------------------------------- RECEIVER -------------------------------------------
     btnAddReceiver() {
-      this.listReceivers++;
+      const newReceiver = {
+        ReceiverCode: "",
+        ReceiverFullname: "",
+        ReceiverDelegate: "",
+        ReceiverPosition: "",
+      };
+      this.receivers.push(newReceiver);
     },
 
-    btnDeleteReceiver() {
-      this.listReceivers--;
+    btnDeleteReceiver(receiver) {
+      const index = this.receivers.indexOf(receiver);
+      if (index !== -1) {
+        this.receivers.splice(index, 1);
+      }
     },
 
     showFormReceiver() {
       this.isCreateReceiver = !this.isCreateReceiver;
-      this.listReceivers = 1;
+      if (this.isCreateReceiver) {
+        this.btnAddReceiver();
+      } else {
+        this.receivers = [];
+      }
+    },
+
+    //------------------------------------------- ASSET -------------------------------------------
+    // load data từ form chọn tài sản chứng từ
+    // TODO: làm thêm api lấy danh sách tài sản không chứa những tài sản đã chọn
+    loadData(items) {
+      if (!this.assets || this.assets.length <= 0) {
+        this.assets = items;
+      } else {
+        this.assets = this.assets.concat(items);
+      }
+    },
+
+    btnDeleteAsset(asset) {
+      const index = this.assets.indexOf(asset);
+      if (index !== -1) {
+        this.assets.splice(index, 1);
+      }
+    },
+
+    //------------------------------------------- COMBOBOX -------------------------------------------
+    /**
+     * Cập nhật thông tin phòng ban cho tài sản
+     * @param {object} asset tài sản
+     * @param {string} item phòng ban
+     * Author: LDTUAN (06/09/2023)
+     */
+    getNewDepartment(asset, item) {
+      if (item) {
+        asset.NewDepartmentId = item.DepartmentId;
+        asset.NewDepartmentName = item.DepartmentName;
+      }
+    },
+
+    /**
+     * Khi xóa text thì cập nhật lại id = null
+     * @param {object} asset tài sản
+     * @param {string} item phòng ban
+     * Author: LDTUAN (06/09/2023)
+     */
+    deleteDepartment(asset, item) {
+      if (!item) {
+        asset.NewDepartmentId = null;
+      }
     },
 
     //------------------------------------------- Click row -------------------------------------------
@@ -417,7 +968,7 @@ export default {
       this.selectedRows = [];
       this.selectedRowsByCheckBox = [];
     },
-    
+
     //------------------------------------------- Form-------------------------------------------
     /**
      * Đóng form, gửi thông tin về cho component cha để đóng nó
@@ -426,6 +977,19 @@ export default {
     btnCloseForm() {
       this.$emit("onCloseForm");
     },
+
+    btnShowFormChooseAsset() {
+      this.assets.forEach((asset) => {
+        if (!Object.prototype.hasOwnProperty.call(asset, "DepartmentCode")) {
+          asset.DepartmentCode = "raw";
+          asset.FixedAssetCategoryCode = "raw";
+          asset.FixedAssetCategoryName = "raw";
+        }
+      });
+      this.existFixedAsset = this.assets;
+      this.isShowFormChooseAsset = true;
+    },
+
     onCloseForm() {
       this.isShowFormChooseAsset = false;
     },
@@ -513,6 +1077,10 @@ export default {
 .checkbox {
   display: flex;
   align-items: center;
+}
+.checkbox-combo {
+  display: flex;
+  align-items: center;
   column-gap: 10px;
 }
 
@@ -597,6 +1165,8 @@ export default {
 
 /* ------------------------------------------- Table ------------------------------------------- */
 .table {
+  flex: 1;
+  max-height: 435px;
   display: flex;
   flex-direction: column;
   border-spacing: unset;

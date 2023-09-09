@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MSIA.WebFresher052023.Application.DTO;
+using MSIA.WebFresher052023.Domain.Model;
 
 namespace Application.DTO
 {
@@ -38,6 +34,30 @@ namespace Application.DTO
         /// </summary>
         /// Created by: ldtuan (27/08/2023)
         public string Description { get; set; }
+
+        /// <summary>
+        /// Nguyên giá của tài sản trong chứng từ
+        /// </summary>
+        /// Created by: ldtuan (01/09/2023)
+        public int? Cost { get; set; }
+
+        /// <summary>
+        /// Giá tài sản còn lại
+        /// </summary>
+        /// Created by: ldtuan (17/07/2023)
+        public decimal RemainingCost { get; set; }
+
+        /// <summary>
+        /// Danh sách tài sản cùng phòng ban từ chi tiết chứng từ
+        /// </summary>
+        /// Created by: ldtuan (01/09/2023)
+        public List<FixedAssetTransferDto>? FixedAssetTransfers { get; set; }
+
+        /// <summary>
+        /// Danh sách người nhận
+        /// </summary>
+        /// Created by: ldtuan (03/09/2023)
+        public List<ReceiverTransferDto>? ReceiverTransfers { get; set; }
         #endregion
     }
 }

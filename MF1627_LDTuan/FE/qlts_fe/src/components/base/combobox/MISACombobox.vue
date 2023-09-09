@@ -109,6 +109,11 @@ export default {
       type: String,
       default: "",
     },
+    // Giá trị nhận từ component cha, truyền về để search
+    newDepartment: {
+      type: String,
+      default: null,
+    },
     tabindex: {
       type: Number,
       default: 0,
@@ -154,7 +159,11 @@ export default {
       keyCode: null,
       // Hiển thị icon xóa text
       canDelete: false,
+      newInput: null,
     };
+  },
+  updated() {
+    
   },
   watch: {
     /**
@@ -185,13 +194,13 @@ export default {
       });
       if (itemFilter != null && itemFilter.length > 0) {
         this.itemFilter = itemFilter;
+      } else {
+        this.$emit("filter", "");
       }
-      // else {
-      //   this.$emit("filter", "");
-      // }
-      if (this.keyCode != "Enter" && this.inputChange == null) {
+      if (this.keyCode != "Enter" && this.inputChange == null && this.newInput == null) {
         this.isShowData = true;
       } else {
+        this.newInput = null;
         this.keyCode = null;
         this.indexHover = -1;
         this.itemFilter = this.ComboboxItems;
@@ -239,6 +248,12 @@ export default {
   mounted() {},
   created() {
     this.loadData();
+    if (this.newDepartment !== null) {
+      this.inputText = this.newDepartment;
+      this.newInput = this.newDepartment;
+      this.itemSelected = this.newDepartment;
+      this.canDelete = true;
+    }
   },
   methods: {
     /**
@@ -247,7 +262,7 @@ export default {
      */
     onDeleteText() {
       this.inputText = "";
-      this.$emit("filter", "");
+      this.$emit("deleteDepartment", "");
       this.indexHover = -1;
       this.itemSelected = null;
       this.itemSelectedByClick = null;

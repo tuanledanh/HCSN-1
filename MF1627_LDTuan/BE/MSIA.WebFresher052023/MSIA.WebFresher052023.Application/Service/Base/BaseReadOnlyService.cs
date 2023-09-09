@@ -57,23 +57,12 @@ namespace MSIA.WebFresher052023.Application.Service.Base
         public virtual async Task<List<TEntityDto>> GetAllAsync(int? pageNumber, int? pageLimit, string filterName)
         {
             List<TModel> entities;
-            if (pageNumber == null && pageLimit == null)
-            {
-                entities = await _baseReadOnlyRepository.GetAllAsync();
-            }
-            else
-            {
-                if (filterName == null)
-                {
-                    filterName = "";
-                }
-                entities = await _baseReadOnlyRepository.GetFilterAsync(pageNumber, pageLimit, filterName);
-            }
-            List<TEntityDto> entitiesDto = new List<TEntityDto>();
-            foreach (var entity in entities)
-            {
-                entitiesDto.Add(_mapper.Map<TEntityDto>(entity));
-            }
+            pageNumber = pageNumber.HasValue ? pageNumber : 1;
+            pageLimit = pageLimit.HasValue ? pageLimit : 20;
+            filterName = string.IsNullOrEmpty(filterName) ? "" : filterName;
+            entities = await _baseReadOnlyRepository.GetFilterAsync(pageNumber, pageLimit, filterName);
+            List<TEntityDto> entitiesDto = _mapper.Map<List<TEntityDto>>(entities);
+
             return entitiesDto;
         }
 

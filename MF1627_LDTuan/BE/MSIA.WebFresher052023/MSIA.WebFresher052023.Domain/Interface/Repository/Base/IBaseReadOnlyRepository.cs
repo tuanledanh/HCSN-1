@@ -41,14 +41,6 @@ namespace MSIA.WebFresher052023.Domain.Interface.Repository.Base
         Task<TModel?> FindByCodeAsync(string code);
 
         /// <summary>
-        /// Hàm lấy 1 bản ghi dựa vào mã code, dùng để check mã trùng
-        /// </summary>
-        /// <param name="code">Mã code của bản ghi</param>
-        /// <returns>TEntity</returns>
-        /// Created by: ldtuan (17/07/2023)
-        Task<TEntity?> GetByCodeAsync(string code);
-
-        /// <summary>
         /// Hàm lấy danh sách bản ghi, có phân trang và lọc
         /// </summary>
         /// <param name="pageNumber">Số trang</param>

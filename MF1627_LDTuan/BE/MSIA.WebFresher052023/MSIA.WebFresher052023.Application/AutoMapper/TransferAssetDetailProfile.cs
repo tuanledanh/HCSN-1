@@ -1,7 +1,5 @@
 ﻿using Application.DTO;
-using Application.DTO;
 using AutoMapper;
-using Domain.Entity;
 using Domain.Model;
 using MSIA.WebFresher052023.Domain.Entity;
 

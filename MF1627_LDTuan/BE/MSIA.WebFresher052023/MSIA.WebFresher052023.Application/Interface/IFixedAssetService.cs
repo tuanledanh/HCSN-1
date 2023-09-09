@@ -15,11 +15,21 @@ namespace Application.Interface
         /// <param name="pageNumber">Số trang</param>
         /// <param name="pageLimit">Số lượng tối đa bản ghi mỗi trang</param>
         /// <param name="filterName">Mã code để tìm kiếm</param>
-        /// <param name="departId">Id của phòng ban dùng để lọc</param>
-        /// <param name="aTypeId">Id của loại tài sản dùng để lọc</param>
+        /// <param name="departmentId">Id của phòng ban dùng để lọc</param>
+        /// <param name="assetTypeId">Id của loại tài sản dùng để lọc</param>
         /// <returns>Danh sách tài sản đáp ứng đúng các điều kiện</returns>
         /// Created by: ldtuan (23/07/2023)
         Task<BaseFilterResponse<FixedAssetDto>> GetAllCustomAsync(int? pageNumber, int? pageLimit, string filterName, string? departmentId, string? assetTypeId);
+
+        /// <summary>
+        /// Lấy danh sách tài sản có loại những bản ghi đã chọn để hiện thị trên form chọn tài sản cho chứng từ
+        /// </summary>
+        /// <param name="pageNumber">Số trang</param>
+        /// <param name="pageLimit">Số lượng tối đa bản ghi mỗi trang</param>
+        /// <param name="dtos">Danh sách truyền vào để loại những bản ghi đó ra</param>
+        /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
+        /// Created by: ldtuan (05/09/2023)
+        Task<BaseFilterResponse<FixedAssetDto>> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, List<FixedAssetDto> dtos);
 
         /// <summary>
         /// Lấy dữ liệu tài sản dưới dạng dataTable

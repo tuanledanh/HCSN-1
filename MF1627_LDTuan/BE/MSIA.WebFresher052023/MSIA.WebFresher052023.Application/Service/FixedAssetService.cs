@@ -4,6 +4,7 @@ using AutoMapper;
 using DocumentFormat.OpenXml.EMMA;
 using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Wordprocessing;
 using Domain.Entity;
 using Domain.Exceptions;
 using Domain.Model;
@@ -64,13 +65,39 @@ namespace Application.Service
             int totalPages = Convert.ToInt32(Math.Ceiling((double)totalRecords / (double)pageLimit));
 
             entities = await _assetRepository.GetFilterSearchAsync(pageNumber, pageLimit, filterName, departmentIdString, assetTypeIdString);
-            List<FixedAssetDto> entitiesDto = new List<FixedAssetDto>();
-            foreach (var entity in entities)
+            List<FixedAssetDto> entitiesDto = _mapper.Map<List<FixedAssetDto>>(entities);
+            var filterData = new BaseFilterResponse<FixedAssetDto>(totalPages, totalRecords, entitiesDto);
+            return filterData;
+        }
+
+        /// <summary>
+        /// Lấy danh sách tài sản có loại những bản ghi đã chọn để hiện thị trên form chọn tài sản cho chứng từ
+        /// </summary>
+        /// <param name="pageNumber">Số trang</param>
+        /// <param name="pageLimit">Số lượng tối đa bản ghi mỗi trang</param>
+        /// <param name="dtos">Danh sách truyền vào để loại những bản ghi đó ra</param>
+        /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
+        /// Created by: ldtuan (05/09/2023)
+        public async Task<BaseFilterResponse<FixedAssetDto>> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, List<FixedAssetDto> dtos)
+        {
+            string ids = "";
+            if (dtos != null && dtos.Count > 0)
             {
-                entitiesDto.Add(_mapper.Map<FixedAssetDto>(entity));
+                ids = string.Join(",", dtos.Select(asset => asset.FixedAssetId));
             }
 
+            List<FixedAssetModel> entities;
+            pageNumber = pageNumber.HasValue && pageNumber.Value > 0 ? pageNumber : 1;
+            pageLimit = pageLimit.HasValue && pageLimit.Value > 0 ? pageLimit : 20;
+
+            var model = await _assetRepository.FilterFixedAssetForTransfer(pageNumber, pageLimit, ids);
+            int totalRecords = model.TotalRecords;
+            int totalPages = Convert.ToInt32(Math.Ceiling((double)totalRecords / (double)pageLimit));
+            entities = model.FixedAssetModels;
+
+            List <FixedAssetDto> entitiesDto = _mapper.Map<List<FixedAssetDto>>(entities);
             var filterData = new BaseFilterResponse<FixedAssetDto>(totalPages, totalRecords, entitiesDto);
+
             return filterData;
         }
 

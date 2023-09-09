@@ -1,4 +1,5 @@
-﻿using MSIA.WebFresher052023.Domain.Model.Base;
+﻿using MSIA.WebFresher052023.Domain.Model;
+using MSIA.WebFresher052023.Domain.Model.Base;
 
 namespace Domain.Model
 {
@@ -34,6 +35,30 @@ namespace Domain.Model
         /// </summary>
         /// Created by: ldtuan (28/08/2023)
         public string Description { get; set; }
+
+        /// <summary>
+        /// Nguyên giá của tài sản trong chứng từ
+        /// </summary>
+        /// Created by: ldtuan (01/09/2023)
+        public int? Cost { get; set; }
+
+        /// <summary>
+        /// Giá tài sản còn lại
+        /// </summary>
+        /// Created by: ldtuan (02/09/2023)
+        public decimal RemainingCost { get; set; }
+
+        /// <summary>
+        /// Danh sách tài sản cùng phòng ban từ chi tiết chứng từ
+        /// </summary>
+        /// Created by: ldtuan (01/09/2023)
+        public List<FixedAssetTransferModel>? FixedAssetTransfers { get; set; }
+
+        /// <summary>
+        /// Danh sách người nhận
+        /// </summary>
+        /// Created by: ldtuan (03/09/2023)
+        public List<ReceiverTransferModel>? ReceiverTransfers { get; set; }
 
         /// <summary>
         /// Nhận được giá trị của thuộc tính khóa trong một đối tượng cụ thể 

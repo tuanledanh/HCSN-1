@@ -24,6 +24,13 @@ const baseDepartmentAxios = axios.create({
   baseURL: baseDepartmentApi,
 });
 
+// Tên url của chứng từ điều chuyển tài sản
+const baseTransferAssetApi = baseURL + "TransferAsset";
+// Tạo axios cho chứng từ điều chuyển tài sản
+const baseTransferAssetAxios = axios.create({
+  baseURL: baseTransferAssetApi,
+});
+
 // Các api của tài sản
 const MISAApi = {
   FixedAsset: {
@@ -34,7 +41,7 @@ const MISAApi = {
      * @param {string} filterName mã code để tìm kiếm
      * @param {string} departId id của phòng ban
      * @param {string} aTypeId id của loại tài sản
-     * @returns 
+     * @returns
      */
     Filter: (pageNumber, pageLimit, filterName, departId, aTypeId) =>
       baseAssetAxios.get("", {
@@ -46,6 +53,8 @@ const MISAApi = {
           aTypeId,
         },
       }),
+    // Api chọn tài sản theo phòng ban mới nhất từ chứng từ và bỏ những tài sản đã được chọn
+    FilterForTransfer: (data) => baseAssetAxios.post("/FilterForTransfer", data),
     // Api của tài sản
     Api: baseAssetApi,
     // Api lấy mã code mới
@@ -78,6 +87,32 @@ const MISAApi = {
     Api: baseDepartmentApi,
     // Api lấy tất cả bản ghi
     GetAll: () => baseDepartmentAxios.get(""),
+  },
+  TransferAsset: {
+    Api: baseTransferAssetApi,
+    // Api lấy mã code mới
+    GetNewCode: () => baseTransferAssetAxios.get("/GetNewCode"),
+    /**
+     * Api filter, lọc, phân trang
+     * @param {Int16Array} pageNumber số trang đang ở
+     * @param {Int16Array} pageLimit số bản ghi tối đa mỗi trang
+     * @param {string} filterName mã code để tìm kiếm
+     * @returns
+     */
+    Filter: (pageNumber, pageLimit, filterName) =>
+      baseTransferAssetAxios.get("", {
+        params: {
+          pageNumber,
+          pageLimit,
+          filterName,
+        },
+      }),
+    // Api tạo bản ghi mới
+    Create: (transferAssetData) => baseTransferAssetAxios.post("", transferAssetData),
+    // Api cập nhật
+    Update: (id, transferAssetData) => baseTransferAssetAxios.put(`/${id}`, transferAssetData),
+    // Api lấy bản ghi bằng mã code
+    GetByCode: (code) => baseTransferAssetAxios.get(`/${code}`),
   },
 };
 

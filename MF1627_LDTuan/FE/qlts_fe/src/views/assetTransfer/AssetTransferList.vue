@@ -42,115 +42,111 @@
         <!-- ------------------------Table start------------------------ -->
         <div :class="[{ table: !isResize }, { 'table-flex': isResize }]">
           <!-- ------------------------Header------------------------ -->
-          <div class="header--row row">
+          <div class="header--row row padding--right-5 border--top">
             <div
-              class="header cell display--center-center border--top border--right border--bottom"
+              class="header cell display--center-center border--right border--bottom"
             >
               <input type="checkbox" />
             </div>
             <div
-              class="header cell display--center-center font-weight--700 border--top border--right border--bottom"
+              class="header cell display--center-center font-weight--700 border--right border--bottom"
             >
               STT
             </div>
             <div
-              class="header cell display--center-left font-weight--700 border--top border--right border--bottom padding--left-10"
+              class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
             >
               Mã chứng từ
             </div>
             <div
-              class="header cell display--center-center font-weight--700 border--top border--right border--bottom"
+              class="header cell display--center-center font-weight--700 border--right border--bottom"
             >
               Ngày điều chuyển
             </div>
             <div
-              class="header cell display--center-center font-weight--700 border--top border--right border--bottom"
+              class="header cell display--center-center font-weight--700 border--right border--bottom"
             >
               Ngày chứng từ
             </div>
             <div
-              class="header cell display--center-right font-weight--700 border--top border--right border--bottom padding--right-10"
+              class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
             >
               Nguyên giá
             </div>
             <div
-              class="header cell display--center-right font-weight--700 border--top border--right border--bottom padding--right-10"
+              class="header cell display--center-right font-weight--700 border--right border--bottom padding--right-10"
             >
               Giá trị còn lại
             </div>
             <div
-              class="header cell display--center-left font-weight--700 border--top border--right border--bottom padding--left-10"
+              class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
             >
               Ghi chú
             </div>
-            <div
-              class="header cell display--center-center font-weight--700 border--top border--bottom"
+            <div id="1"
+              class="header cell display--center-center font-weight--700 border--bottom"
             >
               Chức năng
             </div>
           </div>
           <!-- ------------------------Body------------------------ -->
-          <div class="body-data relative">
+          <div class="body-data relative border--top">
             <div
               class="body--row row"
-              v-for="asset in assets"
-              :key="asset.FixedAssetId"
-              :class="{ 'row--selected': selectedRows.includes(asset) }"
-              @click.exact.stop="callRowOnClick(asset)"
-              @click.ctrl.stop="callRowOnCtrlClick(asset)"
+              v-for="transferAsset in transferAssets"
+              :key="transferAsset.TransferAssetId"
+              :class="{ 'row--selected': selectedRows.includes(transferAsset) }"
+              @click.exact.stop="callRowOnClick(transferAsset)"
+              @click.ctrl.stop="callRowOnCtrlClick(transferAsset)"
             >
               <div
                 class="cell display--center-center border--right border--bottom"
-                @click.stop="callRowOnClickByCheckBox(asset)"
+                @click.stop="callRowOnClickByCheckBox(transferAsset)"
               >
                 <input
                   type="checkbox"
-                  :checked="selectedRowsByCheckBox.includes(asset)"
+                  :checked="selectedRowsByCheckBox.includes(transferAsset)"
                 />
               </div>
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ assets.indexOf(asset) + 1 }}
+                {{ transferAssets.indexOf(transferAsset) + 1 }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ transferAsset.TransferAssetCode }}
               </div>
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatDate(transferAsset.TransferDate) }}
               </div>
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatDate(transferAsset.TransactionDate) }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatMoney(Math.round(transferAsset.Cost)) }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatMoney(Math.round(transferAsset.RemainingCost)) }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ transferAsset.Description }}
               </div>
-              <div class="cell display--center-center border--bottom">
+              <div class="cell display--center-center border--bottom row-scroll">
                 <div class="icon-function">
-                  <MISATooltip bottom content="Chỉnh sửa">
-                    <MISAIcon edit background></MISAIcon>
-                  </MISATooltip>
-                  <MISATooltip bottom content="Xóa">
-                    <MISAIcon deleteIcon background></MISAIcon>
-                  </MISATooltip>
+                    <MISAIcon edit background @click="btnEditTransferAsset(transferAsset)"></MISAIcon>
+                    <MISAIcon deleteIcon background @click="btnDeleteTransferAsset(transferAsset)"></MISAIcon>
                 </div>
               </div>
             </div>
@@ -280,7 +276,7 @@
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ asset.FixedAssetCode }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
@@ -290,27 +286,55 @@
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatMoney(Math.round(asset.Cost)) }}
               </div>
               <div
                 class="cell display--center-right border--right border--bottom padding--right-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ formatMoney(Math.round(asset.RemainingCost)) }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                <el-tooltip
+                  v-if="asset.OldDepartmentName.length > 20"
+                  :visible="visible"
+                  placement="right"
+                >
+                  <template #content>
+                    <span>{{ asset.OldDepartmentName }}</span>
+                  </template>
+                  <span>{{
+                    truncateText(asset.OldDepartmentName, 20)
+                  }}</span>
+                </el-tooltip>
+                <span v-else>{{
+                  truncateText(asset.OldDepartmentName, 20)
+                }}</span>
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                <el-tooltip
+                  v-if="asset.NewDepartmentName.length > 20"
+                  :visible="visible"
+                  placement="right"
+                >
+                  <template #content>
+                    <span>{{ asset.NewDepartmentName }}</span>
+                  </template>
+                  <span>{{
+                    truncateText(asset.NewDepartmentName, 20)
+                  }}</span>
+                </el-tooltip>
+                <span v-else>{{
+                  truncateText(asset.NewDepartmentName, 20)
+                }}</span>
               </div>
               <div
                 class="cell display--center-left border--bottom padding--left-10"
               >
-                {{ asset.FixedAssetName }}
+                {{ asset.Description }}
               </div>
             </div>
           </div>
@@ -333,6 +357,8 @@
   <MISAAssetTransferForm
     v-if="isFormDisplay"
     @onCloseForm="onCloseForm"
+    @reLoad="reLoad"
+    :transferAssetToUpdate="transferData"
   ></MISAAssetTransferForm>
   <div v-if="isShowToastDelete" class="blur">
     <MISAToast typeToast="warning" :content="toast_content_delete"
@@ -346,7 +372,7 @@
       <MISAButton
         buttonMain
         textButton="Xóa"
-        @click="btnDeleteAssets"
+        @click="btnDeleteMultiTransferAsset"
         :tabindex="1"
         ref="cancelForm"
         focus
@@ -362,6 +388,10 @@ import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
 import { showToastDelete } from "../../helpers/table/toastMessage";
 import { closeToastWarning } from "../../helpers/table/toastMessage";
 import { checkTabIndex } from "../../helpers/tabIndex/tabIndex";
+
+import { formatMoney } from "../../helpers/common/format/format";
+import { formatDate } from "../../helpers/common/format/format";
+import { truncateText } from "../../helpers/common/format/format";
 export default {
   name: "AssetTransferList",
   components: {
@@ -377,6 +407,10 @@ export default {
     return {
       // ----------------------------- Data -----------------------------
       // Danh sách bản ghi
+      transferAssets: [],
+      // Dữ liệu của 1 chứng từ, để chuyển sang cho AssetTransferForm và update
+      transferData: null,
+      // Danh sách chi tiết bản ghi
       assets: [],
       // Danh sách các bản ghi đã chọn
       selectedRows: [],
@@ -436,15 +470,45 @@ export default {
     this.$_emitter.emit("onDisplayContent");
   },
   methods: {
-    // load data tạm thời
+    formatDate,
+    formatMoney,
+    truncateText,
+    
+    /**
+     * Lấy dữ liệu của chứng từ
+     * Author: LDTUAN (02/09/2023)
+     */
     loadData() {
-      this.$_MISAApi.FixedAsset.Filter(1, 15, null, null, null)
+      this.$_MISAApi.TransferAsset.Filter(1, 20, null)
         .then((res) => {
-          this.assets = res.data.Data;
+          this.transferAssets = res.data.Data;
         })
         .catch((res) => {
           console.log(res);
         });
+    },
+
+    reLoad(){
+      this.loadData();
+    },
+
+    /**
+     * Lấy dữ liệu của chi tiết chứng từ
+     * Author: LDTUAN (02/09/2023)
+     */
+    loadDataDetail(code) {
+      this.$_MISAApi.TransferAsset.GetByCode(code)
+        .then((res) => {
+          this.assets = res.data.FixedAssetTransfers;
+        })
+        .catch((res) => {
+          console.log(res);
+        });
+    },
+
+    btnDeleteMultiTransferAsset(){
+      const transferAssetIds = this.selectedRowsByCheckBox.map(transfer => transfer.TransferAssetId);
+      console.log(transferAssetIds);
     },
 
     //------------------------------------------- Click row -------------------------------------------
@@ -454,16 +518,17 @@ export default {
      * @param {object} asset thông tin tài sản
      * Author: LDTUAN (02/08/2023)
      */
-    callRowOnClick(asset) {
-      rowOnClick.call(this, asset);
+    callRowOnClick(transferAsset) {
+      rowOnClick.call(this, transferAsset, "transferAssets");
+      this.loadDataDetail(transferAsset.TransferAssetCode);
     },
 
-    callRowOnClickByCheckBox(asset) {
-      rowOnClickByCheckBox.call(this, asset);
+    callRowOnClickByCheckBox(transferAsset) {
+      rowOnClickByCheckBox.call(this, transferAsset, "transferAssets");
     },
 
-    callRowOnCtrlClick(asset) {
-      rowOnCtrlClick.call(this, asset);
+    callRowOnCtrlClick(transferAsset) {
+      rowOnCtrlClick.call(this, transferAsset, "transferAssets");
     },
 
     btnUncheckedAll() {
@@ -493,7 +558,6 @@ export default {
       if (!this.initialHeightFix) {
         this.initialHeightFix = this.$refs.resizableTable.clientHeight;
       }
-      console.log(this.initialHeightFix);
       event.preventDefault(); // Ngăn chặn chọn văn bản khi kéo
       document.addEventListener("mousemove", this.resizing);
       document.addEventListener("mouseup", this.stopResize);
@@ -607,14 +671,33 @@ export default {
       checkTabIndex.call(this, event, index);
     },
 
-    //------------------------------------------- Tab index -------------------------------------------
+    //------------------------------------------- FORM -------------------------------------------
+    /**
+     * Mở form thêm chứng từ
+     */
     btnAddDocument() {
       this.isFormDisplay = true;
     },
 
+    /**
+     * Đóng form thêm chứng từ
+     */
     onCloseForm() {
       this.isFormDisplay = false;
+      this.transferData = null;
     },
+
+    /**
+     * Truyền dữ liệu và mở form thêm chứng từ để sửa đổi
+     */
+     btnEditTransferAsset(transferAsset){
+          this.btnAddDocument();
+          this.transferData = transferAsset;
+     },
+
+     btnDeleteTransferAsset(transferAsset){
+        console.log(transferAsset);
+     },
   },
   mounted() {
     /**
@@ -631,6 +714,10 @@ export default {
      */
     this.initialHeightAfterResize = this.$refs.resizableTable.clientHeight;
     this.tableTopHeightFix = this.$refs.tableTop.clientHeight;
+    // Gọi hàm btnCollapseTable() hai lần để lấy đúng độ rộng của table khi lần đầu hiển thị
+    for (let i = 0; i < 2; i++) {
+      this.btnCollapseTable();
+    }
   },
   beforeUnmount() {
     document.removeEventListener("mouseup", this.handleMouseUp);
@@ -751,6 +838,12 @@ export default {
   display: flex;
   column-gap: 8px;
 }
+
+.header--row{
+  background-color: var(--background-color-table-head);
+  border-color: var(--table-border-color);
+}
+
 .header {
   background-color: var(--background-color-table-head);
 }
@@ -773,6 +866,7 @@ export default {
 }
 .body-data {
   overflow-y: auto;
+  border-color: var(--table-border-color);
 }
 
 /* ------------------------------------------- Resize-bar ------------------------------------------- */
