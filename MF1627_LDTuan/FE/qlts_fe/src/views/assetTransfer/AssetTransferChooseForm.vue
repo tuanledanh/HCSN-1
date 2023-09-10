@@ -232,11 +232,11 @@ import { AssetDepreciation } from "../../helpers/common/format/format";
 
 export default {
   name: "AssetTransferChooseForm",
-  props:{
-    existFixedAsset:{
+  props: {
+    existFixedAsset: {
       type: Object,
       default: null,
-    }
+    },
   },
   data() {
     return {
@@ -297,7 +297,7 @@ export default {
       var dataFilter = {
         pageNumber: 1,
         pageLimit: 20,
-        FixedAssetDtos: this.existFixedAsset
+        FixedAssetDtos: this.existFixedAsset,
       };
       this.$_MISAApi.FixedAsset.FilterForTransfer(dataFilter)
         .then((res) => {
@@ -334,7 +334,13 @@ export default {
 
     //------------------------------------------- SAVE DATA -------------------------------------------
     btnSaveAsset() {
-      if (!this.departmentFilter || this.selectedRowsByCheckBox.length <= 0) {
+      if (this.selectedRowsByCheckBox.length <= 0) {
+        this.toast_content_warning =
+          this.$_MISAResource.VN.Form.Warning.SelectData.TransferAsset;
+        this.isShowToastValidate = true;
+      } else if (!this.departmentFilter) {
+        this.toast_content_warning =
+          this.$_MISAResource.VN.Form.Warning.SelectData.Department.Null;
         this.isShowToastValidate = true;
       } else {
         let departmentName = this.departmentFilter.DepartmentName;
@@ -344,6 +350,8 @@ export default {
           (asset) => asset.DepartmentName === departmentName
         );
         if (containsDepartment) {
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Warning.SelectData.Department.Duplicate;
           this.isShowToastValidate = true;
         } else {
           const assetsWithNewDepartment = this.selectedRowsByCheckBox.map(
@@ -351,7 +359,7 @@ export default {
               ...asset,
               NewDepartmentName: departmentName,
               NewDepartmentId: departmentId,
-              Description: description
+              Description: description,
             })
           );
           this.$emit("loadData", assetsWithNewDepartment);

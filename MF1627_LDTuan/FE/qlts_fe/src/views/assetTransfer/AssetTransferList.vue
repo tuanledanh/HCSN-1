@@ -83,7 +83,8 @@
             >
               Ghi chú
             </div>
-            <div id="1"
+            <div
+              id="1"
               class="header cell display--center-center font-weight--700 border--bottom"
             >
               Chức năng
@@ -143,10 +144,20 @@
               >
                 {{ transferAsset.Description }}
               </div>
-              <div class="cell display--center-center border--bottom row-scroll">
+              <div
+                class="cell display--center-center border--bottom row-scroll"
+              >
                 <div class="icon-function">
-                    <MISAIcon edit background @click="btnEditTransferAsset(transferAsset)"></MISAIcon>
-                    <MISAIcon deleteIcon background @click="btnDeleteTransferAsset(transferAsset)"></MISAIcon>
+                  <MISAIcon
+                    edit
+                    background
+                    @click="btnEditTransferAsset(transferAsset)"
+                  ></MISAIcon>
+                  <MISAIcon
+                    deleteIcon
+                    background
+                    @click="callToastDeleteSingle(transferAsset)"
+                  ></MISAIcon>
                 </div>
               </div>
             </div>
@@ -304,9 +315,7 @@
                   <template #content>
                     <span>{{ asset.OldDepartmentName }}</span>
                   </template>
-                  <span>{{
-                    truncateText(asset.OldDepartmentName, 20)
-                  }}</span>
+                  <span>{{ truncateText(asset.OldDepartmentName, 20) }}</span>
                 </el-tooltip>
                 <span v-else>{{
                   truncateText(asset.OldDepartmentName, 20)
@@ -323,9 +332,7 @@
                   <template #content>
                     <span>{{ asset.NewDepartmentName }}</span>
                   </template>
-                  <span>{{
-                    truncateText(asset.NewDepartmentName, 20)
-                  }}</span>
+                  <span>{{ truncateText(asset.NewDepartmentName, 20) }}</span>
                 </el-tooltip>
                 <span v-else>{{
                   truncateText(asset.NewDepartmentName, 20)
@@ -379,6 +386,38 @@
       ></MISAButton>
     </MISAToast>
   </div>
+  <div v-if="isShowToastDeleteSingle" class="blur">
+    <MISAToast typeToast="warning" :content="toast_content_delete_single"
+      ><MISAButton
+        buttonOutline
+        textButton="Không"
+        @click="callCloseToastWarning"
+        :tabindex="2"
+        @keydown="callCheckTabIndex($event, 'islast')"
+      ></MISAButton>
+      <MISAButton
+        buttonMain
+        textButton="Xóa"
+        @click="btnDeleteSingleTransferAsset"
+        :tabindex="1"
+        ref="cancelForm"
+        focus
+      ></MISAButton>
+    </MISAToast>
+  </div>
+  <div v-if="isShowToastValidateBE" class="blur">
+    <MISAToast typeToast="warning" :content="toast_content_warning + '.'"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="callCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="callCheckTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
 </template>
 <script>
 import MISAAssetTransferForm from "./AssetTransferForm.vue";
@@ -416,6 +455,8 @@ export default {
       selectedRows: [],
       // Index của bản ghi đầu tiên trong danh sách
       lastIndex: 0,
+      // Thông tin bản ghi chứng từ, dùng để xóa duy nhất 1 chứng từ
+      transferAssetSingle: null,
 
       // ----------------------------- Form -----------------------------
       isFormDisplay: false,
@@ -460,6 +501,10 @@ export default {
       // ----------------------------- Toast -----------------------------
       isShowToastDelete: false,
       toast_content_delete: null,
+      isShowToastDeleteSingle: false,
+      toast_content_delete_single: null,
+      isShowToastValidateBE: false,
+      toast_content_warning: null,
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
@@ -473,7 +518,7 @@ export default {
     formatDate,
     formatMoney,
     truncateText,
-    
+
     /**
      * Lấy dữ liệu của chứng từ
      * Author: LDTUAN (02/09/2023)
@@ -482,13 +527,14 @@ export default {
       this.$_MISAApi.TransferAsset.Filter(1, 20, null)
         .then((res) => {
           this.transferAssets = res.data.Data;
+          this.assets = [];
         })
         .catch((res) => {
           console.log(res);
         });
     },
 
-    reLoad(){
+    reLoad() {
       this.loadData();
     },
 
@@ -506,9 +552,31 @@ export default {
         });
     },
 
-    btnDeleteMultiTransferAsset(){
-      const transferAssetIds = this.selectedRowsByCheckBox.map(transfer => transfer.TransferAssetId);
-      console.log(transferAssetIds);
+    /**
+     * Xóa 1 hoặc nhiều bản ghi khi click vào button xóa
+     * Author: LDTUAN (10/09/2023)
+     */
+    deleteTransferAssets(transferAssetIds) {
+      this.isLoading = true;
+      if (transferAssetIds && transferAssetIds.length > 0) {
+        const requestData = transferAssetIds;
+        this.$_MISAApi.TransferAsset.DeleteMany(requestData, {
+          headers: { "Content-Type": "application/json" },
+        })
+          .then(() => this.loadData())
+          .then(() => {
+            this.isLoading = false;
+            this.selectedRow = [];
+            this.selectedRowsByCheckBox = [];
+          })
+          .catch((res) => {
+            this.$processErrorResponse(res);
+            this.isShowToastValidateBE = true;
+            this.toast_content_warning = res.response.data.UserMessage;
+          });
+      }
+      this.isShowToastDelete = false;
+      this.isShowToastDeleteSingle = false;
     },
 
     //------------------------------------------- Click row -------------------------------------------
@@ -525,6 +593,7 @@ export default {
 
     callRowOnClickByCheckBox(transferAsset) {
       rowOnClickByCheckBox.call(this, transferAsset, "transferAssets");
+      console.log(this.selectedRowsByCheckBox);
     },
 
     callRowOnCtrlClick(transferAsset) {
@@ -539,8 +608,8 @@ export default {
     callToastDelete() {
       showToastDelete.call(
         this,
-        this.$_MISAResource.VN.Form.Warning.Delete.Single,
-        this.$_MISAResource.VN.Form.Warning.Delete.Multiple
+        this.$_MISAResource.VN.Form.Warning.DeleteTransfer.Single,
+        this.$_MISAResource.VN.Form.Warning.DeleteTransfer.Multiple
       );
     },
 
@@ -690,14 +759,35 @@ export default {
     /**
      * Truyền dữ liệu và mở form thêm chứng từ để sửa đổi
      */
-     btnEditTransferAsset(transferAsset){
-          this.btnAddDocument();
-          this.transferData = transferAsset;
-     },
+    btnEditTransferAsset(transferAsset) {
+      this.btnAddDocument();
+      this.transferData = transferAsset;
+    },
 
-     btnDeleteTransferAsset(transferAsset){
-        console.log(transferAsset);
-     },
+    callToastDeleteSingle(transferAsset) {
+      var listIds = [];
+      listIds.push(transferAsset.TransferAssetId);
+      console.log(listIds);
+      this.transferAssetSingle = listIds;
+      this.toast_content_delete_single =
+        this.$_MISAResource.VN.Form.Warning.Delete.Single +
+        transferAsset.TransferAssetCode +
+        " - " +
+        transferAsset.TransferAssetName +
+        "?";
+      this.isShowToastDeleteSingle = true;
+    },
+
+    btnDeleteMultiTransferAsset() {
+      const transferAssetIds = this.selectedRowsByCheckBox.map(
+        (transfer) => transfer.TransferAssetId
+      );
+      this.deleteTransferAssets(transferAssetIds);
+    },
+
+    btnDeleteSingleTransferAsset() {
+      this.deleteTransferAssets(this.transferAssetSingle);
+    },
   },
   mounted() {
     /**
@@ -839,7 +929,7 @@ export default {
   column-gap: 8px;
 }
 
-.header--row{
+.header--row {
   background-color: var(--background-color-table-head);
   border-color: var(--table-border-color);
 }

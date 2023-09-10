@@ -1,6 +1,7 @@
 ﻿using Application.DTO;
 using Application.Interface;
 using AutoMapper;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Domain.Exceptions;
 using Domain.Model;
 using MSIA.WebFresher052023.Application.DTO;
@@ -300,6 +301,87 @@ namespace Application.Service
             }
             // ======================================================= CREATE-UPDATE-DELETE END  =======================================================
             #endregion
+        }
+
+        public override async Task<bool> DeleteManyAsync(List<Guid> ids)
+        {
+            // 1.Check chứng từ có tồn tại trong db không, nếu tồn tại thì sắp xếp theo ngày tạo với thứ tự giảm dần
+            var transferAssets = await _transferAssetRepository.GetListByIdsAsync(ids);
+            if (transferAssets == null || !transferAssets.Any() || transferAssets.Count != ids.Count)
+            {
+                throw new DataException();
+            }
+            transferAssets = transferAssets.OrderByDescending(transfer => transfer.CreatedDate).ToList();
+
+
+            // 2.Từ các chứng từ trên, lấy được danh sách tài sản bên trong, từ đó tìm được toàn bộ chứng từ của các tài sản đó
+            var allTransferAssets = await _transferAssetRepository.GetAllTransferAssetOfAsset(ids);
+
+            // 3.Tạo các list receiver và detail để xóa
+            List<TransferAssetDetail> listDetail = new();
+            List<Receiver> listReceiver = new();
+
+            // 3.kiểm tra xem chứng từ nhận được từ FE có phải là các chứng từ mới nhất trong DB không
+            for (int i = 0; i < transferAssets.Count; i++)
+            {
+                // 3.1.Danh sách tài sản trong từng chứng từ 1 của danh sách truyền từ FE về
+                var detailFE = allTransferAssets
+                    .Where(transfer => transfer.TransferAssetId == transferAssets[i].TransferAssetId)
+                    .OrderByDescending(transfer => transfer.CreatedDate)
+                    .ToList();
+
+                // 3.2.So sánh created date của từng tài sản trong FE với trong DB
+                for (int j = 0; j < detailFE.Count; j++)
+                {
+                    var DB = allTransferAssets
+                        .Where(transfer => transfer.FixedAssetId == detailFE[j].FixedAssetId)
+                        .OrderByDescending(transfer => transfer.CreatedDate)
+                        .FirstOrDefault();
+                    if (DB != null && detailFE[j].CreatedDate != DB.CreatedDate)
+                    {
+                        throw new DataException();
+                    }
+                }
+                // 3.3.Xóa các mục của FE ra khỏi allTransferAssets dựa trên transferAssetId
+                allTransferAssets.RemoveAll(transfer => transfer.TransferAssetId == transferAssets[i].TransferAssetId);
+
+                // 3.4.Lấy danh sách người nhận để xóa
+                List<Guid> transferAssetIds = new()
+                {
+                    transferAssets[i].TransferAssetId
+                };
+                var receivers = await _receiverRepository.GetListByIdsAsync(transferAssetIds);
+                listReceiver.AddRange(receivers);
+
+                // 3.5.Lấy danh sách chi tiết chứng từ để xóa
+                List<Guid> assetIds = detailFE.Select(detail => detail.FixedAssetId).ToList();
+                var transferDetailsModel = await _transferAssetDetailRepository.GetListDetailByIdsAsync(assetIds);
+                List<Guid> detailIds = transferDetailsModel
+                    .Where(transfer => transfer.TransferAssetId == transferAssets[i].TransferAssetId)
+                    .Select(transfer => transfer.TransferAssetDetailId)
+                    .ToList();
+                var transferDetails = await _transferAssetDetailRepository.GetListByIdsAsync(detailIds);
+                listDetail.AddRange(transferDetails);
+            }
+
+            // 4.Bắt đầu xóa
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                await _receiverRepository.DeleteManyAsync(listReceiver);
+
+                await _transferAssetDetailRepository.DeleteManyAsync(listDetail);
+
+                await _transferAssetRepository.DeleteManyAsync(transferAssets);
+
+                await _unitOfWork.CommitAsync();
+                return true;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackAsync();
+                return false;
+            }
         }
 
         /// <summary>
