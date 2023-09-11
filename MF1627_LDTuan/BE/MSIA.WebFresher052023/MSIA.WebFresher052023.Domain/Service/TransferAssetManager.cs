@@ -41,19 +41,19 @@ namespace MSIA.WebFresher052023.Domain.Service
         /// Created by: ldtuan (30/08/2023)
         public async Task CheckDateAsync(TransferAsset? transferAsset, List<Guid> listAssetIds)
         {
-            if (transferAsset != null && transferAsset.TransferDate < transferAsset.TransactionDate)
+            if (transferAsset != null && transferAsset.TransferDate <= transferAsset.TransactionDate)
             {
                 throw new DataException();
             }
             var transferList = await _transferAssetRepository.GetNewestTransferAssetByAssetId(listAssetIds);
-            if (transferList != null)
+            if (transferList != null && transferList.Count > 0)
             {
                 var newestTransfer = transferList.FirstOrDefault();
-                if (newestTransfer != null && newestTransfer.TransferAssetCode == transferAsset.TransferAssetCode)
+                if (newestTransfer != null && transferList.Count > 1 && newestTransfer.TransferAssetCode == transferAsset.TransferAssetCode)
                 {
                     newestTransfer = transferList[1];
                 }
-                if (transferAsset.TransferDate < newestTransfer.TransferDate)
+                if (newestTransfer.TransferAssetCode != transferAsset.TransferAssetCode && transferAsset.TransferDate <= newestTransfer.TransferDate)
                 {
                     throw new DataException();
                 }

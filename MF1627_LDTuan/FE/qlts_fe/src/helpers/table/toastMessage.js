@@ -7,7 +7,7 @@ export function showToastDelete(
   messageDeleteMultiple = null,
   messageDeleteZero = null
 ) {
-  const selectedRows = this.selectedRows;
+  const selectedRows = this.selectedRowsByCheckBox;
   const numberOfRecords = selectedRows.length;
   // Thêm số 0 vào trước số bản ghi, nếu số bản ghi nhỏ hơn 10
   // padStart là thêm 1 ký tự vào trước chuỗi ban đầu, nếu sau khi thêm mà độ dài chuổi bằng độ dài cung cấp
@@ -20,10 +20,8 @@ export function showToastDelete(
   if (numberOfRecords == 1) {
     this.toast_content_delete =
       messageDeleteSingle +
-      selectedRows[0].FixedAssetCode +
-      " - " +
-      selectedRows[0].FixedAssetName +
-      "?";
+      selectedRows[0].TransferAssetCode +
+      " không ?";
   } else if (numberOfRecords > 1) {
     this.toast_content_delete =
       formattedNumberOfRecords + messageDeleteMultiple;
@@ -39,6 +37,7 @@ export function showToastDelete(
  */
 export function closeToastWarning() {
   this.isShowToastDelete = false;
+  this.isShowToastDeleteSingle = false;
   this.isShowToastExport = false;
   this.isShowToastValidateBE = false;
 }

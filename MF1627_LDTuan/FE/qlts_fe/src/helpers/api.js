@@ -111,6 +111,9 @@ const MISAApi = {
     Create: (transferAssetData) => baseTransferAssetAxios.post("", transferAssetData),
     // Api cập nhật
     Update: (id, transferAssetData) => baseTransferAssetAxios.put(`/${id}`, transferAssetData),
+    // Api xóa nhiều
+    DeleteMany: (listTransferAssetData) =>
+    baseTransferAssetAxios.delete("", { data: listTransferAssetData }),
     // Api lấy bản ghi bằng mã code
     GetByCode: (code) => baseTransferAssetAxios.get(`/${code}`),
   },

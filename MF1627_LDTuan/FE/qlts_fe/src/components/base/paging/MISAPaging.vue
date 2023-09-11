@@ -31,7 +31,7 @@
             :totalPages="totalPages"
             :currentPage="currentPage"
             @paging="getPageNumber"
-            :disabled="pageNumber == totalPages"
+            :disabled="pageNumber === 0 || totalPages === 0 || pageNumber == totalPages"
           ></MISAIcon>
         </div>
       </div>
@@ -164,8 +164,12 @@ export default {
      * @param {*} value giá trị mới của pageNumber
      * Author: LDTUAN (02/08/2023)
      */
-    pageNumber(value) {
-      this.$emit("paging", value);
+    pageNumber(newValue, oldValue) {
+      if (newValue === "...") {
+        this.pageNumber = oldValue;
+      } else {
+        this.$emit("paging", newValue);
+      }
     },
   },
   methods: {

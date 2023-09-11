@@ -127,16 +127,8 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         [HttpDelete]
         public async Task<IActionResult> DeleteManyByIdAsync([FromBody] List<Guid> ids)
         {
-            var result = await _baseService.DeleteManyAsync(ids);
-            if (result)
-            {
-                return StatusCode(StatusCodes.Status200OK);
-            }
-            else
-            {
-                var error = new ApiResponse { UserMessage = ErrorMessages.Other };
-                return StatusCode(StatusCodes.Status400BadRequest, error);
-            }
+            await _baseService.DeleteManyAsync(ids);
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         /// <summary>

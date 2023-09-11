@@ -22,23 +22,46 @@ const MISAResource = {
         },
         // Thông báo nếu người dùng thay đổi trong ô nhập liệu nào đó
         Edit: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này",
+        Transfer: {
+          Edit: {
+            ValueChange: "Dữ liệu đã thay đổi bản có muốn lưu không?",
+          },
+          Add:{
+            NoAsset: "Bạn chưa thêm tài sản điều chuyển."
+          }
+        },
         // Trường hợp xóa
         Delete: {
           // Xóa 1 bản ghi
           Single: "Bạn có muốn xóa tài sản ",
           // Xóa nhiều bản ghi
-          Multiple: " tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách?",
+          Multiple:
+            " tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách?",
           // Nếu không chọn bản ghi nào thì hiện thông báo
           Zero: "Hãy chọn ít nhất một tài sản để xóa!",
-
-          
+        },
+        DeleteTransfer: {
+          // Xóa 1 bản ghi
+          Single: "Bạn có muốn xóa chứng từ ",
+          // Xóa nhiều bản ghi
+          Multiple:
+            " chứng từ đã được chọn. Bạn có muốn xóa các chứng từ này khỏi danh sách?",
+        },
+        SelectData: {
+          TransferAsset: "Bạn chưa chọn tài sản điều chuyển",
+          Department: {
+            Null: "Vui lòng chọn bộ phận sử dụng mới",
+            Duplicate:
+              "Vui lòng chọn bộ phận sử dụng mới khác bộ phận sử dụng tài sản",
+          },
         },
         // Xuất excel
         Export: {
           // Xuất 1 bản ghi
           Single: "Bạn có muốn xuất excel tài sản ",
           // Xuất nhiều bản ghi
-          Multiple: " tài sản đã được chọn. Bạn có muốn xuất excel các tài sản này không?"
+          Multiple:
+            " tài sản đã được chọn. Bạn có muốn xuất excel các tài sản này không?",
         },
       },
       // Lưu thành công
@@ -59,7 +82,7 @@ const MISAResource = {
         StartUsingDate: "ngày bắt đầu sử dụng",
       },
       // Giới hạn ký tự trong ô nhập liệu
-      Max_value:{
+      Max_value: {
         FixedAssetCode: "Mã tài sản không được vượt quá 50 ký tự",
         FixedAssetName: "Tên tài sản không được vượt quá 255 ký tự",
         Quantity: "Số lượng tài sản lớn hơn giới hạn cho phép",
@@ -68,67 +91,67 @@ const MISAResource = {
     },
     // Các hành động của context menu, khi click 1 option thì contextMenu sẽ bắn index về cho component cha
     // Component cha nhận index và tìm event tương ứng để thực hiện
-    ContextMenu:{
-      Add:{
+    ContextMenu: {
+      Add: {
         icon: "icon-add-black",
         text: "Thêm mới",
         index: 1,
       },
-      Update:{
+      Update: {
         icon: "icon-edit",
         text: "Cập nhật",
         index: 2,
       },
-      Clone:{
+      Clone: {
         icon: "icon-copy",
         text: "Sao chép",
         index: 3,
       },
-      Delete:{
+      Delete: {
         icon: "icon-delete-black",
         text: "Xóa",
         index: 4,
       },
     },
     // Các link thành phần
-    Asset:[
+    Asset: [
       {
-        url: '#',
-        content: 'Ghi tăng'
+        url: "#",
+        content: "Ghi tăng",
       },
       {
-        url: '#',
-        content: 'Thay đổi thông tin'
+        url: "#",
+        content: "Thay đổi thông tin",
       },
       {
-        url: '#',
-        content: 'Đánh giá lại'
+        url: "#",
+        content: "Đánh giá lại",
       },
       {
-        url: 'assetsTransfer',
-        content: 'Điều chuyển tài sản'
+        url: "assetsTransfer",
+        content: "Điều chuyển tài sản",
       },
       {
-        url: '#',
-        content: 'Đề nghị xử lý'
+        url: "#",
+        content: "Đề nghị xử lý",
       },
       {
-        url: '#',
-        content: 'Ghi giảm'
+        url: "#",
+        content: "Ghi giảm",
       },
       {
-        url: '#',
-        content: 'Tính hao mòn'
+        url: "#",
+        content: "Tính hao mòn",
       },
       {
-        url: '#',
-        content: 'Kiểm kê'
+        url: "#",
+        content: "Kiểm kê",
       },
       {
-        url: '#',
-        content: 'Khác'
+        url: "#",
+        content: "Khác",
       },
-    ]
+    ],
   },
   // Tiếng anh
   EN: {
