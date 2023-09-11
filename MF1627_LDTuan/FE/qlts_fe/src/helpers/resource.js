@@ -22,6 +22,14 @@ const MISAResource = {
         },
         // Thông báo nếu người dùng thay đổi trong ô nhập liệu nào đó
         Edit: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này",
+        Transfer: {
+          Edit: {
+            ValueChange: "Dữ liệu đã thay đổi bản có muốn lưu không?",
+          },
+          Add:{
+            NoAsset: "Bạn chưa thêm tài sản điều chuyển."
+          }
+        },
         // Trường hợp xóa
         Delete: {
           // Xóa 1 bản ghi
@@ -43,8 +51,9 @@ const MISAResource = {
           TransferAsset: "Bạn chưa chọn tài sản điều chuyển",
           Department: {
             Null: "Vui lòng chọn bộ phận sử dụng mới",
-            Duplicate: "Vui lòng chọn bộ phận sử dụng mới khác bộ phận sử dụng tài sản"
-          }
+            Duplicate:
+              "Vui lòng chọn bộ phận sử dụng mới khác bộ phận sử dụng tài sản",
+          },
         },
         // Xuất excel
         Export: {

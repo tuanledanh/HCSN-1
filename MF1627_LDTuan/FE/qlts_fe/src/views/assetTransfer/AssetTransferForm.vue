@@ -57,7 +57,7 @@
           <div class="content__row--bot">
             <div class="checkbox">
               <div class="checkbox-combo" @click="showFormReceiver">
-                <input type="checkbox" :checked="receivers.length > 0"/>
+                <input type="checkbox" :checked="receivers.length > 0" />
                 <label class="font-weight--500">Chọn ban giao nhận</label>
               </div>
             </div>
@@ -159,7 +159,15 @@
             <div
               class="header cell display--center-center border--right border--bottom"
             >
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                @click="headCheckboxClick($event)"
+                :checked="
+                  selectedRowsByCheckBox.length === pagingAsset.length &&
+                  pagingAsset.length > 0 &&
+                  selectedRowsByCheckBox.length > 0
+                "
+              />
             </div>
             <div
               class="header cell display--center-center font-weight--700 border--right border--bottom"
@@ -211,9 +219,16 @@
           <div class="body-data relative">
             <div
               class="body--row row"
-              v-for="(asset, index) in assets"
+              v-for="(asset, index) in pagingAsset"
               :key="index"
-              :class="{ 'row--selected': selectedRows.includes(asset) }"
+              :class="[
+                {
+                  'row--selected': selectedRowsByCheckBox.includes(asset),
+                },
+                {
+                  'row--selected': selectedRows.includes(asset),
+                },
+              ]"
               @click.exact.stop="callRowOnClick(asset)"
               @click.ctrl.stop="callRowOnCtrlClick(asset)"
             >
@@ -229,7 +244,9 @@
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ assets.indexOf(asset) + 1 }}
+                {{
+                  pagingAsset.indexOf(asset) + 1 + pageLimit * (currentPage - 1)
+                }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
@@ -322,7 +339,7 @@
       <MISAButton
         buttonOutline
         textButton="Hủy"
-        @click="btnCancelForm"
+        @click="btnCancelTransferAsset"
         :tabindex="15"
       ></MISAButton>
       <MISAButton
@@ -339,6 +356,40 @@
     @loadData="loadData"
     :existFixedAsset="existFixedAsset"
   ></MISAAssetTransferChooseForm>
+
+  <!-- ======================================================= TOAST ======================================================= -->
+  <div v-if="isShowToastValueChange" class="blur">
+    <MISAToast typeToast="warning" :content="toast_content_warning"
+      ><MISAButton
+        buttonOutline
+        textButton="Hủy bỏ"
+        @click="btnCloseToastWarning"
+        focus
+        :tabindex="1"
+        ref="button"
+      ></MISAButton>
+      <MISAButton
+        buttonMain
+        textButton="Lưu"
+        @click="btnSaveTransferAsset"
+        :tabindex="2"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton
+    ></MISAToast>
+  </div>
+  <div v-if="isShowToastValidateBE" class="blur">
+    <MISAToast typeToast="warning" :content="toast_content_warning + '.'"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="btnCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
 </template>
 <script>
 import { rowOnClick } from "../../helpers/table/selectRow";
@@ -376,6 +427,8 @@ export default {
       oldAssets: [],
       // Danh sách bản ghi từ db, các bản ghi này có giá trị không đổi, nó thể hiện đúng dữ liệu hiện có trong db
       originalAssets: [],
+      // Tài sản dùng để phân trang
+      pagingAsset: [],
       // Danh sách người nhận
       receivers: [],
       oldReceivers: [],
@@ -394,6 +447,11 @@ export default {
       existFixedAsset: null,
 
       // ----------------------------- Paging -----------------------------
+      // Số trang hiện tại
+      pageNumber: 1,
+      // Số lượng bản ghi tối đa mỗi trang
+      pageLimit: 20,
+      // Số lượng bản ghi tối đa mỗi trang
       pageLimitList: [],
       // Tổng bản ghi
       totalRecords: 0,
@@ -413,10 +471,15 @@ export default {
       toast_content_delete: null,
 
       // ----------------------------- Tab index -----------------------------
-      buttonFocus: null,
+      buttonFocus: "",
 
       // ----------------------------- COMBOBOX -----------------------------
       inputChange: null,
+
+      // ----------------------------- TOAST -----------------------------
+      isShowToastValueChange: false,
+      toast_content_warning: null,
+      isShowToastValidateBE: false,
     };
   },
   computed: {
@@ -433,6 +496,9 @@ export default {
     },
   },
   created() {
+    // Tải danh sách option giới hạn bản ghi mỗi trang
+    this.getPageLimitList();
+
     /**
      * Kiểm tra thực hiện thêm, sửa, hay sao chép để thực hiện thao tác tương ứng
      * Author: LDTUAN (02/08/2023)
@@ -446,7 +512,29 @@ export default {
         break;
     }
   },
-  mounted() {},
+  watch: {
+    /**
+     * Phân trang lại với giới hạn trang mới
+     * @param {int} value giới hạn bản ghi
+     * Author: LDTUAN (02/08/2023)
+     */
+    pageLimit(value) {
+      this.pageLimit = value;
+      this.pageNumber = 1;
+      this.pagingAssetFE();
+    },
+
+    /**
+     * Phân trang theo số trang mới
+     * @param {int} value số trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    pageNumber(value) {
+      this.pageNumber = value;
+      this.currentPage = value;
+      this.pagingAssetFE();
+    },
+  },
   methods: {
     AssetDepreciation,
     formatMoney,
@@ -461,7 +549,7 @@ export default {
     btnSaveTransferAsset() {
       switch (this.formMode) {
         case this.$_MISAEnum.FORM_MODE.UPDATE:
-          this.updateTransferAssetHelper();
+          this.updateTransferAssetHelper(this.$_MISAEnum.FORM_MODE.UPDATE);
           break;
         case this.$_MISAEnum.FORM_MODE.ADD:
           this.AddTransferAsset();
@@ -494,10 +582,9 @@ export default {
           this.$emit("reLoad");
         })
         .catch((res) => {
-          // this.$processErrorResponse(res);
-          // this.isShowToastValidateBE = true;
-          // this.toast_content_warning = res.response.data.UserMessage;
-          console.log(res);
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
         });
     },
 
@@ -505,7 +592,8 @@ export default {
      * Chuẩn bị dữ liệu rồi trả về cho hàm UpdateTransferAsset gọi đến để thực hiện gọi đến api
      * Author: LDTUAN (04/09/2023)
      */
-    updateTransferAssetHelper() {
+    updateTransferAssetHelper(action) {
+      this.prepareDataForAsset();
       // 1. Lấy thông tin của chứng từ điều chuyển cũ
       this.transferAsset.TransactionDate = DateFormat(
         this.transferAsset.TransactionDate
@@ -686,25 +774,68 @@ export default {
       var listReceiverIdDelete = listReceiverFinal.filter(
         (asset) => asset.Flag == 2
       );
-      if (
-        arePropertiesEqual &&
-        listAssetIdAdd == 0 &&
-        listAssetIdUpdate == 0 &&
-        listAssetIdDelete == 0 &&
-        listAssetIdUnchange != 0 &&
-        listReceiverIdAdd == 0 &&
-        listReceiverIdUpdate == 0 &&
-        listReceiverIdDelete == 0
-      ) {
-        this.btnCloseForm();
-      } else {
-        this.UpdateTransferAsset(
-          transferAssetId,
-          newTransferAsset,
-          listTransferAssetDetail,
-          listReceiverFinal
-        );
+
+      switch (this.formMode) {
+        case this.$_MISAEnum.FORM_MODE.UPDATE:
+          if (
+            arePropertiesEqual &&
+            listAssetIdAdd == 0 &&
+            listAssetIdUpdate == 0 &&
+            listAssetIdDelete == 0 &&
+            listAssetIdUnchange != 0 &&
+            listReceiverIdAdd == 0 &&
+            listReceiverIdUpdate == 0 &&
+            listReceiverIdDelete == 0
+          ) {
+            this.btnCloseForm();
+          } else {
+            if (action == this.$_MISAEnum.FORM_MODE.CANCEL) {
+              this.isShowToastValueChange = true;
+              this.toast_content_warning =
+                this.$_MISAResource.VN.Form.Warning.Transfer.Edit.ValueChange;
+            } else if (action == this.$_MISAEnum.FORM_MODE.UPDATE) {
+              this.UpdateTransferAsset(
+                transferAssetId,
+                newTransferAsset,
+                listTransferAssetDetail,
+                listReceiverFinal
+              );
+            }
+          }
+          break;
+        case this.$_MISAEnum.FORM_MODE.ADD:
+          if (
+            listAssetIdAdd == 0 &&
+            listAssetIdUpdate == 0 &&
+            listAssetIdDelete == 0 &&
+            listReceiverIdAdd == 0 &&
+            listReceiverIdUpdate == 0 &&
+            listReceiverIdDelete == 0
+          ) {
+            this.btnCloseForm();
+          } else {
+            if (action == this.$_MISAEnum.FORM_MODE.CANCEL) {
+              this.isShowToastValueChange = true;
+              this.toast_content_warning =
+                this.$_MISAResource.VN.Form.Warning.Transfer.Edit.ValueChange;
+            }
+          }
+          break;
       }
+    },
+
+    prepareDataForAsset() {
+      this.assets.forEach((asset) => {
+        const match = this.pagingAsset.find(
+          (paging) => paging.FixedAssetId === asset.FixedAssetId
+        );
+        if (match) {
+          asset.NewDepartmentId = match.NewDepartmentId;
+          asset.NewDepartmentName = match.NewDepartmentName;
+          asset.NewDepartmentCode = match.NewDepartmentCode;
+          asset.Description = match.Description;
+        }
+      });
     },
 
     createAddUpdateDeleteList(sourceList, idField, oldList, selectedFields) {
@@ -779,32 +910,38 @@ export default {
      *
      */
     AddTransferAsset() {
+      this.prepareDataForAsset();
       this.transferData.ListReceiver = this.receivers;
-      const transferAssetDetails = this.assets.map((asset) => ({
-        FixedAssetId: asset.FixedAssetId,
-        OldDepartmentId: asset.DepartmentId,
-        NewDepartmentId: asset.NewDepartmentId,
-        Description: asset.description,
-      }));
-      this.transferData.ListTransferAssetDetail = transferAssetDetails;
-      this.transferAsset.TransactionDate = DateFormat(
-        this.transferAsset.TransactionDate
-      );
-      this.transferAsset.TransferDate = DateFormat(
-        this.transferAsset.TransferDate
-      );
-      this.transferData.TransferAsset = this.transferAsset;
-      this.$_MISAApi.TransferAsset.Create(this.transferData)
-        .then(() => {
-          this.btnCloseForm();
-          this.$emit("reLoad");
-        })
-        .catch((res) => {
-          // this.$processErrorResponse(res);
-          // this.isShowToastValidateBE = true;
-          // this.toast_content_warning = res.response.data.UserMessage;
-          console.log(res);
-        });
+      if (!this.assets || this.assets.length <= 0) {
+        this.isShowToastValidateBE = true;
+        this.toast_content_warning =
+          this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoAsset;
+      } else {
+        const transferAssetDetails = this.assets.map((asset) => ({
+          FixedAssetId: asset.FixedAssetId,
+          OldDepartmentId: asset.DepartmentId,
+          NewDepartmentId: asset.NewDepartmentId,
+          Description: asset.Description,
+        }));
+        this.transferData.ListTransferAssetDetail = transferAssetDetails;
+        this.transferAsset.TransactionDate = DateFormat(
+          this.transferAsset.TransactionDate
+        );
+        this.transferAsset.TransferDate = DateFormat(
+          this.transferAsset.TransferDate
+        );
+        this.transferData.TransferAsset = this.transferAsset;
+        this.$_MISAApi.TransferAsset.Create(this.transferData)
+          .then(() => {
+            this.btnCloseForm();
+            this.$emit("reLoad");
+          })
+          .catch((res) => {
+            this.$processErrorResponse(res);
+            this.isShowToastValidateBE = true;
+            this.toast_content_warning = res.response.data.UserMessage;
+          });
+      }
     },
 
     //------------------------------------------- TRANSFER ASSET -------------------------------------------
@@ -823,10 +960,9 @@ export default {
           this.isLoading = false;
         })
         .catch((res) => {
-          // this.$processErrorResponse(res);
-          // this.isShowToastValidateBE = true;
-          // this.toast_content_warning = res.response.data.UserMessage;
-          console.log(res);
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
         });
     },
 
@@ -868,10 +1004,20 @@ export default {
           this.oldAssets = [...this.assets];
           this.originalAssets = JSON.parse(JSON.stringify(this.assets));
           this.oldReceivers = [...this.receivers];
+
+          this.pagingAssetFE();
         })
         .catch((res) => {
           console.log(res);
         });
+    },
+
+    /**
+     * Danh sách số lượng bản ghi mỗi trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageLimitList() {
+      this.pageLimitList = [20, 10, 5];
     },
 
     //------------------------------------------- RECEIVER -------------------------------------------
@@ -910,12 +1056,44 @@ export default {
       } else {
         this.assets = this.assets.concat(items);
       }
+      this.pagingAssetFE();
+    },
+
+    pagingAssetFE() {
+      const pagingAsset = JSON.parse(JSON.stringify(this.assets));
+      this.totalRecords = pagingAsset.length;
+      this.totalPages = Math.ceil(this.totalRecords / this.pageLimit);
+      const start = (this.currentPage - 1) * this.pageLimit;
+      const end = start + this.pageLimit;
+      this.pagingAsset = pagingAsset.slice(start, end);
+    },
+
+    /**
+     * Thực hiện load lại dữ khi thay đổi số trang
+     * @param {int} pageNumber số trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageNumber(pageNumber) {
+      this.pageNumber = pageNumber;
+    },
+
+    /**
+     * Thực hiện load lại dữ khi thay đổi giới hạn bản ghi
+     * @param {int} pageLimit giới hạn bản ghi mỗi trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageLimit(pageLimit) {
+      this.pageLimit = pageLimit;
     },
 
     btnDeleteAsset(asset) {
-      const index = this.assets.indexOf(asset);
+      const index = this.pagingAsset.indexOf(asset);
       if (index !== -1) {
-        this.assets.splice(index, 1);
+        this.pagingAsset.splice(index, 1);
+      }
+      const indexAsset = this.assets.indexOf(asset);
+      if (indexAsset !== -1) {
+        this.assets.splice(indexAsset, 1);
       }
     },
 
@@ -969,6 +1147,27 @@ export default {
       this.selectedRowsByCheckBox = [];
     },
 
+    /**
+     * Thực hiện tick/bỏ tick tất cả bản ghi trong danh sách khi tick/bỏ tích checkbox
+     * @param {checkbox} event input checkbox
+     * Author: LDTUAN (02/08/2023)
+     */
+    headCheckboxClick(event) {
+      if (event.target.checked) {
+        for (const asset of this.pagingAsset) {
+          if (!this.selectedRowsByCheckBox.includes(asset)) {
+            this.selectedRowsByCheckBox.push(asset);
+          }
+        }
+      } else {
+        for (const asset of this.pagingAsset) {
+          this.selectedRowsByCheckBox.splice(asset);
+        }
+        this.selectedRows = [];
+        this.selectedRowsByCheckBox = [];
+      }
+    },
+
     //------------------------------------------- Form-------------------------------------------
     /**
      * Đóng form, gửi thông tin về cho component cha để đóng nó
@@ -978,7 +1177,18 @@ export default {
       this.$emit("onCloseForm");
     },
 
+    btnCancelTransferAsset() {
+      this.updateTransferAssetHelper(this.$_MISAEnum.FORM_MODE.CANCEL);
+    },
+
     btnShowFormChooseAsset() {
+      this.pagingAsset.forEach((asset) => {
+        if (!Object.prototype.hasOwnProperty.call(asset, "DepartmentCode")) {
+          asset.DepartmentCode = "raw";
+          asset.FixedAssetCategoryCode = "raw";
+          asset.FixedAssetCategoryName = "raw";
+        }
+      });
       this.assets.forEach((asset) => {
         if (!Object.prototype.hasOwnProperty.call(asset, "DepartmentCode")) {
           asset.DepartmentCode = "raw";
@@ -992,6 +1202,28 @@ export default {
 
     onCloseForm() {
       this.isShowFormChooseAsset = false;
+    },
+
+    //------------------------------------------- TOAST -------------------------------------------
+    btnCloseToastWarning() {
+      this.isShowToastValueChange = false;
+      this.isShowToastValidateBE = false;
+    },
+
+    //------------------------------------------- TAB INDEX -------------------------------------------
+    /**
+     * Nhấn tab để di chuyển giữa các component
+     * @param {*} event
+     * @param {int} index số index của các component
+     * Author: LDTUAN (10/09/2023)
+     */
+    checkTabIndex(event, index) {
+      var charCode = event.which ? event.which : event.keyCode;
+      if (index == "islast" && charCode == this.$_MISAEnum.KEYCODE.TAB) {
+        event.preventDefault();
+        this.buttonFocus = "button";
+        this.$refs[this.buttonFocus].focusButton();
+      }
     },
   },
 };

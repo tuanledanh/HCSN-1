@@ -20,7 +20,13 @@
       :tabindex="tabindex"
       ref="button"
     >
-      <MISAIcon v-if="combo" button :add="add" :add_box="add_box" :add_box_white="add_box_white"></MISAIcon>
+      <MISAIcon
+        v-if="combo"
+        button
+        :add="add"
+        :add_box="add_box"
+        :add_box_white="add_box_white"
+      ></MISAIcon>
       <MISATooltip :bottom="bottom" :bottom_end="bottom_end" :content="content">
         <MISAIcon
           v-if="buttonIcon || button_icon_normal"
@@ -365,6 +371,6 @@ export default {
 }
 
 .large .button {
-  padding-right: 20px;
+  padding-right: 13px;
 }
 </style>

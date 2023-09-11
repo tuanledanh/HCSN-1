@@ -53,7 +53,7 @@ namespace MSIA.WebFresher052023.Domain.Service
                 {
                     newestTransfer = transferList[1];
                 }
-                if (transferAsset.TransferDate <= newestTransfer.TransferDate)
+                if (newestTransfer.TransferAssetCode != transferAsset.TransferAssetCode && transferAsset.TransferDate <= newestTransfer.TransferDate)
                 {
                     throw new DataException();
                 }

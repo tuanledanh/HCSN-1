@@ -23,7 +23,15 @@
               <div
                 class="header cell display--center-center border--right border--bottom"
               >
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  @click="headCheckboxClick($event)"
+                  :checked="
+                    selectedRowsByCheckBox.length === assets.length &&
+                    assets.length > 0 &&
+                    selectedRowsByCheckBox.length > 0
+                  "
+                />
               </div>
               <div
                 class="header cell display--center-center font-weight--700 border--right border--bottom"
@@ -67,7 +75,15 @@
                 class="body--row row--child"
                 v-for="asset in assets"
                 :key="asset.FixedAssetId"
-                :class="{ 'row--selected': selectedRows.includes(asset) }"
+                :class="[
+                {
+                  'row--selected':
+                    selectedRowsByCheckBox.includes(asset),
+                },
+                {
+                  'row--selected': selectedRows.includes(asset),
+                },
+              ]"
                 @click.exact.stop="callRowOnClick(asset)"
                 @click.ctrl.stop="callRowOnCtrlClick(asset)"
               >
@@ -258,6 +274,11 @@ export default {
       isFormDisplay: false,
 
       // ----------------------------- PAGING -----------------------------
+      // Số trang hiện tại
+      pageNumber: 1,
+      // Số lượng bản ghi tối đa mỗi trang
+      pageLimit: 20,
+      // Số lượng bản ghi tối đa mỗi trang
       pageLimitList: [],
       // Tổng bản ghi
       totalRecords: 0,
@@ -284,7 +305,30 @@ export default {
       inputChange: null,
     };
   },
+  watch: {
+    /**
+     * Phân trang lại với giới hạn trang mới
+     * @param {int} value giới hạn bản ghi
+     * Author: LDTUAN (02/08/2023)
+     */
+    pageLimit(value) {
+      this.loadData(1, value);
+    },
+
+    /**
+     * Phân trang theo số trang mới
+     * @param {int} value số trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    pageNumber(value) {
+      this.loadData(value, this.pageLimit);
+      this.currentPage = value;
+    },
+  },
   created() {
+    // Tải danh sách option giới hạn bản ghi mỗi trang
+    this.getPageLimitList();
+
     this.loadData();
   },
   methods: {
@@ -292,20 +336,49 @@ export default {
     formatMoney,
     truncateText,
 
-    // load data tạm thời
-    loadData() {
-      var dataFilter = {
-        pageNumber: 1,
-        pageLimit: 20,
+    loadData(pageNumber = this.pageNumber, pageLimit = this.pageLimit) {
+      let dataFilter = {
+        pageNumber: pageNumber,
+        pageLimit: pageLimit,
         FixedAssetDtos: this.existFixedAsset,
       };
-      this.$_MISAApi.FixedAsset.FilterForTransfer(dataFilter)
+      this.$_MISAApi.FixedAsset.FilterForTransfer(dataFilter, {
+        headers: { "Content-Type": "application/json" },
+      })
         .then((res) => {
           this.assets = res.data.Data;
+          this.totalPages = res.data.TotalPages;
+          this.totalRecords = res.data.TotalRecords;
         })
         .catch((res) => {
           console.log(res);
         });
+    },
+
+    /**
+     * Danh sách số lượng bản ghi mỗi trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageLimitList() {
+      this.pageLimitList = [20, 10, 5];
+    },
+
+    /**
+     * Thực hiện load lại dữ khi thay đổi số trang
+     * @param {int} pageNumber số trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageNumber(pageNumber) {
+      this.pageNumber = pageNumber;
+    },
+
+    /**
+     * Thực hiện load lại dữ khi thay đổi giới hạn bản ghi
+     * @param {int} pageLimit giới hạn bản ghi mỗi trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageLimit(pageLimit) {
+      this.pageLimit = pageLimit;
     },
 
     //------------------------------------------- CLICK ROW -------------------------------------------
@@ -330,6 +403,27 @@ export default {
     btnUncheckedAll() {
       this.selectedRows = [];
       this.selectedRowsByCheckBox = [];
+    },
+
+    /**
+     * Thực hiện tick/bỏ tick tất cả bản ghi trong danh sách khi tick/bỏ tích checkbox
+     * @param {checkbox} event input checkbox
+     * Author: LDTUAN (02/08/2023)
+     */
+    headCheckboxClick(event) {
+      if (event.target.checked) {
+        for (const asset of this.assets) {
+          if (!this.selectedRowsByCheckBox.includes(asset)) {
+            this.selectedRowsByCheckBox.push(asset);
+          }
+        }
+      } else {
+        for (const asset of this.assets) {
+          this.selectedRowsByCheckBox.splice(asset);
+        }
+        this.selectedRows = [];
+        this.selectedRowsByCheckBox = [];
+      }
     },
 
     //------------------------------------------- SAVE DATA -------------------------------------------

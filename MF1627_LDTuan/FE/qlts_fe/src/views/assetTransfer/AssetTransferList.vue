@@ -3,7 +3,7 @@
     <div class="content--top" ref="contentTop">
       <div v-if="selectedRowsByCheckBox.length == 0" class="top-left">
         <span class="font-weight--700">Điều Chuyển</span>
-        <MISAIcon loading></MISAIcon>
+        <MISAIcon loading @click="reLoad"></MISAIcon>
       </div>
       <div v-else class="top-left font-size-default">
         <span class="font-weight--400"
@@ -42,11 +42,19 @@
         <!-- ------------------------Table start------------------------ -->
         <div :class="[{ table: !isResize }, { 'table-flex': isResize }]">
           <!-- ------------------------Header------------------------ -->
-          <div class="header--row row padding--right-5 border--top">
+          <div class="header--row row border--top">
             <div
               class="header cell display--center-center border--right border--bottom"
             >
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                @click="headCheckboxClick($event)"
+                :checked="
+                  selectedRowsByCheckBox.length === transferAssets.length &&
+                  transferAssets.length > 0 &&
+                  selectedRowsByCheckBox.length > 0
+                "
+              />
             </div>
             <div
               class="header cell display--center-center font-weight--700 border--right border--bottom"
@@ -96,7 +104,15 @@
               class="body--row row"
               v-for="transferAsset in transferAssets"
               :key="transferAsset.TransferAssetId"
-              :class="{ 'row--selected': selectedRows.includes(transferAsset) }"
+              :class="[
+                {
+                  'row--selected':
+                    selectedRowsByCheckBox.includes(transferAsset),
+                },
+                {
+                  'row--selected': selectedRows.includes(transferAsset),
+                },
+              ]"
               @click.exact.stop="callRowOnClick(transferAsset)"
               @click.ctrl.stop="callRowOnCtrlClick(transferAsset)"
             >
@@ -112,7 +128,11 @@
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ transferAssets.indexOf(transferAsset) + 1 }}
+                {{
+                  transferAssets.indexOf(transferAsset) +
+                  1 +
+                  pageLimitTransfer * (currentPageTransfer - 1)
+                }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
@@ -166,12 +186,12 @@
         <!-- ------------------------Table end------------------------ -->
 
         <MISAPaging
-          :totalRecords="totalRecords"
-          :totalPages="totalPages"
-          :currentPage="currentPage"
-          :pageLimitList="pageLimitList"
-          @filter="getPageLimit"
-          @paging="getPageNumber"
+          :totalRecords="totalRecordsTransfer"
+          :totalPages="totalPagesTransfer"
+          :currentPage="currentPageTransfer"
+          :pageLimitList="pageLimitListTransfer"
+          @filter="getPageLimitTransfer"
+          @paging="getPageNumberTransfer"
         ></MISAPaging>
       </div>
 
@@ -206,6 +226,7 @@
               textButton="Thông tin chi tiết"
               @click="btnAddAsset"
               large
+              class="padding--right-4"
             ></MISAButton>
           </div>
           <div class="top-right">
@@ -282,7 +303,7 @@
               <div
                 class="cell display--center-center border--right border--bottom"
               >
-                {{ assets.indexOf(asset) + 1 }}
+                {{ assets.indexOf(asset) + 1 + pageLimit * (currentPage - 1) }}
               </div>
               <div
                 class="cell display--center-left border--right border--bottom padding--left-10"
@@ -348,7 +369,7 @@
         </div>
         <!-- ------------------------Table end------------------------ -->
         <div>
-          <MISAPaging
+          <MISAPagingFE
             v-if="isShowPagingBottom"
             :totalRecords="totalRecords"
             :totalPages="totalPages"
@@ -356,11 +377,12 @@
             :pageLimitList="pageLimitList"
             @filter="getPageLimit"
             @paging="getPageNumber"
-          ></MISAPaging>
+          ></MISAPagingFE>
         </div>
       </div>
     </div>
   </div>
+  <MISALoading v-if="isLoading"></MISALoading>
   <MISAAssetTransferForm
     v-if="isFormDisplay"
     @onCloseForm="onCloseForm"
@@ -457,18 +479,32 @@ export default {
       lastIndex: 0,
       // Thông tin bản ghi chứng từ, dùng để xóa duy nhất 1 chứng từ
       transferAssetSingle: null,
+      // Loading
+      isLoading: false,
+      transferAssetCode: null,
 
       // ----------------------------- Form -----------------------------
       isFormDisplay: false,
 
       // ----------------------------- Paging -----------------------------
+      // Số trang hiện tại
+      pageNumber: 1,
+      pageNumberTransfer: 1,
+      // Số lượng bản ghi tối đa mỗi trang
+      pageLimit: 20,
+      pageLimitTransfer: 20,
+
       pageLimitList: [],
+      pageLimitListTransfer: [],
       // Tổng bản ghi
       totalRecords: 0,
+      totalRecordsTransfer: 0,
       // Tổng trang
       totalPages: 0,
+      totalPagesTransfer: 0,
       // Trang hiện tại
       currentPage: 1,
+      currentPageTransfer: 1,
 
       // ----------------------------- Resize table -----------------------------
       // Hiển thị tooltip của icon resize
@@ -510,7 +546,52 @@ export default {
       buttonFocus: null,
     };
   },
+  watch: {
+    /**
+     * Phân trang lại với giới hạn trang mới
+     * @param {int} value giới hạn bản ghi
+     * Author: LDTUAN (02/08/2023)
+     */
+    pageLimit(value) {
+      this.pageLimit = value;
+      this.pageNumber = 1;
+      this.loadDataDetail();
+    },
+
+    /**
+     * Phân trang theo số trang mới
+     * @param {int} value số trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    pageNumber(value) {
+      this.pageNumber = value;
+      this.currentPage = value;
+      this.loadDataDetail();
+    },
+
+    /**
+     * Phân trang lại với giới hạn trang mới
+     * @param {int} value giới hạn bản ghi
+     * Author: LDTUAN (02/08/2023)
+     */
+    pageLimitTransfer(value) {
+      this.loadData(1, value);
+    },
+
+    /**
+     * Phân trang theo số trang mới
+     * @param {int} value số trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    pageNumberTransfer(value) {
+      this.loadData(value, this.pageLimitTransfer);
+      this.currentPageTransfer = value;
+    },
+  },
   created() {
+    // Tải danh sách option giới hạn bản ghi mỗi trang
+    this.getPageLimitList();
+    this.getPageLimitListTransfer();
     this.loadData();
     this.$_emitter.emit("onDisplayContent");
   },
@@ -523,14 +604,24 @@ export default {
      * Lấy dữ liệu của chứng từ
      * Author: LDTUAN (02/09/2023)
      */
-    loadData() {
-      this.$_MISAApi.TransferAsset.Filter(1, 20, null)
+    loadData(
+      pageNumber = this.pageNumberTransfer,
+      pageLimit = this.pageLimitTransfer
+    ) {
+      this.isLoading = true;
+      this.$_MISAApi.TransferAsset.Filter(pageNumber, pageLimit, null)
         .then((res) => {
           this.transferAssets = res.data.Data;
+          this.totalPagesTransfer = res.data.TotalPages;
+          this.totalRecordsTransfer = res.data.TotalRecords;
           this.assets = [];
+          this.isLoading = false;
         })
         .catch((res) => {
-          console.log(res);
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+          this.isLoading = false;
         });
     },
 
@@ -542,13 +633,23 @@ export default {
      * Lấy dữ liệu của chi tiết chứng từ
      * Author: LDTUAN (02/09/2023)
      */
-    loadDataDetail(code) {
-      this.$_MISAApi.TransferAsset.GetByCode(code)
+    loadDataDetail() {
+      this.$_MISAApi.TransferAsset.GetByCode(this.transferAssetCode)
         .then((res) => {
-          this.assets = res.data.FixedAssetTransfers;
+          const assets = res.data.FixedAssetTransfers;
+          this.totalRecords = assets.length;
+          this.totalPages = Math.ceil(this.totalRecords / this.pageLimit);
+          const start = (this.currentPage - 1) * this.pageLimit;
+          const end = start + this.pageLimit;
+          this.assets = assets.slice(start, end);
+          if (this.selectedRows.length === 0) {
+            this.assets = [];
+          }
         })
         .catch((res) => {
-          console.log(res);
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
         });
     },
 
@@ -573,10 +674,63 @@ export default {
             this.$processErrorResponse(res);
             this.isShowToastValidateBE = true;
             this.toast_content_warning = res.response.data.UserMessage;
+            this.isLoading = false;
           });
       }
       this.isShowToastDelete = false;
       this.isShowToastDeleteSingle = false;
+    },
+
+    /**
+     * Danh sách số lượng bản ghi mỗi trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageLimitList() {
+      this.pageLimitList = [20, 10, 5];
+    },
+
+    /**
+     * Danh sách số lượng bản ghi mỗi trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageLimitListTransfer() {
+      this.pageLimitListTransfer = [20, 10, 5];
+    },
+
+    /**
+     * Thực hiện load lại dữ khi thay đổi số trang
+     * @param {int} pageNumber số trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageNumber(pageNumber) {
+      this.pageNumber = pageNumber;
+    },
+
+    /**
+     * Thực hiện load lại dữ khi thay đổi số trang
+     * @param {int} pageNumber số trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageNumberTransfer(pageNumber) {
+      this.pageNumberTransfer = pageNumber;
+    },
+
+    /**
+     * Thực hiện load lại dữ khi thay đổi giới hạn bản ghi
+     * @param {int} pageLimit giới hạn bản ghi mỗi trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageLimit(pageLimit) {
+      this.pageLimit = pageLimit;
+    },
+
+    /**
+     * Thực hiện load lại dữ khi thay đổi giới hạn bản ghi
+     * @param {int} pageLimit giới hạn bản ghi mỗi trang
+     * Author: LDTUAN (02/08/2023)
+     */
+    getPageLimitTransfer(pageLimit) {
+      this.pageLimitTransfer = pageLimit;
     },
 
     //------------------------------------------- Click row -------------------------------------------
@@ -588,7 +742,8 @@ export default {
      */
     callRowOnClick(transferAsset) {
       rowOnClick.call(this, transferAsset, "transferAssets");
-      this.loadDataDetail(transferAsset.TransferAssetCode);
+      this.transferAssetCode = transferAsset.TransferAssetCode;
+      this.loadDataDetail(this.transferAssetCode);
     },
 
     callRowOnClickByCheckBox(transferAsset) {
@@ -598,6 +753,27 @@ export default {
 
     callRowOnCtrlClick(transferAsset) {
       rowOnCtrlClick.call(this, transferAsset, "transferAssets");
+    },
+
+    /**
+     * Thực hiện tick/bỏ tick tất cả bản ghi trong danh sách khi tick/bỏ tích checkbox
+     * @param {checkbox} event input checkbox
+     * Author: LDTUAN (02/08/2023)
+     */
+    headCheckboxClick(event) {
+      if (event.target.checked) {
+        for (const asset of this.transferAssets) {
+          if (!this.selectedRowsByCheckBox.includes(asset)) {
+            this.selectedRowsByCheckBox.push(asset);
+          }
+        }
+      } else {
+        for (const asset of this.transferAssets) {
+          this.selectedRowsByCheckBox.splice(asset);
+        }
+        this.selectedRows = [];
+        this.selectedRowsByCheckBox = [];
+      }
     },
 
     btnUncheckedAll() {
@@ -899,7 +1075,7 @@ export default {
 .row {
   display: grid;
   grid-template-columns:
-    44px 50px 120px 150px 150px 140px 200px calc(100% - 964px)
+    44px 50px 120px 150px 150px 140px 200px 471px
     110px;
   height: 35px;
   cursor: pointer;
@@ -956,6 +1132,7 @@ export default {
 }
 .body-data {
   overflow-y: auto;
+  overflow-x: hidden;
   border-color: var(--table-border-color);
 }
 

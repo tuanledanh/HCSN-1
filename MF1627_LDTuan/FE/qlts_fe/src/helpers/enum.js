@@ -9,6 +9,8 @@ const MISAEnum = {
     VIEW: 3,
     // Sao chép
     CLONE: 4,
+    // Hủy form
+    CANCEL: 5,
   },
   // Giới tính
   GENDER: {
