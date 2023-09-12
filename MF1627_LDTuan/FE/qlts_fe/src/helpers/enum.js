@@ -33,6 +33,8 @@ const MISAEnum = {
     NoAuthen: 401,
     // Server gặp trục trặc
     ServerError: 500,
+    // Lỗi validate
+    UnprocessableEntity: 422,
   },
   // Mã code của các phím
   KEYCODE:{

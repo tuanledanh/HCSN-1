@@ -10,9 +10,11 @@ using MSIA.WebFresher052023.Application.Service.Base;
 using MSIA.WebFresher052023.Domain.Entity;
 using MSIA.WebFresher052023.Domain.Entity.Base;
 using MSIA.WebFresher052023.Domain.Enum;
+using MSIA.WebFresher052023.Domain.Exceptions;
 using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Manager;
 using MSIA.WebFresher052023.Domain.Interface.Repository;
+using MSIA.WebFresher052023.Domain.Resource;
 using MSIA.WebFresher052023.Domain.Service;
 
 namespace Application.Service
@@ -24,15 +26,17 @@ namespace Application.Service
         private readonly ITransferAssetManager _transferAssetManager;
         private readonly ITransferAssetDetailManager _transferAssetDetailManager;
         private readonly IReceiverRepository _receiverRepository;
+        private readonly IFixedAssetRepository _fixedAssetRepository;
         private readonly ITransferAssetDetailRepository _transferAssetDetailRepository;
         #endregion
 
         #region Constructor
-        public TransferAssetService(ITransferAssetRepository transferAssetRepository, IReceiverRepository receiverRepository, ITransferAssetDetailRepository transferAssetDetailRepository, IMapper mapper, ITransferAssetManager transferAssetManager, ITransferAssetDetailManager transferAssetDetailManager, IUnitOfWork unitOfWork) : base(transferAssetRepository, mapper, transferAssetManager, unitOfWork)
+        public TransferAssetService(ITransferAssetRepository transferAssetRepository, IReceiverRepository receiverRepository, IFixedAssetRepository fixedAssetRepository, ITransferAssetDetailRepository transferAssetDetailRepository, IMapper mapper, ITransferAssetManager transferAssetManager, ITransferAssetDetailManager transferAssetDetailManager, IUnitOfWork unitOfWork) : base(transferAssetRepository, mapper, transferAssetManager, unitOfWork)
         {
             _transferAssetRepository = transferAssetRepository;
             _transferAssetManager = transferAssetManager;
             _receiverRepository = receiverRepository;
+            _fixedAssetRepository = fixedAssetRepository;
             _transferAssetDetailRepository = transferAssetDetailRepository;
             _transferAssetDetailManager = transferAssetDetailManager;
         }
@@ -156,8 +160,8 @@ namespace Application.Service
             #region Validate
             // ======================================================= VALIDATE START =======================================================
             // 1.Kiểm tra xem trong db có tồn tại chứng từ này hay không
-            var oldTransferAsset = await _transferAssetRepository.GetAsync(transferAssetId) ?? throw new DataException();
-            if (transferAssetUpdateDto == null) throw new DataException();
+            var oldTransferAsset = await _transferAssetRepository.GetAsync(transferAssetId) ?? throw new DataException(ErrorMessages.Data);
+            if (transferAssetUpdateDto == null) throw new DataException(ErrorMessages.Data);
 
             // 2.Check tài sản điều chuyển, chi tiết tài sản điều chuyển, bên giao nhận xem có null không
             _transferAssetManager.CheckNullRequest(transferAssetUpdateDto.TransferAsset, transferAssetUpdateDto.ListTransferAssetDetail);
@@ -187,7 +191,7 @@ namespace Application.Service
             var listTransferAssetDetailInDB = await _transferAssetDetailRepository.GetListByIdsAsync(listTransferAssetDetailIds);
             if (listTransferAssetDetailInDB.Count != listTransferAssetDetailIds.Count)
             {
-                throw new DataException();
+                throw new DataException(ErrorMessages.Data);
             }
 
             // 7.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích xóa)
@@ -309,7 +313,7 @@ namespace Application.Service
             var transferAssets = await _transferAssetRepository.GetListByIdsAsync(ids);
             if (transferAssets == null || !transferAssets.Any() || transferAssets.Count != ids.Count)
             {
-                throw new DataException();
+                throw new DataException(ErrorMessages.Data);
             }
             transferAssets = transferAssets.OrderByDescending(transfer => transfer.CreatedDate).ToList();
 
@@ -339,7 +343,16 @@ namespace Application.Service
                         .FirstOrDefault();
                     if (DB != null && detailFE[j].CreatedDate != DB.CreatedDate)
                     {
-                        throw new DataException();
+                        // 3.2.1.Lấy mã code của tài sản để hiển thị lên thông báo lỗi
+                        var fixedAsset = await _fixedAssetRepository.GetAsync(detailFE[j].FixedAssetId);
+
+                        // 3.2.2.Lấy các chứng từ phát sinh ra
+                        var generatedDocument = allTransferAssets
+                            .Where(transfer => transfer.FixedAssetId == detailFE[j].FixedAssetId && transfer.CreatedDate > detailFE[j].CreatedDate)
+                            .OrderByDescending(transfer => transfer.CreatedDate)
+                            .ToList();
+
+                        throw new ValidateException(ErrorMessagesTransferAsset.Arise(fixedAsset.FixedAssetCode), ErrorMessagesTransferAsset.Infor(generatedDocument));
                     }
                 }
                 // 3.3.Xóa các mục của FE ra khỏi allTransferAssets dựa trên transferAssetId

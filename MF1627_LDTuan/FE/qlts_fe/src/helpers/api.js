@@ -31,6 +31,13 @@ const baseTransferAssetAxios = axios.create({
   baseURL: baseTransferAssetApi,
 });
 
+// Tên url của ban giao nhận
+const baseReceiverApi = baseURL + "Receiver";
+// Tạo axios cho ban giao nhận
+const baseReceiverAxios = axios.create({
+  baseURL: baseReceiverApi,
+});
+
 // Các api của tài sản
 const MISAApi = {
   FixedAsset: {
@@ -54,7 +61,8 @@ const MISAApi = {
         },
       }),
     // Api chọn tài sản theo phòng ban mới nhất từ chứng từ và bỏ những tài sản đã được chọn
-    FilterForTransfer: (data) => baseAssetAxios.post("/FilterForTransfer", data),
+    FilterForTransfer: (data) =>
+      baseAssetAxios.post("/FilterForTransfer", data),
     // Api của tài sản
     Api: baseAssetApi,
     // Api lấy mã code mới
@@ -88,6 +96,10 @@ const MISAApi = {
     // Api lấy tất cả bản ghi
     GetAll: () => baseDepartmentAxios.get(""),
   },
+  Receiver: {
+    // Lấy các phòng ban mới nhất
+    GetNewest: () => baseReceiverAxios.get("/getNewest"),
+  },
   TransferAsset: {
     Api: baseTransferAssetApi,
     // Api lấy mã code mới
@@ -108,12 +120,14 @@ const MISAApi = {
         },
       }),
     // Api tạo bản ghi mới
-    Create: (transferAssetData) => baseTransferAssetAxios.post("", transferAssetData),
+    Create: (transferAssetData) =>
+      baseTransferAssetAxios.post("", transferAssetData),
     // Api cập nhật
-    Update: (id, transferAssetData) => baseTransferAssetAxios.put(`/${id}`, transferAssetData),
+    Update: (id, transferAssetData) =>
+      baseTransferAssetAxios.put(`/${id}`, transferAssetData),
     // Api xóa nhiều
     DeleteMany: (listTransferAssetData) =>
-    baseTransferAssetAxios.delete("", { data: listTransferAssetData }),
+      baseTransferAssetAxios.delete("", { data: listTransferAssetData }),
     // Api lấy bản ghi bằng mã code
     GetByCode: (code) => baseTransferAssetAxios.get(`/${code}`),
   },

@@ -113,6 +113,7 @@
                   'row--selected': selectedRows.includes(transferAsset),
                 },
               ]"
+              @dblclick="btnEditTransferAsset(transferAsset)"
               @click.exact.stop="callRowOnClick(transferAsset)"
               @click.ctrl.stop="callRowOnCtrlClick(transferAsset)"
             >
@@ -428,7 +429,7 @@
     </MISAToast>
   </div>
   <div v-if="isShowToastValidateBE" class="blur">
-    <MISAToast typeToast="warning" :content="toast_content_warning + '.'"
+    <MISAToast typeToast="warning" :content="toast_content_warning + '.'" :moreInfo="moreInfo"
       ><MISAButton
         buttonSub
         textButton="Đóng"
@@ -541,6 +542,7 @@ export default {
       toast_content_delete_single: null,
       isShowToastValidateBE: false,
       toast_content_warning: null,
+      moreInfo: null,
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
@@ -674,6 +676,7 @@ export default {
             this.$processErrorResponse(res);
             this.isShowToastValidateBE = true;
             this.toast_content_warning = res.response.data.UserMessage;
+            this.moreInfo = res.response.data.MoreInfo;
             this.isLoading = false;
           });
       }

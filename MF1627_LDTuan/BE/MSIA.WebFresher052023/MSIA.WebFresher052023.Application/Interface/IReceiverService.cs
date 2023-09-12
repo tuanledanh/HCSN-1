@@ -7,5 +7,6 @@ namespace Application.Interface
 {
     public interface IReceiverService : IBaseService<Receiver, ReceiverModel, ReceiverDto, ReceiverCreateDto, ReceiverUpdateDto, ReceiverUpdateMultiDto>
     {
+        Task<List<ReceiverDto>?> GetNewestReceiver();
     }
 }

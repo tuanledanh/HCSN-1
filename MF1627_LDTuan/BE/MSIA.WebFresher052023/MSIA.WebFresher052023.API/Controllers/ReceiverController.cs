@@ -1,5 +1,6 @@
 ﻿using Application.DTO;
 using Application.Interface;
+using Application.Service;
 using AutoMapper;
 using Domain.Model;
 using Microsoft.AspNetCore.Mvc;
@@ -12,8 +13,17 @@ namespace API.Controllers
     [ApiController]
     public class ReceiverController : BaseSearchPagingController<Receiver, ReceiverModel, ReceiverDto, ReceiverCreateDto, ReceiverUpdateDto, ReceiverUpdateMultiDto>
     {
+        private readonly IReceiverService _receiverService;
         public ReceiverController(IReceiverService receiverService, IMapper mapper) : base(receiverService, mapper)
         {
+            _receiverService = receiverService;
+        }
+
+        [HttpGet("getNewest")]
+        public async Task<IActionResult> GetNewestReceiver()
+        {
+            var receivers = await _receiverService.GetNewestReceiver();
+            return StatusCode(StatusCodes.Status200OK, receivers);
         }
     }
 }

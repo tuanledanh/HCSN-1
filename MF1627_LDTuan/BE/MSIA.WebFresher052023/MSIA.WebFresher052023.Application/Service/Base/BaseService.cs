@@ -7,6 +7,7 @@ using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Manager.Base;
 using MSIA.WebFresher052023.Domain.Interface.Repository.Base;
 using MSIA.WebFresher052023.Domain.Model.Base;
+using MSIA.WebFresher052023.Domain.Resource;
 using MSIA.WebFresher052023.Domain.Result;
 
 namespace MSIA.WebFresher052023.Application.Service.Base
@@ -105,7 +106,7 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             var entities = await _baseRepository.GetListByIdsAsync(ids);
             if (ids.Count == 0 || entities.Count < ids.Count)
             {
-                throw new DataException();
+                throw new DataException(ErrorMessages.Data);
             }
             var result = await _baseRepository.DeleteManyAsync(entities);
             return result;

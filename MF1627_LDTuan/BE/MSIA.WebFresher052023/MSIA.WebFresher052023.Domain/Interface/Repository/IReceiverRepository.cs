@@ -7,5 +7,6 @@ namespace MSIA.WebFresher052023.Domain.Interface.Repository
 {
     public interface IReceiverRepository : IBaseRepository<Receiver, ReceiverModel>
     {
+        Task<List<Receiver>> GetNewestReceiver();
     }
 }

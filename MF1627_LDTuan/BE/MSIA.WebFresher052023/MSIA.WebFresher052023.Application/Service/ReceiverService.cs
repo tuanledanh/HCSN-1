@@ -37,6 +37,20 @@ namespace Application.Service
             bool result = await _receiverRepository.InsertAsync(entity);
             return result;
         } 
+
+        public async Task<List<ReceiverDto>?> GetNewestReceiver()
+        {
+            var receivers = await _receiverRepository.GetNewestReceiver();
+            if(receivers == null)
+            {
+                return null;
+            }
+            else
+            {
+                var receiverDtos = _mapper.Map<List<ReceiverDto>>(receivers);
+                return receiverDtos;
+            }
+        }
         #endregion
     }
 }
