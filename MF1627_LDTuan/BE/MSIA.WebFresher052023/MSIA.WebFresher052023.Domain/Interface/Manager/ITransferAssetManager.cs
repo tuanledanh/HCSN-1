@@ -1,6 +1,7 @@
 ﻿using Domain.Entity;
 using Domain.Model;
 using MSIA.WebFresher052023.Domain.Entity;
+using MSIA.WebFresher052023.Domain.Enum;
 using MSIA.WebFresher052023.Domain.Interface.Manager.Base;
 
 namespace MSIA.WebFresher052023.Domain.Interface.Manager
@@ -23,7 +24,7 @@ namespace MSIA.WebFresher052023.Domain.Interface.Manager
         /// <param name="transferAsset">Chứng từ</param>
         /// <exception cref="DataException">Lỗi data truyền về</exception>
         /// Created by: ldtuan (30/08/2023)
-        Task CheckDateAsync(TransferAsset? transferAsset, List<Guid> listAssetIds);
+        Task CheckDateAsync(TransferAsset? transferAsset, List<Guid> listAssetIds, ActionMode actionMode);
 
         /// <summary>
         /// Kiểm tra tài sản và phòng ban  xem tồn tại trong db hay không

@@ -4,7 +4,7 @@
       'icon',
       { 'icon-reverse': reverse },
       'icon--resize',
-      {'icon--box-thin': add_box_thin},
+      { 'icon--box-thin': add_box_thin },
       { 'icon--background': background },
       { 'icon--background-expand-narrow': background_expand_narrow },
       { 'icon--disabled': disabled },
@@ -72,6 +72,18 @@
       <path
         fill="currentColor"
         d="M256.236 504L120 367.764v-38.156h72v-144h-72V146.98L255.766 11.216L392 147.452v38.156h-72v144h72v38.627ZM159.1 361.608l97.137 97.137l97.137-97.137H288v-208h64.9l-97.134-97.137l-97.138 97.137H224v208Z"
+      />
+    </svg>
+    <svg
+      v-else-if="view"
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 256 256"
+    >
+      <path
+        fill="currentColor"
+        d="M245.48 125.57c-.34-.78-8.66-19.23-27.24-37.81C201 70.54 171.38 50 128 50S55 70.54 37.76 87.76c-18.58 18.58-26.9 37-27.24 37.81a6 6 0 0 0 0 4.88c.34.77 8.66 19.22 27.24 37.8C55 185.47 84.62 206 128 206s73-20.53 90.24-37.75c18.58-18.58 26.9-37 27.24-37.8a6 6 0 0 0 0-4.88ZM128 194c-31.38 0-58.78-11.42-81.45-33.93A134.77 134.77 0 0 1 22.69 128a134.56 134.56 0 0 1 23.86-32.06C69.22 73.42 96.62 62 128 62s58.78 11.42 81.45 33.94A134.56 134.56 0 0 1 233.31 128C226.94 140.21 195 194 128 194Zm0-112a46 46 0 1 0 46 46a46.06 46.06 0 0 0-46-46Zm0 80a34 34 0 1 1 34-34a34 34 0 0 1-34 34Z"
       />
     </svg>
     <div
@@ -341,6 +353,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    // Icon xem
+    view: {
+      type: Boolean,
+      default: false,
+    },
 
     // Icon lọc
     filter: {
@@ -550,8 +567,8 @@ export default {
 
 .icon-drop-down-large {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -420px -330px;
-	width: 16px;
-	height: 19px;
+  width: 16px;
+  height: 19px;
 }
 
 .icon-drop-down-thin {
@@ -575,8 +592,8 @@ export default {
 
 .icon-pull-up-large {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -332px -331px;
-	width: 17px;
-	height: 18px;
+  width: 17px;
+  height: 18px;
 }
 
 /*==================== Main content ====================*/
@@ -820,7 +837,7 @@ export default {
   border-radius: 50%;
 }
 
-.icon--box-thin{
+.icon--box-thin {
   width: 18px;
   height: 18px;
   border: 1px solid black;

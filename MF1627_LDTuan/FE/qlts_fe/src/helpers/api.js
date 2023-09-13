@@ -104,6 +104,8 @@ const MISAApi = {
     Api: baseTransferAssetApi,
     // Api lấy mã code mới
     GetNewCode: () => baseTransferAssetAxios.get("/GetNewCode"),
+    GetNewest: (transferAssetId, assetIds) =>
+      baseTransferAssetAxios.post(`/GetNewest/${transferAssetId}`, assetIds),
     /**
      * Api filter, lọc, phân trang
      * @param {Int16Array} pageNumber số trang đang ở

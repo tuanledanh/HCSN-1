@@ -170,6 +170,11 @@
               >
                 <div class="icon-function">
                   <MISAIcon
+                    view
+                    background
+                    @click="btnViewTransferAsset(transferAsset)"
+                  ></MISAIcon>
+                  <MISAIcon
                     edit
                     background
                     @click="btnEditTransferAsset(transferAsset)"
@@ -389,6 +394,7 @@
     @onCloseForm="onCloseForm"
     @reLoad="reLoad"
     :transferAssetToUpdate="transferData"
+    :actionMode="actionMode"
   ></MISAAssetTransferForm>
   <div v-if="isShowToastDelete" class="blur">
     <MISAToast typeToast="warning" :content="toast_content_delete"
@@ -486,6 +492,7 @@ export default {
 
       // ----------------------------- Form -----------------------------
       isFormDisplay: false,
+      actionMode: false,
 
       // ----------------------------- Paging -----------------------------
       // Số trang hiện tại
@@ -941,6 +948,18 @@ export default {
     btnEditTransferAsset(transferAsset) {
       this.btnAddDocument();
       this.transferData = transferAsset;
+      this.actionMode = this.$_MISAEnum.FORM_MODE.UPDATE;
+    },
+
+    /**
+     * Mở form view thông tin chứng từ
+     * @param {object} transferAsset Thông tin chứng từ
+     * Author: LDTUAN (13/09/2023)
+     */
+    btnViewTransferAsset(transferAsset) {
+      this.btnAddDocument();
+      this.transferData = transferAsset;
+      this.actionMode = this.$_MISAEnum.FORM_MODE.VIEW;
     },
 
     callToastDeleteSingle(transferAsset) {
@@ -1078,8 +1097,8 @@ export default {
 .row {
   display: grid;
   grid-template-columns:
-    44px 50px 120px 150px 150px 140px 200px 471px
-    110px;
+    44px 50px 120px 150px 150px 140px 200px 461px
+    120px;
   height: 35px;
   cursor: pointer;
 }

@@ -17,5 +17,6 @@ namespace Application.Interface
         /// <returns>Danh sách tài sản đáp ứng đúng các điều kiện</returns>
         /// Created by: ldtuan (01/09/2023)
         Task<BaseFilterResponse<TransferAssetDto>> GetAllCustomAsync(int? pageNumber, int? pageLimit, string filterName);
+        Task GetNewestTransferAsset(Guid transferId, List<Guid> assetIds);
     }
 }

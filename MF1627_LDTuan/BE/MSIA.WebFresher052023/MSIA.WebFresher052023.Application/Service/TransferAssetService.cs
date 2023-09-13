@@ -1,6 +1,7 @@
 ﻿using Application.DTO;
 using Application.Interface;
 using AutoMapper;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Domain.Exceptions;
 using Domain.Model;
@@ -63,6 +64,53 @@ namespace Application.Service
             return transferAssetDto;
         }
 
+        public async Task GetNewestTransferAsset(Guid transferId, List<Guid> assetIds)
+        {
+            var transferAsset = await _transferAssetRepository.GetAsync(transferId);
+            if(transferAsset == null)
+            {
+                throw new Exception();
+            }
+            var transferList = await _transferAssetRepository.GetNewestTransferAssetByAssetId(assetIds);
+            var newestTransfer = transferList.FirstOrDefault();
+            if(newestTransfer != null && newestTransfer.TransferAssetId != transferId)
+            {
+                // Danh sách tài sản nhận được từ request truyền về
+                var fixedAssetList = await _fixedAssetRepository.GetListByIdsAsync(assetIds);
+                // Danh sách chi tiết chừng từ (đã tồn tài từ trước) trong DB của các tài sản này
+                var detailList = await _transferAssetDetailRepository.GetListDetailByIdsAsync(assetIds);
+                // Danh sách tất cả chứng từ của toàn bộ tài sản này
+                var transferIds = detailList.Select(detail => detail.TransferAssetId).Distinct().ToList();
+                var allTransferAssets = await _transferAssetRepository.GetAllTransferAssetOfAsset(transferIds);
+
+                // Lấy chi tiết chứng từ của chứng từ mới nhất này
+                var filterDetails = detailList
+                    .Where(detail => detail.TransferAssetId == newestTransfer.TransferAssetId)
+                    .ToList();
+
+                // Lấy các tài sản riêng biệt nằm trong chứng từ này
+                var filterFixedAssets = fixedAssetList
+                    .Where(asset => filterDetails
+                    .Any(detail => detail.FixedAssetId == asset.FixedAssetId))
+                    .Distinct()
+                    .ToList();
+
+                // Xem tài sản nào nằm trong chứng từ đang cần thêm này, chọn 1 cái để hiển thị thông báo lỗi
+                var duplicateFixedAsset = filterFixedAssets
+                    .Where(asset => assetIds.Contains(asset.FixedAssetId))
+                    .OrderByDescending(asset => asset.ModifiedDate)
+                    .ToList();
+                // Lấy mã code của tài sản này
+                var fixedAsset = await _fixedAssetRepository.GetAsync(duplicateFixedAsset.FirstOrDefault().FixedAssetId);
+                // Lấy danh sách chứng từ phát sinh của tài sản này
+                var generatedDocument = allTransferAssets
+                            .Where(transfer => transfer.FixedAssetId == fixedAsset.FixedAssetId && transfer.CreatedDate > transferAsset.CreatedDate)
+                            .OrderByDescending(transfer => transfer.CreatedDate)
+                            .ToList();
+                throw new ValidateException(ErrorMessagesTransferAsset.Arise(fixedAsset.FixedAssetCode), ErrorMessagesTransferAsset.Infor(generatedDocument));
+            }
+        }
+
         public async Task<BaseFilterResponse<TransferAssetDto>> GetAllCustomAsync(int? pageNumber, int? pageLimit, string filterName)
         {
             List<TransferAssetModel> entities;
@@ -102,7 +150,7 @@ namespace Application.Service
             // 3.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
             // Và ngày điều chuyển cũng phải lớn hơn các ngày điều chuyển của chứng từ mà tài sản hiện đang thuộc
             var listAssetIds = listTransferAssetDetails.Select(transfer => transfer.FixedAssetId).Distinct().ToList();
-            await _transferAssetManager.CheckDateAsync(transferAssetDto, listAssetIds);
+            await _transferAssetManager.CheckDateAsync(transferAssetDto, listAssetIds, ActionMode.Create);
 
             // ======================================================= VALIDATE END  =======================================================
             #endregion
@@ -180,7 +228,7 @@ namespace Application.Service
             // 5.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
             // Và ngày điều chuyển cũng phải lớn hơn các ngày điều chuyển của chứng từ mà tài sản hiện đang thuộc
             var listAssetIds = listTransferAssetDetails.Select(transfer => transfer.FixedAssetId).Distinct().ToList();
-            await _transferAssetManager.CheckDateAsync(transferAssetDto, listAssetIds);
+            await _transferAssetManager.CheckDateAsync(transferAssetDto, listAssetIds, ActionMode.Update);
 
             // 6.Kiểm tra xem danh sách chi tiết chứng từ có tồn tại trong db hay không, áp dụng với cập nhật và xóa
             var listTransferAssetDetailIds = listTransferAssetDeatilDtos

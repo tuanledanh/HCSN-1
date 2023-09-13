@@ -409,6 +409,19 @@
       ></MISAButton>
     </MISAToast>
   </div>
+  <div v-if="isShowToastValidateAriseTransfer" class="blur">
+    <MISAToast typeToast="warning" :content="toast_content_warning + '.'" :moreInfo="moreInfo"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="btnCancelTransferAsset"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
 </template>
 <script>
 import { rowOnClick } from "../../helpers/table/selectRow";
@@ -503,6 +516,8 @@ export default {
       isShowToastValueChange: false,
       toast_content_warning: null,
       isShowToastValidateBE: false,
+      isShowToastValidateAriseTransfer: false,
+      moreInfo: null,
       //
       // Focus vào ô nhập liệu, ban đầu là mã chứng từ
       inputFocus: "TransferAssetCode",
@@ -1098,10 +1113,27 @@ export default {
 
           this.getNewestReceiver();
           this.pagingAssetFE();
+          this.checkTransferAssetArise();
         })
         .catch((res) => {
-          console.log(res);
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
         });
+    },
+
+    checkTransferAssetArise() {
+      let assets = JSON.parse(JSON.stringify(this.originalAssets));
+      let fixedAssetIds = assets.map((asset) => asset.FixedAssetId);
+      this.$_MISAApi.TransferAsset.GetNewest(
+        this.transferAsset.TransferAssetId,
+        fixedAssetIds
+      ).catch((res) => {
+        this.$processErrorResponse(res);
+        this.isShowToastValidateAriseTransfer = true;
+        this.toast_content_warning = res.response.data.UserMessage;
+        this.moreInfo = res.response.data.MoreInfo;
+      });
     },
 
     /**
@@ -1148,7 +1180,17 @@ export default {
         this.$_MISAApi.Receiver.GetNewest()
           .then((res) => {
             this.newestReceivers = res.data;
-            this.receivers = JSON.parse(JSON.stringify(this.newestReceivers));
+            if (
+              this.newestReceivers !== null &&
+              this.newestReceivers.length > 0 &&
+              this.newestReceivers[0] !== null
+            ) {
+              this.receivers = JSON.parse(JSON.stringify(this.newestReceivers)); // Tạo bản sao của this.newestReceivers
+              for (let i = 0; i < this.receivers.length; i++) {
+                delete this.receivers[i].ReceiverId; // Loại bỏ thuộc tính "id"
+              }
+              console.log(this.receivers);
+            }
           })
           .catch((res) => {
             this.$processErrorResponse(res);

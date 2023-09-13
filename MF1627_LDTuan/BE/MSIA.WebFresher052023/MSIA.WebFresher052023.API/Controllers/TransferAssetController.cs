@@ -33,5 +33,11 @@ namespace API.Controllers
             var transferAssetList = await _transferAssetService.GetAllCustomAsync(pageNumber, pageLimit, filterName);
             return StatusCode(StatusCodes.Status200OK, transferAssetList);
         }
+        [HttpPost("GetNewest/{transferId}")]
+        public async Task<IActionResult> GetNewestTransferAsset([FromRoute] Guid transferId, [FromBody] List<Guid> assetIds)
+        {
+            await _transferAssetService.GetNewestTransferAsset(transferId, assetIds);
+            return StatusCode(StatusCodes.Status200OK);
+        }
     }
 }
