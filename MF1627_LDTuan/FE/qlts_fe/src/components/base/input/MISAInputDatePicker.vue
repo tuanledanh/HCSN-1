@@ -6,7 +6,7 @@
     :medium="medium"
     @click="focusInput"
   ></MISALabel>
-  <div :class="[{ 'date-picker': !medium }, {'date-picker-grid':medium}]">
+  <div :class="[{ 'date-picker': !medium }, {'date-picker-grid':medium}, {'disabled':disabled}]">
     <el-date-picker
       v-model="date"
       type="date"
@@ -17,6 +17,7 @@
       :clear-icon="false"
       :prefix-icon="customIconClass"
       :tabindex="tabindex"
+      :disabled="disabled"
       @focus.stop="$emit('focus')"
       ref="input"
       :class="[{ 'input--error': error }, { 'font-size-16': medium }]"
@@ -39,6 +40,10 @@ export default {
   props: {
     // Nhãn dán
     label: {
+      type: Boolean,
+      default: false,
+    },
+    disabled: {
       type: Boolean,
       default: false,
     },
@@ -177,5 +182,17 @@ export default {
 
 .input--error .el-input__wrapper {
   border: 1px solid red !important;
+}
+
+.disabled .el-input__inner{
+  -webkit-text-fill-color: #565555  !important;
+}
+.disabled .el-input__wrapper{
+  background-color: #f5f5f5 !important;
+  cursor: not-allowed;
+}
+
+.disabled .el-input__wrapper:hover {
+  border: 1px solid #afafaf !important;
 }
 </style>

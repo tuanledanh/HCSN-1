@@ -411,7 +411,7 @@ export default {
 
 .input--disabled input {
   background-color: #f5f5f5 !important;
-  cursor: unset;
+  cursor: not-allowed;
 }
 
 .input--disabled input:hover {

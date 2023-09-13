@@ -50,7 +50,7 @@
                 type="checkbox"
                 @click="headCheckboxClick($event)"
                 :checked="
-                  selectedRowsByCheckBox.length === transferAssets.length &&
+                  transferAssets.every(transferItem => selectedRowsByCheckBox.some(selectedItem => selectedItem.TransferAssetId === transferItem.TransferAssetId)) &&
                   transferAssets.length > 0 &&
                   selectedRowsByCheckBox.length > 0
                 "
@@ -106,8 +106,7 @@
               :key="transferAsset.TransferAssetId"
               :class="[
                 {
-                  'row--selected':
-                    selectedRowsByCheckBox.includes(transferAsset),
+                  'row--selected': selectedRowsByCheckBox.some(item => item.TransferAssetId === transferAsset.TransferAssetId),
                 },
                 {
                   'row--selected': selectedRows.includes(transferAsset),
@@ -123,7 +122,7 @@
               >
                 <input
                   type="checkbox"
-                  :checked="selectedRowsByCheckBox.includes(transferAsset)"
+                  :checked="selectedRowsByCheckBox.some(item => item.TransferAssetId === transferAsset.TransferAssetId)"
                 />
               </div>
               <div
@@ -584,6 +583,7 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     pageLimitTransfer(value) {
+      console.log(this.selectedRowsByCheckBox);
       this.loadData(1, value);
     },
 
@@ -593,6 +593,7 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     pageNumberTransfer(value) {
+      console.log(this.selectedRowsByCheckBox);
       this.loadData(value, this.pageLimitTransfer);
       this.currentPageTransfer = value;
     },
@@ -758,7 +759,6 @@ export default {
 
     callRowOnClickByCheckBox(transferAsset) {
       rowOnClickByCheckBox.call(this, transferAsset, "transferAssets");
-      console.log(this.selectedRowsByCheckBox);
     },
 
     callRowOnCtrlClick(transferAsset) {
@@ -932,6 +932,7 @@ export default {
      */
     btnAddDocument() {
       this.isFormDisplay = true;
+      this.actionMode = this.$_MISAEnum.FORM_MODE.ADD;
     },
 
     /**
@@ -940,6 +941,7 @@ export default {
     onCloseForm() {
       this.isFormDisplay = false;
       this.transferData = null;
+      this.actionMode = null;
     },
 
     /**
@@ -968,11 +970,9 @@ export default {
       console.log(listIds);
       this.transferAssetSingle = listIds;
       this.toast_content_delete_single =
-        this.$_MISAResource.VN.Form.Warning.Delete.Single +
+      this.$_MISAResource.VN.Form.Warning.DeleteTransfer.Single +
         transferAsset.TransferAssetCode +
-        " - " +
-        transferAsset.TransferAssetName +
-        "?";
+        " không?";
       this.isShowToastDeleteSingle = true;
     },
 

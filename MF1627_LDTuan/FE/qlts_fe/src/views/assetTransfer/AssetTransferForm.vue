@@ -15,6 +15,8 @@
         bottom
         ref="exit"
         content="Thoát"
+        :tabindex="7"
+        @keydown="checkTabIndex($event, 'islast')"
         @click="btnCloseForm"
       ></MISAButton>
     </div>
@@ -33,6 +35,9 @@
                 medium
                 required
                 maxlength="12"
+                :tabindex="3"
+                @keydown="checkTabIndex($event, 'isFirst')"
+                :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               ></MISAInput>
             </div>
             <div class="content__column">
@@ -43,6 +48,8 @@
                 v-model="transferAsset.TransactionDate"
                 medium
                 required
+                :tabindex="4"
+                :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               ></MISAInputDatePicker>
             </div>
             <div class="content__column">
@@ -53,6 +60,8 @@
                 v-model="transferAsset.TransferDate"
                 medium
                 required
+                :tabindex="5"
+                :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               ></MISAInputDatePicker>
             </div>
             <div class="content__column">
@@ -61,20 +70,30 @@
                 label="Ghi chú"
                 v-model="transferAsset.Description"
                 medium
-                maxlength="4"
+                maxlength="200"
+                :tabindex="6"
+                :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               ></MISAInput>
             </div>
           </div>
           <div class="content__row--bot">
             <div class="checkbox">
               <div class="checkbox-combo" @click="showFormReceiver">
-                <input type="checkbox" :checked="receivers.length > 0" />
+                <input
+                  type="checkbox"
+                  :checked="receivers.length > 0"
+                  :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+                />
                 <label class="font-weight--500">Chọn ban giao nhận</label>
               </div>
             </div>
             <div v-if="receivers.length > 0" class="checkbox">
               <div class="checkbox-combo" @click="showNewestReceiver">
-                <input type="checkbox" :checked="isGetNewestReceiver" />
+                <input
+                  type="checkbox"
+                  :checked="isGetNewestReceiver"
+                  :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+                />
                 <label class="font-weight--500"
                   >Thêm ban giao nhận từ lần nhập trước</label
                 >
@@ -108,6 +127,7 @@
                     maxlength="12"
                     placeholder="Nhập họ và tên"
                     v-model="receiver.ReceiverFullname"
+                    :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
@@ -117,6 +137,7 @@
                     maxlength="12"
                     placeholder="Nhập đại diện"
                     v-model="receiver.ReceiverDelegate"
+                    :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
@@ -126,17 +147,45 @@
                     maxlength="12"
                     placeholder="Nhập chức vụ"
                     v-model="receiver.ReceiverPosition"
+                    :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                   ></MISAInput>
                 </div>
                 <div class="content__column">
                   <div class="combo-icon">
-                    <MISAIcon pull_up_large></MISAIcon>
-                    <MISAIcon drop_down_large></MISAIcon>
-                    <div @click="btnAddReceiver">
-                      <MISAIcon add_box_thin></MISAIcon>
+                    <div
+                      :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
+                    >
+                      <MISAIcon
+                        pull_up_large
+                        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+                      ></MISAIcon>
                     </div>
-                    <div @click="btnDeleteReceiver(receiver)">
-                      <MISAIcon v-if="index > 0" deleteIcon></MISAIcon>
+                    <div
+                      :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
+                    >
+                      <MISAIcon
+                        drop_down_large
+                        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+                      ></MISAIcon>
+                    </div>
+                    <div
+                      @click="btnAddReceiver"
+                      :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
+                    >
+                      <MISAIcon
+                        add_box_thin
+                        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+                      ></MISAIcon>
+                    </div>
+                    <div
+                      @click="btnDeleteReceiver(receiver)"
+                      :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
+                    >
+                      <MISAIcon
+                        v-if="index > 0"
+                        deleteIcon
+                        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+                      ></MISAIcon>
                     </div>
                   </div>
                 </div>
@@ -167,6 +216,7 @@
             basic
             large
             @click="btnShowFormChooseAsset"
+            :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
           ></MISAButton>
         </div>
       </div>
@@ -186,6 +236,7 @@
                   pagingAsset.length > 0 &&
                   selectedRowsByCheckBox.length > 0
                 "
+                :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               />
             </div>
             <div
@@ -258,6 +309,7 @@
                 <input
                   type="checkbox"
                   :checked="selectedRowsByCheckBox.includes(asset)"
+                  :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                 />
               </div>
               <div
@@ -318,6 +370,7 @@
                   :newDepartment="asset.NewDepartmentName"
                   isDisplay
                   self_adjust_size
+                  :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                 ></MISACombobox>
               </div>
               <div
@@ -328,14 +381,19 @@
                   medium
                   padding_2
                   v-model="asset.Description"
+                  :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                 ></MISAInput>
               </div>
               <div class="cell display--center-center border--bottom">
-                <div class="icon-function">
+                <div
+                  class="icon-function"
+                  :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
+                >
                   <MISAIcon
                     deleteIcon
                     background
                     @click="btnDeleteAsset(asset)"
+                    :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                   ></MISAIcon>
                 </div>
               </div>
@@ -359,13 +417,13 @@
         buttonOutline
         textButton="Hủy"
         @click="btnCancelTransferAsset"
-        :tabindex="15"
+        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
       ></MISAButton>
       <MISAButton
         buttonMain
         textButton="Lưu"
         @click="btnSaveTransferAsset"
-        :tabindex="16"
+        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
       ></MISAButton>
     </div>
   </div>
@@ -410,7 +468,10 @@
     </MISAToast>
   </div>
   <div v-if="isShowToastValidateAriseTransfer" class="blur">
-    <MISAToast typeToast="warning" :content="toast_content_warning + '.'" :moreInfo="moreInfo"
+    <MISAToast
+      typeToast="warning"
+      :content="toast_content_warning + '.'"
+      :moreInfo="moreInfo"
       ><MISAButton
         buttonSub
         textButton="Đóng"
@@ -443,7 +504,10 @@ export default {
       type: Object,
       default: null,
     },
-    ty: {},
+    actionMode: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -529,10 +593,13 @@ export default {
      * Author: LDTUAN (03/09/2023)
      */
     formMode() {
-      if (this.transferAssetToUpdate != null) {
-        return this.$_MISAEnum.FORM_MODE.UPDATE;
-      } else {
-        return this.$_MISAEnum.FORM_MODE.ADD;
+      switch (this.actionMode) {
+        case this.$_MISAEnum.FORM_MODE.UPDATE:
+          return this.$_MISAEnum.FORM_MODE.UPDATE;
+        case this.$_MISAEnum.FORM_MODE.VIEW:
+          return this.$_MISAEnum.FORM_MODE.VIEW;
+        default:
+          return this.$_MISAEnum.FORM_MODE.ADD;
       }
     },
 
@@ -549,7 +616,6 @@ export default {
         (item) =>
           !this.newestReceivers.some(
             (newItem) =>
-              newItem.ReceiverId === item.ReceiverId &&
               newItem.ReceiverFullname === item.ReceiverFullname &&
               newItem.ReceiverDelegate === item.ReceiverDelegate &&
               newItem.ReceiverPosition === item.ReceiverPosition
@@ -573,6 +639,9 @@ export default {
     switch (this.formMode) {
       case this.$_MISAEnum.FORM_MODE.UPDATE:
         this.loadTransferDataUpdate();
+        break;
+      case this.$_MISAEnum.FORM_MODE.VIEW:
+        this.loadTransferDataView();
         break;
       case this.$_MISAEnum.FORM_MODE.ADD:
         this.loadTransferAssetCode();
@@ -671,7 +740,7 @@ export default {
       this.transferAsset.TransferDate = DateFormat(
         this.transferAsset.TransferDate
       );
-      this.transferAsset.Description = this.transferAsset.Description.trim();
+      this.transferAsset.Description = this.transferAsset.Description ? this.transferAsset.Description.trim() : "";
       let oldTransferAsset = this.transferAsset;
 
       // 2.Lấy id của chứng từ điều chuyển
@@ -1071,6 +1140,45 @@ export default {
         });
     },
 
+    async loadTransferDataView() {
+      var oldTransferAsset = this.transferAssetToUpdate;
+      await this.$_MISAApi.TransferAsset.GetByCode(
+        oldTransferAsset.TransferAssetCode
+      )
+        .then((res) => {
+          if (res.data.ReceiverTransfers[0]) {
+            this.receivers = res.data.ReceiverTransfers;
+            this.isCreateReceiver = true;
+          }
+
+          this.transferAsset = {
+            TransferAssetId: res.data.TransferAssetId,
+            TransferAssetCode: res.data.TransferAssetCode,
+            TransferDate: DateFormat(res.data.TransferDate),
+            TransactionDate: DateFormat(res.data.TransactionDate),
+            Description: res.data.Description,
+          };
+
+          this.loadData(res.data.FixedAssetTransfers);
+          // Duyệt qua mảng assets và chuyển giá trị của olddpepartment sang department
+          this.assets.forEach((asset) => {
+            asset.DepartmentName = asset.OldDepartmentName;
+            asset.DepartmentId = asset.OldDepartmentId;
+            // Sau khi chuyển giá trị, bạn có thể xoá thuộc tính olddpepartment nếu cần
+            delete asset.OldDepartmentName;
+            delete asset.OldDepartmentId;
+          });
+
+          this.getNewestReceiver();
+          this.pagingAssetFE();
+        })
+        .catch((res) => {
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+        });
+    },
+
     async loadTransferDataUpdate() {
       var oldTransferAsset = this.transferAssetToUpdate;
       await this.$_MISAApi.TransferAsset.GetByCode(
@@ -1146,19 +1254,23 @@ export default {
 
     //------------------------------------------- RECEIVER -------------------------------------------
     btnAddReceiver() {
-      const newReceiver = {
-        ReceiverCode: "",
-        ReceiverFullname: "",
-        ReceiverDelegate: "",
-        ReceiverPosition: "",
-      };
-      this.receivers.push(newReceiver);
+      if (this.formMode != this.$_MISAEnum.FORM_MODE.VIEW) {
+        const newReceiver = {
+          ReceiverCode: "",
+          ReceiverFullname: "",
+          ReceiverDelegate: "",
+          ReceiverPosition: "",
+        };
+        this.receivers.push(newReceiver);
+      }
     },
 
     btnDeleteReceiver(receiver) {
-      const index = this.receivers.indexOf(receiver);
-      if (index !== -1) {
-        this.receivers.splice(index, 1);
+      if (this.formMode != this.$_MISAEnum.FORM_MODE.VIEW) {
+        const index = this.receivers.indexOf(receiver);
+        if (index !== -1) {
+          this.receivers.splice(index, 1);
+        }
       }
     },
 
@@ -1306,7 +1418,9 @@ export default {
     },
 
     callRowOnCtrlClick(asset) {
-      rowOnCtrlClick.call(this, asset);
+      if (this.formMode != this.$_MISAEnum.FORM_MODE.VIEW) {
+        rowOnCtrlClick.call(this, asset);
+      }
     },
 
     btnUncheckedAll() {
@@ -1387,10 +1501,22 @@ export default {
      */
     checkTabIndex(event, index) {
       var charCode = event.which ? event.which : event.keyCode;
-      if (index == "islast" && charCode == this.$_MISAEnum.KEYCODE.TAB) {
+      if (
+        index == "islast" &&
+        charCode == this.$_MISAEnum.KEYCODE.TAB &&
+        this.toast_content_warning
+      ) {
         event.preventDefault();
         this.buttonFocus = "button";
         this.$refs[this.buttonFocus].focusButton();
+      } else if (
+        index == "islast" &&
+        charCode == this.$_MISAEnum.KEYCODE.TAB &&
+        !this.toast_content_warning
+      ) {
+        event.preventDefault();
+        this.inputFocus = "TransferAssetCode";
+        this.$refs[this.inputFocus].focusInput();
       }
     },
 
@@ -1664,5 +1790,9 @@ export default {
 }
 .body-data {
   overflow-y: auto;
+}
+
+.disabled {
+  cursor: not-allowed;
 }
 </style>

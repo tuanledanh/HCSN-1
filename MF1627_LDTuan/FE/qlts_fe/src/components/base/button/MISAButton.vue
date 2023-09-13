@@ -1,5 +1,12 @@
 <template>
-  <div :class="[{ 'button-combo': combo }, { large: large }, { basic: basic }]">
+  <div
+    :class="[
+      { 'button-combo': combo },
+      { large: large },
+      { basic: basic },
+      { disabled: disabled },
+    ]"
+  >
     <button
       :disabled="disabled"
       :class="[
@@ -26,6 +33,7 @@
         :add="add"
         :add_box="add_box"
         :add_box_white="add_box_white"
+        :disabled="disabled"
       ></MISAIcon>
       <MISATooltip :bottom="bottom" :bottom_end="bottom_end" :content="content">
         <MISAIcon
@@ -33,6 +41,7 @@
           :exportIcon="exportIcon"
           :deleteIcon="deleteIcon"
           :exit="exit"
+          :disabled="disabled"
         ></MISAIcon>
       </MISATooltip>
 
@@ -365,9 +374,21 @@ export default {
 }
 
 .disabled {
-  pointer-events: none; /* Prevents the button from being clicked */
-  opacity: 0.6;
-  cursor: not-allowed;
+  background-color: #f5f5f5 !important;
+  border-color: #d4d4d4 !important;
+  color: #000000;
+  cursor: not-allowed !important;
+}
+
+.disabled:hover{
+  background-color: #f5f5f5 !important;
+  border-color: #d4d4d4 !important;
+  color: #000000;
+  cursor: not-allowed !important;
+}
+
+.disabled .button--main{
+  border: 1px solid #d4d4d4 !important;
 }
 
 .large .button {
