@@ -18,6 +18,11 @@ export function processErrorResponse(res) {
       this.errors.push(dataError.userMsg);
       this.showNotice = true;
       break;
+    case MISAEnum.HttpStatusCode.UnprocessableEntity:
+      this.errors = [];
+      this.errors.push(dataError.userMsg);
+      this.showNotice = true;
+      break;
 
     default:
       break;

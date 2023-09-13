@@ -24,19 +24,46 @@
           class="t-toast--icon-warning center"
           v-if="typeToast === 'export'"
         >
-        <MISAIcon export_toast></MISAIcon>
+          <MISAIcon export_toast></MISAIcon>
         </section>
-        <p
-          :class="[
-            { 't-toast--title-18px': typeToast === 'warning' || typeToast === 'export' },
-            { 't-toast--title-14px': typeToast === 'success' },
-          ]"
-        >
-          <span class="bold">{{ messageLeft }}</span> {{ content }}
-          <span class="bold">{{ messageRight }}</span>
-        </p>
+        <div class="message">
+          <p
+            :class="[
+              {
+                't-toast--title-16px':
+                  typeToast === 'warning' || typeToast === 'export',
+              },
+              { 't-toast--title-14px': typeToast === 'success' },
+            ]"
+          >
+            <span v-html="content"></span>
+          </p>
+          <div v-if="moreInfo" class="moreInfo">
+            <div
+              v-if="displayInfo"
+              @click="btnViewInfo"
+              class="t-toast--title-16px view"
+            >
+              Ẩn chi tiết phát sinh
+            </div>
+            <div v-else @click="btnViewInfo" class="t-toast--title-16px view">
+              Xem chi tiết phát sinh
+            </div>
+            <div v-if="displayInfo" class="moreInfo-text">
+              <span
+                v-for="mess in moreInfoList"
+                :key="mess"
+                class="t-toast--title-16px"
+                v-html="mess"
+              ></span>
+            </div>
+          </div>
+        </div>
       </main>
-      <footer class="t-toast__footer center-y" v-if="typeToast === 'warning' || typeToast === 'export'">
+      <footer
+        class="t-toast__footer center-y"
+        v-if="typeToast === 'warning' || typeToast === 'export'"
+      >
         <slot> </slot>
       </footer>
     </section>
@@ -60,15 +87,29 @@ export default {
       type: String,
       default: "",
     },
-
-    // Message bên trái
-    messageLeft: {
+    // Nội dung phụ
+    moreInfo: {
       type: String,
+      default: "",
     },
+  },
+  data() {
+    return {
+      // Xem thông tin chi tiết phát sinh hay không
+      displayInfo: false,
+      // moreInfo sau khi tách
+      moreInfoList: [],
+    };
+  },
+  created() {
+    if (this.moreInfo) {
+      this.moreInfoList = this.moreInfo.split(",").map((item) => item.trim());
+    }
+  },
 
-    // Message bên phải
-    messageRight: {
-      type: String,
+  methods: {
+    btnViewInfo() {
+      this.displayInfo = !this.displayInfo;
     },
   },
 };
@@ -77,8 +118,8 @@ export default {
 .t-toast {
   background-color: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-  width: 450px;
-  padding: 50px 30px 30px 40px;
+  width: 464px;
+  padding: 14px 30px 14px 40px;
   row-gap: 30px;
 }
 
@@ -118,8 +159,8 @@ export default {
   height: 8px;
 }
 
-.t-toast--title-18px {
-  font-size: 18px;
+.t-toast--title-16px {
+  font-size: 16px;
   word-wrap: break-word;
   word-break: keep-all;
 }
@@ -151,5 +192,30 @@ export default {
 
 .toast--bottom .t-toast {
   padding: 6px 30px;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  column-gap: 20px;
+}
+
+.view {
+  color: #00b7e5;
+  cursor: pointer;
+}
+
+.moreInfo {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+}
+
+.moreInfo-text {
+  display: flex;
+  flex-direction: column;
+  row-gap: 6px;
+  max-height: 45px;
+  overflow-y: auto;
 }
 </style>

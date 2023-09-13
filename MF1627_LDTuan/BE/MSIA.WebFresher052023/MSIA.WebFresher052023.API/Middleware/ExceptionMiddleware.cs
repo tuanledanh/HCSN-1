@@ -1,4 +1,5 @@
 ﻿using Domain.Exceptions;
+using MSIA.WebFresher052023.Domain.Exceptions;
 using MSIA.WebFresher052023.Domain.Resource;
 
 namespace API.Middleware
@@ -87,6 +88,21 @@ namespace API.Middleware
                             DevMessage = exception.Message,
                             TraceId = context.TraceIdentifier,
                             MoreInfo = exception.HelpLink
+                        }.ToString() ?? "");
+                    break;
+                    
+                // Xử lý ngoại lệ validate
+                case ValidateException:
+                    context.Response.StatusCode = StatusCodes.Status422UnprocessableEntity;
+                    var excep = (ValidateException)exception;
+                    await context.Response.WriteAsync(
+                        new BaseException()
+                        {
+                            ErrorCode = StatusCodes.Status422UnprocessableEntity,
+                            UserMessage = exception.Message,
+                            DevMessage = exception.Message,
+                            TraceId = context.TraceIdentifier,
+                            MoreInfo = excep.MoreInfo
                         }.ToString() ?? "");
                     break;
 

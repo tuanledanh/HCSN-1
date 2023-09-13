@@ -6,6 +6,7 @@ using MSIA.WebFresher052023.Domain.Entity;
 using MSIA.WebFresher052023.Domain.Interface;
 using MSIA.WebFresher052023.Domain.Interface.Repository;
 using MSIA.WebFresher052023.Infrastructure.Repository.Base;
+using Org.BouncyCastle.Crypto;
 using System.Data;
 using static Dapper.SqlMapper;
 
@@ -34,6 +35,12 @@ namespace Infrastructure.Repository
 
             var listEntities = await _unitOfWork.Connection.QueryAsync<Receiver>(sql, param, transaction: _unitOfWork.Transaction);
             return listEntities.ToList();
+        }
+        public async Task<List<Receiver>> GetNewestReceiver()
+        {
+            string procedureName = "Proc_GetNewestReceiver";
+            var receivers = await _unitOfWork.Connection.QueryAsync<Receiver>(procedureName, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
+            return receivers.ToList();
         }
     }
 }

@@ -1,8 +1,13 @@
 <template>
   <div class="popup">
     <div class="popup__header">
-      <span class="header__title font-weight--500"
+      <span
+        v-if="formMode === this.$_MISAEnum.FORM_MODE.ADD"
+        class="header__title font-weight--500"
         >Thêm chứng từ điều chuyển
+      </span>
+      <span v-else class="header__title font-weight--500"
+        >Sửa chứng từ điều chuyển
       </span>
       <MISAButton
         button_icon_normal
@@ -22,6 +27,8 @@
               <MISAInput
                 normalGrid
                 label="Mã chứng từ"
+                ref="TransferAssetCode"
+                @focus="setInputFocus('TransferAssetCode')"
                 v-model="transferAsset.TransferAssetCode"
                 medium
                 required
@@ -31,6 +38,8 @@
             <div class="content__column">
               <MISAInputDatePicker
                 label="Ngày chứng từ"
+                ref="TransactionDate"
+                @focus="setInputFocus('TransactionDate')"
                 v-model="transferAsset.TransactionDate"
                 medium
                 required
@@ -39,6 +48,8 @@
             <div class="content__column">
               <MISAInputDatePicker
                 label="Ngày điều chuyển"
+                ref="TransferDate"
+                @focus="setInputFocus('TransferDate')"
                 v-model="transferAsset.TransferDate"
                 medium
                 required
@@ -59,6 +70,14 @@
               <div class="checkbox-combo" @click="showFormReceiver">
                 <input type="checkbox" :checked="receivers.length > 0" />
                 <label class="font-weight--500">Chọn ban giao nhận</label>
+              </div>
+            </div>
+            <div v-if="receivers.length > 0" class="checkbox">
+              <div class="checkbox-combo" @click="showNewestReceiver">
+                <input type="checkbox" :checked="isGetNewestReceiver" />
+                <label class="font-weight--500"
+                  >Thêm ban giao nhận từ lần nhập trước</label
+                >
               </div>
             </div>
           </div>
@@ -390,6 +409,19 @@
       ></MISAButton>
     </MISAToast>
   </div>
+  <div v-if="isShowToastValidateAriseTransfer" class="blur">
+    <MISAToast typeToast="warning" :content="toast_content_warning + '.'" :moreInfo="moreInfo"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="btnCancelTransferAsset"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
 </template>
 <script>
 import { rowOnClick } from "../../helpers/table/selectRow";
@@ -427,11 +459,15 @@ export default {
       oldAssets: [],
       // Danh sách bản ghi từ db, các bản ghi này có giá trị không đổi, nó thể hiện đúng dữ liệu hiện có trong db
       originalAssets: [],
+      // Danh sách bản ghi từ db, các bản ghi này có giá trị không đổi, nó thể hiện đúng dữ liệu hiện có trong db
+      originalReceivers: [],
       // Tài sản dùng để phân trang
       pagingAsset: [],
       // Danh sách người nhận
       receivers: [],
       oldReceivers: [],
+      // Danh sách người nhận mới nhất (từ lần nhập trước đó)
+      newestReceivers: [],
       // Danh sách các bản ghi đã chọn
       selectedRows: [],
       // Index của bản ghi đầu tiên trong danh sách
@@ -480,6 +516,11 @@ export default {
       isShowToastValueChange: false,
       toast_content_warning: null,
       isShowToastValidateBE: false,
+      isShowToastValidateAriseTransfer: false,
+      moreInfo: null,
+      //
+      // Focus vào ô nhập liệu, ban đầu là mã chứng từ
+      inputFocus: "TransferAssetCode",
     };
   },
   computed: {
@@ -494,6 +535,32 @@ export default {
         return this.$_MISAEnum.FORM_MODE.ADD;
       }
     },
+
+    /**
+     * Kiểm tra xem danh sách ban giao nhận có bằng ban giao nhận từ lần nhập trước không
+     */
+    isGetNewestReceiver() {
+      if (this.receivers.length !== this.newestReceivers.length) {
+        return false;
+      }
+      // some để kiểm tra xem có ít nhất một phần tử trong
+      // this.receiver không tìm thấy trong newestReceivers hoặc ngược lại
+      const result = this.receivers.some(
+        (item) =>
+          !this.newestReceivers.some(
+            (newItem) =>
+              newItem.ReceiverId === item.ReceiverId &&
+              newItem.ReceiverFullname === item.ReceiverFullname &&
+              newItem.ReceiverDelegate === item.ReceiverDelegate &&
+              newItem.ReceiverPosition === item.ReceiverPosition
+          )
+      );
+      // Trả về true nếu danh sách bằng nhau, ngược lại trả về false
+      return !result;
+    },
+  },
+  mounted() {
+    this.$refs[this.inputFocus].focusInput();
   },
   created() {
     // Tải danh sách option giới hạn bản ghi mỗi trang
@@ -547,13 +614,16 @@ export default {
      */
     // TODO: validate
     btnSaveTransferAsset() {
-      switch (this.formMode) {
-        case this.$_MISAEnum.FORM_MODE.UPDATE:
-          this.updateTransferAssetHelper(this.$_MISAEnum.FORM_MODE.UPDATE);
-          break;
-        case this.$_MISAEnum.FORM_MODE.ADD:
-          this.AddTransferAsset();
-          break;
+      this.validate();
+      if (!this.isShowToastValidateBE && !this.isShowToastValueChange) {
+        switch (this.formMode) {
+          case this.$_MISAEnum.FORM_MODE.UPDATE:
+            this.updateTransferAssetHelper(this.$_MISAEnum.FORM_MODE.UPDATE);
+            break;
+          case this.$_MISAEnum.FORM_MODE.ADD:
+            this.AddTransferAsset();
+            break;
+        }
       }
     },
 
@@ -601,6 +671,7 @@ export default {
       this.transferAsset.TransferDate = DateFormat(
         this.transferAsset.TransferDate
       );
+      this.transferAsset.Description = this.transferAsset.Description.trim();
       let oldTransferAsset = this.transferAsset;
 
       // 2.Lấy id của chứng từ điều chuyển
@@ -680,9 +751,9 @@ export default {
           asset.OldDepartmentId === asset.NewDepartmentId
         ) {
           // 7.1ném ra toast lỗi ở đây
-          throw new Error(
-            "Exception: Các cặp giá trị oldDepartmentId và newDepartmentId trùng nhau"
-          );
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Warning.Department.Duplicate;
         }
       });
 
@@ -752,6 +823,23 @@ export default {
         selectedFieldsReceiver
       );
 
+      // 9.1.Gắn flag 3 cho những receiver không đổi dữ liệu
+      listReceiverFinal
+        .filter((item) => item.Flag == 1)
+        .forEach((updateItem) => {
+          const matchingItem = this.originalReceivers.find(
+            (originalItem) => originalItem.ReceiverId === updateItem.ReceiverId
+          );
+          if (
+            matchingItem &&
+            matchingItem.ReceiverFullname === updateItem.ReceiverFullname &&
+            matchingItem.ReceiverDelegate === updateItem.ReceiverDelegate &&
+            matchingItem.ReceiverPosition === updateItem.ReceiverPosition
+          ) {
+            updateItem.Flag = 3;
+          }
+        });
+
       // Nếu không thay đổi dữ liệu gì thì đóng form
       var listAssetIdAdd = listTransferAssetDetail.filter(
         (asset) => asset.Flag == 0
@@ -794,12 +882,14 @@ export default {
               this.toast_content_warning =
                 this.$_MISAResource.VN.Form.Warning.Transfer.Edit.ValueChange;
             } else if (action == this.$_MISAEnum.FORM_MODE.UPDATE) {
-              this.UpdateTransferAsset(
-                transferAssetId,
-                newTransferAsset,
-                listTransferAssetDetail,
-                listReceiverFinal
-              );
+              if (!this.isShowToastValidateBE) {
+                this.UpdateTransferAsset(
+                  transferAssetId,
+                  newTransferAsset,
+                  listTransferAssetDetail,
+                  listReceiverFinal
+                );
+              }
             }
           }
           break;
@@ -912,35 +1002,50 @@ export default {
     AddTransferAsset() {
       this.prepareDataForAsset();
       this.transferData.ListReceiver = this.receivers;
-      if (!this.assets || this.assets.length <= 0) {
+      let nullReceiver = false;
+      this.receivers.forEach((receiver) => {
+        if (!receiver.ReceiverFullname.trim()) {
+          nullReceiver = true;
+        }
+      });
+      if (nullReceiver == true) {
         this.isShowToastValidateBE = true;
         this.toast_content_warning =
-          this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoAsset;
+          this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoReceiver;
       } else {
-        const transferAssetDetails = this.assets.map((asset) => ({
-          FixedAssetId: asset.FixedAssetId,
-          OldDepartmentId: asset.DepartmentId,
-          NewDepartmentId: asset.NewDepartmentId,
-          Description: asset.Description,
-        }));
-        this.transferData.ListTransferAssetDetail = transferAssetDetails;
-        this.transferAsset.TransactionDate = DateFormat(
-          this.transferAsset.TransactionDate
-        );
-        this.transferAsset.TransferDate = DateFormat(
-          this.transferAsset.TransferDate
-        );
-        this.transferData.TransferAsset = this.transferAsset;
-        this.$_MISAApi.TransferAsset.Create(this.transferData)
-          .then(() => {
-            this.btnCloseForm();
-            this.$emit("reLoad");
-          })
-          .catch((res) => {
-            this.$processErrorResponse(res);
-            this.isShowToastValidateBE = true;
-            this.toast_content_warning = res.response.data.UserMessage;
-          });
+        if (!this.assets || this.assets.length <= 0) {
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoAsset;
+        } else {
+          const transferAssetDetails = this.assets.map((asset) => ({
+            FixedAssetId: asset.FixedAssetId,
+            OldDepartmentId: asset.DepartmentId,
+            NewDepartmentId: asset.NewDepartmentId,
+            Description: asset.Description ? asset.Description.trim() : "",
+          }));
+          this.transferData.ListTransferAssetDetail = transferAssetDetails;
+          this.transferAsset.TransactionDate = DateFormat(
+            this.transferAsset.TransactionDate
+          );
+          this.transferAsset.TransferDate = DateFormat(
+            this.transferAsset.TransferDate
+          );
+          this.transferAsset.Description = this.transferAsset.Description
+            ? this.transferAsset.Description.trim()
+            : "";
+          this.transferData.TransferAsset = this.transferAsset;
+          this.$_MISAApi.TransferAsset.Create(this.transferData)
+            .then(() => {
+              this.btnCloseForm();
+              this.$emit("reLoad");
+            })
+            .catch((res) => {
+              this.$processErrorResponse(res);
+              this.isShowToastValidateBE = true;
+              this.toast_content_warning = res.response.data.UserMessage;
+            });
+        }
       }
     },
 
@@ -1004,12 +1109,31 @@ export default {
           this.oldAssets = [...this.assets];
           this.originalAssets = JSON.parse(JSON.stringify(this.assets));
           this.oldReceivers = [...this.receivers];
+          this.originalReceivers = JSON.parse(JSON.stringify(this.receivers));
 
+          this.getNewestReceiver();
           this.pagingAssetFE();
+          this.checkTransferAssetArise();
         })
         .catch((res) => {
-          console.log(res);
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
         });
+    },
+
+    checkTransferAssetArise() {
+      let assets = JSON.parse(JSON.stringify(this.originalAssets));
+      let fixedAssetIds = assets.map((asset) => asset.FixedAssetId);
+      this.$_MISAApi.TransferAsset.GetNewest(
+        this.transferAsset.TransferAssetId,
+        fixedAssetIds
+      ).catch((res) => {
+        this.$processErrorResponse(res);
+        this.isShowToastValidateAriseTransfer = true;
+        this.toast_content_warning = res.response.data.UserMessage;
+        this.moreInfo = res.response.data.MoreInfo;
+      });
     },
 
     /**
@@ -1045,6 +1169,47 @@ export default {
       } else {
         this.receivers = [];
       }
+    },
+
+    showNewestReceiver() {
+      if (this.isGetNewestReceiver) {
+        this.newestReceivers = [];
+        this.receivers = [];
+        this.btnAddReceiver();
+      } else {
+        this.$_MISAApi.Receiver.GetNewest()
+          .then((res) => {
+            this.newestReceivers = res.data;
+            if (
+              this.newestReceivers !== null &&
+              this.newestReceivers.length > 0 &&
+              this.newestReceivers[0] !== null
+            ) {
+              this.receivers = JSON.parse(JSON.stringify(this.newestReceivers)); // Tạo bản sao của this.newestReceivers
+              for (let i = 0; i < this.receivers.length; i++) {
+                delete this.receivers[i].ReceiverId; // Loại bỏ thuộc tính "id"
+              }
+              console.log(this.receivers);
+            }
+          })
+          .catch((res) => {
+            this.$processErrorResponse(res);
+            this.isShowToastValidateBE = true;
+            this.toast_content_warning = res.response.data.UserMessage;
+          });
+      }
+    },
+
+    getNewestReceiver() {
+      this.$_MISAApi.Receiver.GetNewest()
+        .then((res) => {
+          this.newestReceivers = res.data;
+        })
+        .catch((res) => {
+          this.$processErrorResponse(res);
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+        });
     },
 
     //------------------------------------------- ASSET -------------------------------------------
@@ -1091,9 +1256,11 @@ export default {
       if (index !== -1) {
         this.pagingAsset.splice(index, 1);
       }
-      const indexAsset = this.assets.indexOf(asset);
-      if (indexAsset !== -1) {
-        this.assets.splice(indexAsset, 1);
+      const indexAssets = this.assets.findIndex(
+        (item) => item.TransferAssetDetailId === asset.TransferAssetDetailId
+      );
+      if (indexAssets !== -1) {
+        this.assets.splice(indexAssets, 1);
       }
     },
 
@@ -1208,6 +1375,7 @@ export default {
     btnCloseToastWarning() {
       this.isShowToastValueChange = false;
       this.isShowToastValidateBE = false;
+      this.$refs[this.inputFocus].focusInput();
     },
 
     //------------------------------------------- TAB INDEX -------------------------------------------
@@ -1223,6 +1391,48 @@ export default {
         event.preventDefault();
         this.buttonFocus = "button";
         this.$refs[this.buttonFocus].focusButton();
+      }
+    },
+
+    //------------------------------------------- VALIDATE -------------------------------------------
+    setInputFocus(value) {
+      this.inputFocus = value;
+    },
+
+    validate() {
+      if (this.receivers !== null) {
+        var nullReceiver = null;
+        this.receivers.forEach((receiver) => {
+          if (!receiver.ReceiverFullname.trim()) {
+            nullReceiver = true;
+          }
+        });
+        if (nullReceiver == true) {
+          //this.inputFocus = "ReceiverFullname";
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoReceiver;
+        }
+      }
+      switch ("") {
+        case this.transferAsset.TransferAssetCode ?? "":
+          this.inputFocus = "TransferAssetCode";
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Warning.Transfer.TransferAssetCode;
+          break;
+        case this.transferAsset.TransactionDate ?? "":
+          this.inputFocus = "TransactionDate";
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Warning.Transfer.TransactionDate;
+          break;
+        case this.transferAsset.TransferDate ?? "":
+          this.inputFocus = "TransferDate";
+          this.isShowToastValidateBE = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Warning.Transfer.TransferDate;
+          break;
       }
     },
   },
@@ -1303,7 +1513,8 @@ export default {
 .content__row--bot {
   flex: 1;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: row;
+  column-gap: 50px;
 }
 
 .checkbox {

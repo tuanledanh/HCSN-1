@@ -113,6 +113,7 @@
                   'row--selected': selectedRows.includes(transferAsset),
                 },
               ]"
+              @dblclick="btnEditTransferAsset(transferAsset)"
               @click.exact.stop="callRowOnClick(transferAsset)"
               @click.ctrl.stop="callRowOnCtrlClick(transferAsset)"
             >
@@ -168,6 +169,11 @@
                 class="cell display--center-center border--bottom row-scroll"
               >
                 <div class="icon-function">
+                  <MISAIcon
+                    view
+                    background
+                    @click="btnViewTransferAsset(transferAsset)"
+                  ></MISAIcon>
                   <MISAIcon
                     edit
                     background
@@ -388,6 +394,7 @@
     @onCloseForm="onCloseForm"
     @reLoad="reLoad"
     :transferAssetToUpdate="transferData"
+    :actionMode="actionMode"
   ></MISAAssetTransferForm>
   <div v-if="isShowToastDelete" class="blur">
     <MISAToast typeToast="warning" :content="toast_content_delete"
@@ -428,7 +435,7 @@
     </MISAToast>
   </div>
   <div v-if="isShowToastValidateBE" class="blur">
-    <MISAToast typeToast="warning" :content="toast_content_warning + '.'"
+    <MISAToast typeToast="warning" :content="toast_content_warning + '.'" :moreInfo="moreInfo"
       ><MISAButton
         buttonSub
         textButton="Đóng"
@@ -485,6 +492,7 @@ export default {
 
       // ----------------------------- Form -----------------------------
       isFormDisplay: false,
+      actionMode: false,
 
       // ----------------------------- Paging -----------------------------
       // Số trang hiện tại
@@ -541,6 +549,7 @@ export default {
       toast_content_delete_single: null,
       isShowToastValidateBE: false,
       toast_content_warning: null,
+      moreInfo: null,
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
@@ -674,6 +683,7 @@ export default {
             this.$processErrorResponse(res);
             this.isShowToastValidateBE = true;
             this.toast_content_warning = res.response.data.UserMessage;
+            this.moreInfo = res.response.data.MoreInfo;
             this.isLoading = false;
           });
       }
@@ -938,6 +948,18 @@ export default {
     btnEditTransferAsset(transferAsset) {
       this.btnAddDocument();
       this.transferData = transferAsset;
+      this.actionMode = this.$_MISAEnum.FORM_MODE.UPDATE;
+    },
+
+    /**
+     * Mở form view thông tin chứng từ
+     * @param {object} transferAsset Thông tin chứng từ
+     * Author: LDTUAN (13/09/2023)
+     */
+    btnViewTransferAsset(transferAsset) {
+      this.btnAddDocument();
+      this.transferData = transferAsset;
+      this.actionMode = this.$_MISAEnum.FORM_MODE.VIEW;
     },
 
     callToastDeleteSingle(transferAsset) {
@@ -1075,8 +1097,8 @@ export default {
 .row {
   display: grid;
   grid-template-columns:
-    44px 50px 120px 150px 150px 140px 200px 471px
-    110px;
+    44px 50px 120px 150px 150px 140px 200px 461px
+    120px;
   height: 35px;
   cursor: pointer;
 }
