@@ -27,7 +27,12 @@
                   type="checkbox"
                   @click="headCheckboxClick($event)"
                   :checked="
-                    assets.every(assetItem => selectedRowsByCheckBox.some(selectedItem => selectedItem.FixedAssetId === assetItem.FixedAssetId)) &&
+                    assets.every((assetItem) =>
+                      selectedRowsByCheckBox.some(
+                        (selectedItem) =>
+                          selectedItem.FixedAssetId === assetItem.FixedAssetId
+                      )
+                    ) &&
                     assets.length > 0 &&
                     selectedRowsByCheckBox.length > 0
                   "
@@ -76,14 +81,15 @@
                 v-for="asset in assets"
                 :key="asset.FixedAssetId"
                 :class="[
-                {
-                  'row--selected':
-                    selectedRowsByCheckBox.some(item => item.FixedAssetId === asset.FixedAssetId),
-                },
-                {
-                  'row--selected': selectedRows.includes(asset),
-                },
-              ]"
+                  {
+                    'row--selected': selectedRowsByCheckBox.some(
+                      (item) => item.FixedAssetId === asset.FixedAssetId
+                    ),
+                  },
+                  {
+                    'row--selected': selectedRows.includes(asset),
+                  },
+                ]"
                 @click.exact.stop="callRowOnClick(asset)"
                 @click.ctrl.stop="callRowOnCtrlClick(asset)"
               >
@@ -93,7 +99,11 @@
                 >
                   <input
                     type="checkbox"
-                    :checked="selectedRowsByCheckBox.some(item => item.FixedAssetId === asset.FixedAssetId)"
+                    :checked="
+                      selectedRowsByCheckBox.some(
+                        (item) => item.FixedAssetId === asset.FixedAssetId
+                      )
+                    "
                   />
                 </div>
                 <div
@@ -253,6 +263,10 @@ export default {
       type: Object,
       default: null,
     },
+    deletedAssets: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
@@ -337,10 +351,17 @@ export default {
     truncateText,
 
     loadData(pageNumber = this.pageNumber, pageLimit = this.pageLimit) {
+      let detailIds = null;
+      if (this.deletedAssets) {
+        detailIds = this.deletedAssets.map(
+          (item) => item.TransferAssetDetailId
+        );
+      }
       let dataFilter = {
-        pageNumber: pageNumber,
-        pageLimit: pageLimit,
+        PageNumber: pageNumber,
+        PageLimit: pageLimit,
         FixedAssetDtos: this.existFixedAsset,
+        TransferAssetDetailIds: detailIds,
       };
       this.$_MISAApi.FixedAsset.FilterForTransfer(dataFilter, {
         headers: { "Content-Type": "application/json" },

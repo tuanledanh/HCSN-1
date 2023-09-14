@@ -195,4 +195,8 @@ export default {
 .disabled .el-input__wrapper:hover {
   border: 1px solid #afafaf !important;
 }
+
+.disabled .icon-date-picker {
+  cursor: not-allowed !important;
+}
 </style>

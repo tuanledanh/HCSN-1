@@ -50,7 +50,13 @@
                 type="checkbox"
                 @click="headCheckboxClick($event)"
                 :checked="
-                  transferAssets.every(transferItem => selectedRowsByCheckBox.some(selectedItem => selectedItem.TransferAssetId === transferItem.TransferAssetId)) &&
+                  transferAssets.every((transferItem) =>
+                    selectedRowsByCheckBox.some(
+                      (selectedItem) =>
+                        selectedItem.TransferAssetId ===
+                        transferItem.TransferAssetId
+                    )
+                  ) &&
                   transferAssets.length > 0 &&
                   selectedRowsByCheckBox.length > 0
                 "
@@ -106,7 +112,10 @@
               :key="transferAsset.TransferAssetId"
               :class="[
                 {
-                  'row--selected': selectedRowsByCheckBox.some(item => item.TransferAssetId === transferAsset.TransferAssetId),
+                  'row--selected': selectedRowsByCheckBox.some(
+                    (item) =>
+                      item.TransferAssetId === transferAsset.TransferAssetId
+                  ),
                 },
                 {
                   'row--selected': selectedRows.includes(transferAsset),
@@ -122,7 +131,12 @@
               >
                 <input
                   type="checkbox"
-                  :checked="selectedRowsByCheckBox.some(item => item.TransferAssetId === transferAsset.TransferAssetId)"
+                  :checked="
+                    selectedRowsByCheckBox.some(
+                      (item) =>
+                        item.TransferAssetId === transferAsset.TransferAssetId
+                    )
+                  "
                 />
               </div>
               <div
@@ -394,6 +408,8 @@
     @reLoad="reLoad"
     :transferAssetToUpdate="transferData"
     :actionMode="actionMode"
+    @updateSuccess="toast_content_success = $event"
+    @addSuccess="toast_content_success = $event"
   ></MISAAssetTransferForm>
   <div v-if="isShowToastDelete" class="blur">
     <MISAToast typeToast="warning" :content="toast_content_delete"
@@ -434,7 +450,10 @@
     </MISAToast>
   </div>
   <div v-if="isShowToastValidateBE" class="blur">
-    <MISAToast typeToast="warning" :content="toast_content_warning + '.'" :moreInfo="moreInfo"
+    <MISAToast
+      typeToast="warning"
+      :content="toast_content_warning + '.'"
+      :moreInfo="moreInfo"
       ><MISAButton
         buttonSub
         textButton="Đóng"
@@ -446,6 +465,16 @@
       ></MISAButton>
     </MISAToast>
   </div>
+  <MISAToast
+    v-if="isShowToastAddSuccess"
+    typeToast="success"
+    :content="toast_content_success"
+  ></MISAToast>
+  <MISAToast
+    v-if="isShowToastUpdateSuccess"
+    typeToast="update"
+    :content="toast_content_success"
+  ></MISAToast>
 </template>
 <script>
 import MISAAssetTransferForm from "./AssetTransferForm.vue";
@@ -492,6 +521,7 @@ export default {
       // ----------------------------- Form -----------------------------
       isFormDisplay: false,
       actionMode: false,
+      isSuccessAddOrUpdate: false,
 
       // ----------------------------- Paging -----------------------------
       // Số trang hiện tại
@@ -549,6 +579,9 @@ export default {
       isShowToastValidateBE: false,
       toast_content_warning: null,
       moreInfo: null,
+      isShowToastAddSuccess: false,
+      isShowToastUpdateSuccess: false,
+      toast_content_success: null,
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
@@ -626,6 +659,15 @@ export default {
           this.totalRecordsTransfer = res.data.TotalRecords;
           this.assets = [];
           this.isLoading = false;
+
+          if (this.isSuccessAddOrUpdate) {
+            setTimeout(() => {
+              this.isShowToastAddSuccess = false;
+              this.isShowToastUpdateSuccess = false;
+              this.toast_content_success = null;
+              this.isSuccessAddOrUpdate = false;
+            }, 3000);
+          }
         })
         .catch((res) => {
           this.$processErrorResponse(res);
@@ -636,6 +678,15 @@ export default {
     },
 
     reLoad() {
+      this.isSuccessAddOrUpdate = true;
+      switch (this.toast_content_success) {
+        case this.$_MISAResource.VN.Form.Warning.Transfer.Success.Update:
+          this.isShowToastUpdateSuccess = true;
+          break;
+        case this.$_MISAResource.VN.Form.Warning.Transfer.Success.Add:
+          this.isShowToastAddSuccess = true;
+          break;
+      }
       this.loadData();
     },
 
@@ -774,7 +825,8 @@ export default {
       if (event.target.checked) {
         for (const transfer of this.transferAssets) {
           const index = this.selectedRowsByCheckBox.findIndex(
-            (selectedItem) => selectedItem.TransferAssetId === transfer.TransferAssetId
+            (selectedItem) =>
+              selectedItem.TransferAssetId === transfer.TransferAssetId
           );
           if (index === -1) {
             this.selectedRowsByCheckBox.push(transfer);
@@ -783,7 +835,8 @@ export default {
       } else {
         for (const transfer of this.transferAssets) {
           const index = this.selectedRowsByCheckBox.findIndex(
-            (selectedItem) => selectedItem.TransferAssetId === transfer.TransferAssetId
+            (selectedItem) =>
+              selectedItem.TransferAssetId === transfer.TransferAssetId
           );
           if (index !== -1) {
             this.selectedRowsByCheckBox.splice(index, 1);
@@ -977,7 +1030,7 @@ export default {
       console.log(listIds);
       this.transferAssetSingle = listIds;
       this.toast_content_delete_single =
-      this.$_MISAResource.VN.Form.Warning.DeleteTransfer.Single +
+        this.$_MISAResource.VN.Form.Warning.DeleteTransfer.Single +
         transferAsset.TransferAssetCode +
         " không?";
       this.isShowToastDeleteSingle = true;

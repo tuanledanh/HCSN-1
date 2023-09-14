@@ -26,16 +26,24 @@ const MISAResource = {
           Edit: {
             ValueChange: "Dữ liệu đã thay đổi bản có muốn lưu không?",
           },
-          Add:{
+          Add: {
             NoAsset: "Bạn chưa thêm tài sản điều chuyển",
-            NoReceiver: "Bạn chưa điền tên ban giao nhận"
+            NoReceiver: "Bạn chưa điền tên ban giao nhận",
+          },
+          Success: {
+            Update: "Cập nhật chứng từ thành công",
+            Add: "Thêm mới chứng từ thành công",
+          },
+          Save: {
+            UnChange: "Bạn chưa thay đổi dữ liệu nên không thể lưu",
           },
           TransferAssetCode: "Mã chứng từ không được để trống",
           TransactionDate: "Ngày chứng từ không được để trống",
-          TransferDate: "Ngày điều chuyển không được để trống"
+          TransferDate: "Ngày điều chuyển không được để trống",
         },
-        Department:{
-          Duplicate: "Vui lòng chọn bộ phận điều chuyển đến khác bộ phận đang sử dụng"
+        Department: {
+          Duplicate:
+            "Vui lòng chọn bộ phận điều chuyển đến khác bộ phận đang sử dụng",
         },
         // Trường hợp xóa
         Delete: {

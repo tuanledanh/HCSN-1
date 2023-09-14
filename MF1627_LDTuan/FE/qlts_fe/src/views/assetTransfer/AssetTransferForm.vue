@@ -17,7 +17,7 @@
         content="Thoát"
         :tabindex="7"
         @keydown="checkTabIndex($event, 'islast')"
-        @click="btnCloseForm"
+        @click="btnCancelTransferAsset"
       ></MISAButton>
     </div>
     <div class="popup__body">
@@ -208,6 +208,27 @@
           ></MISAInput>
         </div>
         <div class="action--right">
+          <div
+            v-if="selectedRowsByCheckBox.length > 0"
+            class="left font-size-default"
+          >
+            <span class="font-weight--400"
+              >Đã chọn:
+              <span class="font-weight--500">{{
+                selectedRowsByCheckBox.length
+              }}</span></span
+            >
+            <span
+              class="font-weight--500 main-color pointer"
+              @click="btnUncheckedAll"
+              >Bỏ chọn</span
+            >
+            <MISAButton
+              error
+              textButton="Xóa"
+              @click="btnDeleteSelectedAsset(this.selectedRowsByCheckBox)"
+            ></MISAButton>
+          </div>
           <MISAButton
             combo
             add_box
@@ -443,15 +464,16 @@
     v-if="isShowFormChooseAsset"
     @loadData="loadData"
     :existFixedAsset="existFixedAsset"
+    :deletedAssets="deletedAssets"
   ></MISAAssetTransferChooseForm>
 
   <!-- ======================================================= TOAST ======================================================= -->
   <div v-if="isShowToastValueChange" class="blur">
     <MISAToast typeToast="warning" :content="toast_content_warning"
       ><MISAButton
-        buttonOutline
+        buttonSub
         textButton="Hủy bỏ"
-        @click="btnCloseToastWarning"
+        @click="btnCloseForm"
         focus
         :tabindex="1"
         ref="button"
@@ -549,6 +571,8 @@ export default {
       lastIndex: 0,
       // Hiển thị phần tạo người nhận
       isCreateReceiver: false,
+      // Danh sách chứa các phần tử bị xóa, các phần từ này là các chi tiết chứng từ đã tồn tại trong chứng từ, có transferAssetDetailId
+      deletedAssets: null,
 
       // ----------------------------- Form -----------------------------
       isFormDisplay: false,
@@ -695,7 +719,7 @@ export default {
     // TODO: validate
     btnSaveTransferAsset() {
       this.validate();
-      if (!this.isShowToastValidateBE && !this.isShowToastValueChange) {
+      if (!this.isShowToastValidateBE) {
         switch (this.formMode) {
           case this.$_MISAEnum.FORM_MODE.UPDATE:
             this.updateTransferAssetHelper(this.$_MISAEnum.FORM_MODE.UPDATE);
@@ -729,6 +753,11 @@ export default {
       this.$_MISAApi.TransferAsset.Update(transferAssetId, transfer)
         .then(() => {
           this.btnCloseForm();
+          // Phải để emit này lên trên reLoad, nếu k nó sẽ gọi reload trước, load xong mới gọi đến emit này
+          this.$emit(
+            "updateSuccess",
+            this.$_MISAResource.VN.Form.Warning.Transfer.Success.Update
+          );
           this.$emit("reLoad");
         })
         .catch((res) => {
@@ -957,20 +986,36 @@ export default {
             listReceiverIdUpdate == 0 &&
             listReceiverIdDelete == 0
           ) {
-            this.btnCloseForm();
+            if (action == this.$_MISAEnum.FORM_MODE.UPDATE) {
+              this.isShowToastValidateBE = true;
+              this.toast_content_warning =
+                this.$_MISAResource.VN.Form.Warning.Transfer.Save.UnChange;
+            }
+            if (
+              this.isShowToastValidateAriseTransfer ||
+              action == this.$_MISAEnum.FORM_MODE.CANCEL
+            ) {
+              this.btnCloseForm();
+            }
           } else {
             if (action == this.$_MISAEnum.FORM_MODE.CANCEL) {
               this.isShowToastValueChange = true;
               this.toast_content_warning =
                 this.$_MISAResource.VN.Form.Warning.Transfer.Edit.ValueChange;
             } else if (action == this.$_MISAEnum.FORM_MODE.UPDATE) {
-              if (!this.isShowToastValidateBE) {
-                this.UpdateTransferAsset(
-                  transferAssetId,
-                  newTransferAsset,
-                  listTransferAssetDetail,
-                  listReceiverFinal
-                );
+              if (!this.assets || this.assets.length <= 0) {
+                this.isShowToastValidateBE = true;
+                this.toast_content_warning =
+                  this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoAsset;
+              } else {
+                if (!this.isShowToastValidateBE) {
+                  this.UpdateTransferAsset(
+                    transferAssetId,
+                    newTransferAsset,
+                    listTransferAssetDetail,
+                    listReceiverFinal
+                  );
+                }
               }
             }
           }
@@ -1120,6 +1165,11 @@ export default {
           this.$_MISAApi.TransferAsset.Create(this.transferData)
             .then(() => {
               this.btnCloseForm();
+              // Phải để emit này lên trên reLoad, nếu k nó sẽ gọi reload trước, load xong mới gọi đến emit này
+              this.$emit(
+                "addSuccess",
+                this.$_MISAResource.VN.Form.Warning.Transfer.Success.Add
+              );
               this.$emit("reLoad");
             })
             .catch((res) => {
@@ -1340,6 +1390,7 @@ export default {
     // load data từ form chọn tài sản chứng từ
     // TODO: làm thêm api lấy danh sách tài sản không chứa những tài sản đã chọn
     loadData(items) {
+      console.log(items);
       if (!this.assets || this.assets.length <= 0) {
         this.assets = items;
       } else {
@@ -1386,6 +1437,36 @@ export default {
       if (indexAssets !== -1) {
         this.assets.splice(indexAssets, 1);
       }
+
+      if (this.pagingAsset.length === 0) {
+        this.currentPage = 1;
+        this.pagingAssetFE();
+        if (this.pageNumber !== 1) {
+          this.pageNumber = 1;
+        }
+      }
+    },
+
+    btnDeleteSelectedAsset(assetsToDelete) {
+      assetsToDelete.forEach((asset) => {
+        const index = this.pagingAsset.findIndex(
+          (item) => item.TransferAssetDetailId === asset.TransferAssetDetailId
+        );
+
+        if (index !== -1) {
+          this.pagingAsset.splice(index, 1);
+        }
+
+        const indexAssets = this.assets.findIndex(
+          (item) => item.TransferAssetDetailId === asset.TransferAssetDetailId
+        );
+
+        if (indexAssets !== -1) {
+          this.assets.splice(indexAssets, 1);
+        }
+      });
+
+      this.selectedRowsByCheckBox = [];
 
       if (this.pagingAsset.length === 0) {
         this.currentPage = 1;
@@ -1505,6 +1586,12 @@ export default {
         }
       });
       this.existFixedAsset = this.assets;
+      this.deletedAssets = this.originalAssets.filter(original => {
+        return this.existFixedAsset.findIndex(
+          exist => exist.transferAssetDetailId === original.transferAssetDetailId
+        ) === -1;
+      });
+      console.log(this.deletedAssets);
       this.isShowFormChooseAsset = true;
     },
 

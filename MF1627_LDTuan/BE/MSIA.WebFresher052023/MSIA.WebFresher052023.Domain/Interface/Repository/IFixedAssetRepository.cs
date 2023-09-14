@@ -27,7 +27,7 @@ namespace MSIA.WebFresher052023.Domain.Interface.Repository
         /// <param name="ids">Danh sách id truyền vào để loại những bản ghi có id đó ra</param>
         /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
         /// Created by: ldtuan (05/09/2023)
-        Task<FixedAssetForTransferModel> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, string ids);
+        Task<FixedAssetForTransferModel> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, string ids, string detailIds);
 
         /// <summary>
         /// Lấy tổng số bản ghi thỏa mãn điều kiện lọc
