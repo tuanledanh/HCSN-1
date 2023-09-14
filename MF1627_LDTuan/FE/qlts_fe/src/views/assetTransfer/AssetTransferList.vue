@@ -772,17 +772,24 @@ export default {
      */
     headCheckboxClick(event) {
       if (event.target.checked) {
-        for (const asset of this.transferAssets) {
-          if (!this.selectedRowsByCheckBox.includes(asset)) {
-            this.selectedRowsByCheckBox.push(asset);
+        for (const transfer of this.transferAssets) {
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) => selectedItem.TransferAssetId === transfer.TransferAssetId
+          );
+          if (index === -1) {
+            this.selectedRowsByCheckBox.push(transfer);
           }
         }
       } else {
-        for (const asset of this.transferAssets) {
-          this.selectedRowsByCheckBox.splice(asset);
+        for (const transfer of this.transferAssets) {
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) => selectedItem.TransferAssetId === transfer.TransferAssetId
+          );
+          if (index !== -1) {
+            this.selectedRowsByCheckBox.splice(index, 1);
+          }
         }
         this.selectedRows = [];
-        this.selectedRowsByCheckBox = [];
       }
     },
 

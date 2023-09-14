@@ -232,7 +232,12 @@
                 type="checkbox"
                 @click="headCheckboxClick($event)"
                 :checked="
-                  selectedRowsByCheckBox.length === pagingAsset.length &&
+                  pagingAsset.every((assetItem) =>
+                    selectedRowsByCheckBox.some(
+                      (selectedItem) =>
+                        selectedItem.FixedAssetId === assetItem.FixedAssetId
+                    )
+                  ) &&
                   pagingAsset.length > 0 &&
                   selectedRowsByCheckBox.length > 0
                 "
@@ -289,11 +294,13 @@
           <div class="body-data relative">
             <div
               class="body--row row"
-              v-for="(asset, index) in pagingAsset"
-              :key="index"
+              v-for="asset in pagingAsset"
+              :key="asset.FixedAssetId"
               :class="[
                 {
-                  'row--selected': selectedRowsByCheckBox.includes(asset),
+                  'row--selected': selectedRowsByCheckBox.some(
+                    (item) => item.FixedAssetId === asset.FixedAssetId
+                  ),
                 },
                 {
                   'row--selected': selectedRows.includes(asset),
@@ -308,7 +315,11 @@
               >
                 <input
                   type="checkbox"
-                  :checked="selectedRowsByCheckBox.includes(asset)"
+                  :checked="
+                    selectedRowsByCheckBox.some(
+                      (item) => item.FixedAssetId === asset.FixedAssetId
+                    )
+                  "
                   :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                 />
               </div>
@@ -740,7 +751,9 @@ export default {
       this.transferAsset.TransferDate = DateFormat(
         this.transferAsset.TransferDate
       );
-      this.transferAsset.Description = this.transferAsset.Description ? this.transferAsset.Description.trim() : "";
+      this.transferAsset.Description = this.transferAsset.Description
+        ? this.transferAsset.Description.trim()
+        : "";
       let oldTransferAsset = this.transferAsset;
 
       // 2.Lấy id của chứng từ điều chuyển
@@ -1301,7 +1314,6 @@ export default {
               for (let i = 0; i < this.receivers.length; i++) {
                 delete this.receivers[i].ReceiverId; // Loại bỏ thuộc tính "id"
               }
-              console.log(this.receivers);
             }
           })
           .catch((res) => {
@@ -1374,6 +1386,14 @@ export default {
       if (indexAssets !== -1) {
         this.assets.splice(indexAssets, 1);
       }
+
+      if (this.pagingAsset.length === 0) {
+        this.currentPage = 1;
+        this.pagingAssetFE();
+        if (this.pageNumber !== 1) {
+          this.pageNumber = 1;
+        }
+      }
     },
 
     //------------------------------------------- COMBOBOX -------------------------------------------
@@ -1414,12 +1434,12 @@ export default {
     },
 
     callRowOnClickByCheckBox(asset) {
-      rowOnClickByCheckBox.call(this, asset);
+      rowOnClickByCheckBox.call(this, asset, "assets");
     },
 
     callRowOnCtrlClick(asset) {
       if (this.formMode != this.$_MISAEnum.FORM_MODE.VIEW) {
-        rowOnCtrlClick.call(this, asset);
+        rowOnCtrlClick.call(this, asset, "assets");
       }
     },
 
@@ -1436,16 +1456,23 @@ export default {
     headCheckboxClick(event) {
       if (event.target.checked) {
         for (const asset of this.pagingAsset) {
-          if (!this.selectedRowsByCheckBox.includes(asset)) {
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+          );
+          if (index === -1) {
             this.selectedRowsByCheckBox.push(asset);
           }
         }
       } else {
         for (const asset of this.pagingAsset) {
-          this.selectedRowsByCheckBox.splice(asset);
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+          );
+          if (index !== -1) {
+            this.selectedRowsByCheckBox.splice(index, 1);
+          }
         }
         this.selectedRows = [];
-        this.selectedRowsByCheckBox = [];
       }
     },
 

@@ -27,7 +27,7 @@
                   type="checkbox"
                   @click="headCheckboxClick($event)"
                   :checked="
-                    selectedRowsByCheckBox.length === assets.length &&
+                    assets.every(assetItem => selectedRowsByCheckBox.some(selectedItem => selectedItem.FixedAssetId === assetItem.FixedAssetId)) &&
                     assets.length > 0 &&
                     selectedRowsByCheckBox.length > 0
                   "
@@ -78,7 +78,7 @@
                 :class="[
                 {
                   'row--selected':
-                    selectedRowsByCheckBox.includes(asset),
+                    selectedRowsByCheckBox.some(item => item.FixedAssetId === asset.FixedAssetId),
                 },
                 {
                   'row--selected': selectedRows.includes(asset),
@@ -93,7 +93,7 @@
                 >
                   <input
                     type="checkbox"
-                    :checked="selectedRowsByCheckBox.includes(asset)"
+                    :checked="selectedRowsByCheckBox.some(item => item.FixedAssetId === asset.FixedAssetId)"
                   />
                 </div>
                 <div
@@ -393,11 +393,11 @@ export default {
     },
 
     callRowOnClickByCheckBox(asset) {
-      rowOnClickByCheckBox.call(this, asset);
+      rowOnClickByCheckBox.call(this, asset, "assets");
     },
 
     callRowOnCtrlClick(asset) {
-      rowOnCtrlClick.call(this, asset);
+      rowOnCtrlClick.call(this, asset, "assets");
     },
 
     btnUncheckedAll() {
@@ -413,16 +413,23 @@ export default {
     headCheckboxClick(event) {
       if (event.target.checked) {
         for (const asset of this.assets) {
-          if (!this.selectedRowsByCheckBox.includes(asset)) {
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+          );
+          if (index === -1) {
             this.selectedRowsByCheckBox.push(asset);
           }
         }
       } else {
         for (const asset of this.assets) {
-          this.selectedRowsByCheckBox.splice(asset);
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+          );
+          if (index !== -1) {
+            this.selectedRowsByCheckBox.splice(index, 1);
+          }
         }
         this.selectedRows = [];
-        this.selectedRowsByCheckBox = [];
       }
     },
 

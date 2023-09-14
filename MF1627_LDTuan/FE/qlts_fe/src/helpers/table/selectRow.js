@@ -14,15 +14,14 @@ export function rowOnClick(asset, assetType) {
   if (this.selectedRows.length == 0) {
     this.lastIndex = 0;
   } else {
-    if (assetType === 'assets') {
+    if (assetType === "assets") {
       this.lastIndex = this.assets.indexOf(asset);
-    } else if (assetType === 'transferAssets') {
+    } else if (assetType === "transferAssets") {
       this.lastIndex = this.transferAssets.indexOf(asset);
     }
   }
   this.selectedRowsByCheckBox = [];
 }
-
 
 /**
  * Chọn bản ghi bằng cách nhấn click vào ô checkbox
@@ -30,7 +29,17 @@ export function rowOnClick(asset, assetType) {
  * Author: LDTUAN (09/08/2023)
  */
 export function rowOnClickByCheckBox(asset, assetType) {
-  const index = this.selectedRowsByCheckBox.indexOf(asset);
+  let index = null;
+  if (assetType === "assets") {
+    index = this.selectedRowsByCheckBox.findIndex(
+      (item) => item.FixedAssetId === asset.FixedAssetId
+    );
+  } else if (assetType === "transferAssets") {
+    index = this.selectedRowsByCheckBox.findIndex(
+      (item) => item.TransferAssetId === asset.TransferAssetId
+    );
+  }
+
   if (index !== -1) {
     this.selectedRows.splice(index, 1);
     this.selectedRowsByCheckBox.splice(index, 1);
@@ -41,10 +50,14 @@ export function rowOnClickByCheckBox(asset, assetType) {
   if (this.selectedRows.length == 0) {
     this.lastIndex = 0;
   } else {
-    if (assetType === 'assets') {
-      this.lastIndex = this.assets.indexOf(asset);
-    } else if (assetType === 'transferAssets') {
-      this.lastIndex = this.transferAssets.indexOf(asset);
+    if (assetType === "assets") {
+      this.lastIndex = this.assets.findIndex(
+        (item) => item.FixedAssetId === asset.FixedAssetId
+      );
+    } else if (assetType === "transferAssets") {
+      this.lastIndex = this.transferAssets.findIndex(
+        (item) => item.TransferAssetId === asset.TransferAssetId
+      );
     }
   }
 }
@@ -55,8 +68,25 @@ export function rowOnClickByCheckBox(asset, assetType) {
  * Author: LDTUAN (09/08/2023)
  */
 export function rowOnCtrlClick(asset, assetType) {
-  const index = this.selectedRows.indexOf(asset);
-  const indexCheckbox = this.selectedRowsByCheckBox.indexOf(asset);
+  let index = null;
+  let indexCheckbox = null;
+
+  if (assetType === "assets") {
+    index = this.selectedRows.findIndex(
+      (item) => item.FixedAssetId === asset.FixedAssetId
+    );
+    indexCheckbox = this.selectedRowsByCheckBox.findIndex(
+      (item) => item.FixedAssetId === asset.FixedAssetId
+    );
+  } else if (assetType === "transferAssets") {
+    index = this.selectedRows.findIndex(
+      (item) => item.TransferAssetId === asset.TransferAssetId
+    );
+    indexCheckbox = this.selectedRowsByCheckBox.findIndex(
+      (item) => item.TransferAssetId === asset.TransferAssetId
+    );
+  }
+
   if (index !== -1) {
     this.selectedRows.splice(index, 1);
     if (indexCheckbox !== -1)
@@ -68,10 +98,14 @@ export function rowOnCtrlClick(asset, assetType) {
   if (this.selectedRows.length == 0) {
     this.lastIndex = 0;
   } else {
-    if (assetType === 'assets') {
-      this.lastIndex = this.assets.indexOf(asset);
-    } else if (assetType === 'transferAssets') {
-      this.lastIndex = this.transferAssets.indexOf(asset);
+    if (assetType === "assets") {
+      this.lastIndex = this.assets.findIndex(
+        (item) => item.FixedAssetId === asset.FixedAssetId
+      );
+    } else if (assetType === "transferAssets") {
+      this.lastIndex = this.transferAssets.findIndex(
+        (item) => item.TransferAssetId === asset.TransferAssetId
+      );
     }
   }
 }
