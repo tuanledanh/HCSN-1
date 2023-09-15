@@ -244,8 +244,7 @@
               short
               textButton="Thông tin chi tiết"
               @click="btnAddAsset"
-              large
-              class="padding--right-4"
+              large_6
             ></MISAButton>
           </div>
           <div class="top-right">
@@ -659,6 +658,8 @@ export default {
           this.totalRecordsTransfer = res.data.TotalRecords;
           this.assets = [];
           this.isLoading = false;
+
+          this.callRowOnClick(this.transferAssets[0]);
 
           if (this.isSuccessAddOrUpdate) {
             setTimeout(() => {
@@ -1182,9 +1183,17 @@ export default {
   border-color: var(--table-border-color);
 }
 
-.icon-function {
+.body--row:hover > .cell > .icon-function{
   display: flex;
+}
+
+.body--row > .cell > .icon-function {
+  display: none;
   column-gap: 8px;
+}
+
+.row--selected > .cell > .icon-function{
+  display: flex;
 }
 
 .header--row {

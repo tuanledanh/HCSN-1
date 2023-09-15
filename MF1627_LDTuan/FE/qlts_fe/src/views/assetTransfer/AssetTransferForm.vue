@@ -419,7 +419,9 @@
               <div class="cell display--center-center border--bottom">
                 <div
                   class="icon-function"
-                  :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
+                  :class="[
+                    { disabled: actionMode == this.$_MISAEnum.FORM_MODE.VIEW },
+                  ]"
                 >
                   <MISAIcon
                     deleteIcon
@@ -1099,22 +1101,22 @@ export default {
           return newItem;
         });
 
-      let listUpdate = oldList
-        .filter((oldItem) => {
-          return listUD.find(
-            (newItem) => newItem[idField] === oldItem[idField]
+      let listUpdate = listUD
+        .filter((newItem) => {
+          return oldList.find(
+            (oldItem) => newItem[idField] === oldItem[idField]
           );
         })
-        .map((item) => {
-          let newItem = {
+        .map((newItem) => {
+          let updatedItem = {
             Flag: 1,
-            [idField]: item[idField],
+            [idField]: newItem[idField],
           };
           for (const field of selectedFields) {
-            newItem[field] = item[field];
+            updatedItem[field] = newItem[field];
           }
 
-          return newItem;
+          return updatedItem;
         });
 
       // 3.Nối các danh sách lại với nhau
@@ -1390,7 +1392,40 @@ export default {
     // load data từ form chọn tài sản chứng từ
     // TODO: làm thêm api lấy danh sách tài sản không chứa những tài sản đã chọn
     loadData(items) {
-      console.log(items);
+      // Tạo một đối tượng để ánh xạ FixedAssetId với TransferAssetDetailId trong deletedAssets
+      if (
+        items &&
+        items.length > 0 &&
+        this.deletedAssets &&
+        this.deletedAssets.length > 0
+      ) {
+        // Tạo một đối tượng để ánh xạ FixedAssetId với TransferAssetDetailId trong deletedAssets
+        const deletedAssetMap = {};
+        this.deletedAssets.forEach((asset) => {
+          deletedAssetMap[asset.FixedAssetId] = asset.TransferAssetDetailId;
+        });
+
+        // Duyệt qua mảng items và thêm TransferAssetDetailId nếu có
+        items.forEach((item) => {
+          const transferDetailId = deletedAssetMap[item.FixedAssetId];
+          if (transferDetailId !== undefined) {
+            item.TransferAssetDetailId = transferDetailId;
+            // item.Description = item.Description ? item.Description : "";
+            // item.NewDepartmentCode = item.NewDepartmentCode ? item.NewDepartmentCode : "raw";
+          }
+        });
+        // Duyệt qua mảng oldAssets và items để tìm và gán dữ liệu
+        this.oldAssets.forEach((oldItem) => {
+          items.forEach((item) => {
+            if (oldItem.TransferAssetDetailId === item.TransferAssetDetailId) {
+              oldItem.NewDepartmentId = item.NewDepartmentId;
+              oldItem.NewDepartmentName = item.NewDepartmentName;
+              oldItem.Description = item.Description;
+            }
+          });
+        });
+      }
+
       if (!this.assets || this.assets.length <= 0) {
         this.assets = items;
       } else {
@@ -1567,7 +1602,11 @@ export default {
     },
 
     btnCancelTransferAsset() {
-      this.updateTransferAssetHelper(this.$_MISAEnum.FORM_MODE.CANCEL);
+      if (this.formMode == this.$_MISAEnum.FORM_MODE.VIEW) {
+        this.btnCloseForm();
+      } else {
+        this.updateTransferAssetHelper(this.$_MISAEnum.FORM_MODE.CANCEL);
+      }
     },
 
     btnShowFormChooseAsset() {
@@ -1586,12 +1625,14 @@ export default {
         }
       });
       this.existFixedAsset = this.assets;
-      this.deletedAssets = this.originalAssets.filter(original => {
-        return this.existFixedAsset.findIndex(
-          exist => exist.transferAssetDetailId === original.transferAssetDetailId
-        ) === -1;
+      this.deletedAssets = this.originalAssets.filter((original) => {
+        return (
+          this.existFixedAsset.findIndex(
+            (exist) =>
+              exist.TransferAssetDetailId === original.TransferAssetDetailId
+          ) === -1
+        );
       });
-      console.log(this.deletedAssets);
       this.isShowFormChooseAsset = true;
     },
 

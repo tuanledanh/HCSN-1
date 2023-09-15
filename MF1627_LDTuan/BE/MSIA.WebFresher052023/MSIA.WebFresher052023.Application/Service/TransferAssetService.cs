@@ -221,16 +221,25 @@ namespace Application.Service
             var listTransferAssetDeatilDtos = transferAssetUpdateDto.ListTransferAssetDetail.ToList();
             var listReceiverDtos = transferAssetUpdateDto.ListReceiver.ToList();
 
-            // 4.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
+            // 4.Kiểm tra phòng ban mới và cũ của từng chi tiết chứng từ có bị trùng không
+            foreach (var detail in listTransferAssetDeatilDtos)
+            {
+                if (detail.OldDepartmentId == detail.NewDepartmentId)
+                {
+                    throw new DataException(ErrorMessages.Data);
+                }
+            }
+
+            // 5.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
             var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(listTransferAssetDeatilDtos);
             await _transferAssetManager.CheckExistAssetAsync(listTransferAssetDetails);
 
-            // 5.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
+            // 6.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
             // Và ngày điều chuyển cũng phải lớn hơn các ngày điều chuyển của chứng từ mà tài sản hiện đang thuộc
             var listAssetIds = listTransferAssetDetails.Select(transfer => transfer.FixedAssetId).Distinct().ToList();
             await _transferAssetManager.CheckDateAsync(transferAssetDto, listAssetIds, ActionMode.Update);
 
-            // 6.Kiểm tra xem danh sách chi tiết chứng từ có tồn tại trong db hay không, áp dụng với cập nhật và xóa
+            // 7.Kiểm tra xem danh sách chi tiết chứng từ có tồn tại trong db hay không, áp dụng với cập nhật và xóa
             var listTransferAssetDetailIds = listTransferAssetDeatilDtos
                 .Where(transfer => transfer.Flag == ActionMode.Update || transfer.Flag == ActionMode.Delete)
                 .Select(transfer => transfer.TransferAssetDetailId)
@@ -242,10 +251,10 @@ namespace Application.Service
                 throw new DataException(ErrorMessages.Data);
             }
 
-            // 7.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích xóa)
+            // 8.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích xóa)
             await CheckIfCanUpdateOrDelete(ActionMode.Delete, listTransferAssetDeatilDtos, oldTransferAsset.TransferAssetId);
 
-            // 8.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích cập nhật)
+            // 9.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích cập nhật)
             await CheckIfCanUpdateOrDelete(ActionMode.Update, listTransferAssetDeatilDtos, oldTransferAsset.TransferAssetId);
 
             // ======================================================= VALIDATE END  =======================================================
@@ -273,7 +282,7 @@ namespace Application.Service
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                // Cập nhật chứng từ
+                // 3.1.Cập nhật chứng từ
                 DateTime? createdDate = oldTransferAsset.CreatedDate;
                 var transferAsset = _mapper.Map(transferAssetDto, oldTransferAsset);
                 transferAsset.SetKey(transferAssetId);
@@ -282,7 +291,7 @@ namespace Application.Service
 
                 await _transferAssetRepository.UpdateAsync(transferAsset);
 
-                // 3.1.Thêm người nhận và chi tiết chứng từ
+                // 3.2.Thêm người nhận và chi tiết chứng từ
                 if (transferDtosCreate != null)
                 {
                     List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map<List<TransferAssetDetail>>(transferDtosCreate);
@@ -299,7 +308,7 @@ namespace Application.Service
                     await _receiverRepository.InsertMultiAsync(receivers);
                 }
 
-                // 3.2.Sửa người nhận và chi tiết chứng từ
+                // 3.3.Sửa người nhận và chi tiết chứng từ
                 if (transferDtosUpdate != null)
                 {
                     transferDtosUpdate = transferDtosUpdate.Select(item =>
@@ -328,7 +337,7 @@ namespace Application.Service
                     await _receiverRepository.UpdateMultiAsync(receivers);
                 }
 
-                // 3.3.Xóa người nhận và chi tiết chứng từ
+                // 3.4.Xóa người nhận và chi tiết chứng từ
                 if (transferDtosDelete != null)
                 {
                     List<TransferAssetDetail> transferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(transferDtosDelete);

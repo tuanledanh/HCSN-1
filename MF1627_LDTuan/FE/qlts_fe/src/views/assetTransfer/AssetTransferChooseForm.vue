@@ -208,7 +208,6 @@
                 label="Ghi chú"
                 v-model="Description"
                 medium
-                required
                 maxlength="4"
               ></MISAInput>
             </div>

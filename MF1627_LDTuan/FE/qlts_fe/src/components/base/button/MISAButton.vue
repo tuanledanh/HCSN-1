@@ -3,6 +3,7 @@
     :class="[
       { 'button-combo': combo },
       { large: large },
+      { 'large-6': large_6 },
       { basic: basic },
       { disabled: disabled },
     ]"
@@ -162,6 +163,11 @@ export default {
     },
     // Những button có width rộng hơn min width là 110px thì sẽ thêm padding
     large: {
+      type: Boolean,
+      default: false,
+    },
+    // Những button có width rộng hơn min width là 110px thì sẽ thêm padding
+    large_6: {
       type: Boolean,
       default: false,
     },
@@ -394,4 +400,10 @@ export default {
 .large .button {
   padding-right: 13px;
 }
+
+.large-6 .button {
+  padding-right: 6px;
+}
+
+
 </style>
