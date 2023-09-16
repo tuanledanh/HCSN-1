@@ -1,0 +1,56 @@
+// Variables
+$background-color: #1c3048;
+$background-color-scroll: #424755;
+$text-color: #fff;
+$border-color: #afafaf;
+
+.sidebar {
+    background-color: $background-color;
+    width: 66px;
+    transition: width 0.2s ease-in-out;
+
+    &--grow {
+        width: 200px;
+        .square-arrow {
+            transform: rotate(180deg);
+        }
+    }
+
+    &__header {
+        &__icon {
+            @include backgroundImage(-20px -680px, 36px, 36px);
+        }
+
+        &__title {
+            color: $text-color;
+            font-weight: 700;
+            font-size: 2rem;
+            white-space: nowrap;
+            overflow-x: hidden;
+        }
+    }
+
+    &__body {
+        flex: 0 0 calc(100vh - 90px);
+
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: $background-color-scroll;
+            border-radius: 50%;
+        }
+    }
+
+    &__footer {
+        flex: 0 0 40px;
+        border-top: 1px solid $border-color;
+        padding-right: 22px;
+
+        .square-arrow {
+            @include backgroundImage(-329px -417px, 22px, 22px);
+            transition: transform 0.1s ease-in-out;
+        }
+    }
+}

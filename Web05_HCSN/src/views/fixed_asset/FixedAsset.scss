@@ -1,0 +1,56 @@
+$background-color: #dee5fb;
+
+.fixed-asset {
+    background-color: $background-color;
+    &__header {
+        height: 50px;
+        flex: 0 0 50px;
+        flex: 0 0 50px;
+    }
+
+    &__main {
+        height: calc(100vh - 94px);
+        min-height: calc(100vh - 94px);
+        max-height: calc(100vh - 94px);
+        flex: 0 0 calc(100vh - 94px);
+    }
+
+    .search {
+        @include backgroundImage(-243px -23px, 18px, 18px);
+    }
+    .filter {
+        @include backgroundImage(-243px -69px, 17px, 16px);
+    }
+    .add {
+        @include backgroundImage(-204px -424px, 8px, 8px);
+    }
+    .excel {
+        @include backgroundImage(-287px -111px, 18px, 17px);
+    }
+    .delete {
+        @include backgroundImage(-463px -111px, 18px, 18px);
+    }
+    .setting {
+        @include backgroundImage(-111px -22px, 18px, 19px);
+    }
+    .edit {
+        @include backgroundImage(-156px -68px, 16px, 16px);
+    }
+    .replication {
+        @include backgroundImage(-244px -112px, 16px, 16px);
+    }
+
+    .t-button:hover .async,
+    .t-button:focus .async,
+    .t-button:active .async {
+        filter: invert(100%);
+    }
+
+    .async {
+        @include backgroundImage(-110px -68px, 20px, 16px);
+        // filter: invert(100%);
+        &.updateData {
+            animation: spin 1s linear infinite;
+        }
+    }
+}
