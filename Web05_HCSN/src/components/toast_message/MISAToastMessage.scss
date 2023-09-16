@@ -1,0 +1,66 @@
+$background-color: #fff;
+$box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+
+.t-toast-warning {
+    max-width: 450px;
+    width: 430px;
+    min-height: 150px;
+    background-color: $background-color;
+    box-shadow: $box-shadow;
+
+    &__body {
+        flex: 1;
+        &--icon {
+            min-height: 100%;
+            width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .warning {
+                transform: scale(2);
+                @include backgroundImage(-416px -66px, 24px, 20px);
+            }
+        }
+        &--message {
+            min-height: 100%;
+            flex: 1;
+        }
+    }
+
+    &__footer {
+        flex: 0 0 76px;
+        padding-right: 20px;
+    }
+}
+
+.t-toast-success {
+    background-color: $background-color;
+    height: 80px;
+    width: 300px;
+    position: fixed;
+    right: 20px;
+    bottom: 50px;
+    box-shadow: $box-shadow;
+
+    &--icon {
+        width: 80px;
+        .wrapper-success {
+            background-color: #1ac871;
+            border-radius: 50%;
+            height: 30px;
+            aspect-ratio: 1;
+            box-shadow: 0 0 0 5px #baeed4;
+            cursor: unset;
+            .success {
+                transform: scale(1.5);
+                cursor: unset !important;
+                @include backgroundImage(-71px -512px, 11px, 8px);
+            }
+        }
+    }
+
+    &--message {
+        flex: 1;
+    }
+}

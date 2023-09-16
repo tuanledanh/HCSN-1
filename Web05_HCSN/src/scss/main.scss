@@ -1,0 +1,16 @@
+// Abstracts
+@import './abstracts/mixin';
+@import './abstracts/variables';
+
+// Base
+@import './base/reset';
+@import './base/fonts';
+@import './base/animation';
+@import './base/global';
+
+#app {
+    min-width: 100vw;
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: auto 1fr;
+}

@@ -1,0 +1,18 @@
+.transfer-asset-info {
+    padding: 20px 20px 0 0;
+    max-height: 170px;
+    min-height: 70px;
+    &__more-info {
+        max-height: 80px;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+            width: 5px;
+            background-color: #d4d4d4;
+            border-radius: 50px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #818181;
+            border-radius: 50px;
+        }
+    }
+}

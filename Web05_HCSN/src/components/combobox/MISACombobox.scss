@@ -1,0 +1,121 @@
+$background-color--white: #fff;
+$background-color--read-only: #f5f5f5;
+$background-color-icon--hover: #e0e0e0;
+$border--focus: 1px solid #1aa4c8;
+$border--invalid: 1px solid #ff0000;
+$border: 1px solid #afafaf;
+$color-requried: #ff0000;
+$box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+$background-color--hover: #d1edf4;
+$background-color--active: #afe9f9;
+
+.t-combobox {
+    &__label {
+        .required {
+            color: $color-requried;
+        }
+    }
+
+    &__wrapper {
+        border: $border;
+        background-color: $background-color--white;
+
+        .icon-left:hover,
+        .icon-right:hover {
+            background-color: $background-color-icon--hover;
+        }
+
+        .icon-right:active {
+            // transform: scale(0.9);
+            background-color: $background-color--active;
+        }
+
+        .input {
+            background-color: inherit;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+        }
+
+        .input.placeholder--italic::placeholder {
+            font-style: italic;
+        }
+
+        &:has(.input:focus),
+        &:has(.icon-right:active),
+        &:has(.icon-left:active) {
+            border: $border--focus;
+        }
+        &:has(.input.invalid) {
+            border: $border--invalid;
+        }
+        &:has(.input:read-only) {
+            border: $border;
+            background-color: $background-color--read-only;
+            cursor: not-allowed;
+        }
+
+        &:has(~ .t-combobox__list:active) {
+            border: $border--focus;
+        }
+
+        .arrow-down {
+            transition: all 0.3s linear;
+            @include backgroundImage(-72px -338px, 8px, 5px);
+
+            &.rotate {
+                transform: rotate(180deg);
+            }
+        }
+        .clear {
+            @include backgroundImage(-336px -247px, 9px, 9px);
+        }
+
+        .icon-clear {
+            &:active {
+                transform: scale(0.9);
+            }
+        }
+    }
+
+    &__list {
+        max-height: 200px;
+        background-color: $background-color--white;
+        box-shadow: $box-shadow;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+            width: 4px;
+            background-color: #d4d4d4;
+            border-radius: 50px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #818181;
+            border-radius: 50px;
+        }
+
+        .check {
+            @include backgroundImage(-160px -424px, 10px, 8px);
+        }
+    }
+
+    &__item {
+        margin-top: 10px;
+        margin-bottom: 10px;
+
+        &-titel {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: calc(100% - 36px);
+        }
+    }
+
+    &__item.hover {
+        background-color: $background-color--hover;
+    }
+    &__item.active {
+        background-color: $background-color--active;
+    }
+}

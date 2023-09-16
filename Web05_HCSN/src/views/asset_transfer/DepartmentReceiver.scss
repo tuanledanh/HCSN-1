@@ -1,0 +1,45 @@
+$grid-template-column: 50px repeat(3, 1.5fr) 1fr;
+
+.department-receive {
+    .label {
+        grid-template-columns: $grid-template-column;
+        h1 {
+            font-weight: 500;
+        }
+    }
+
+    .wrapper {
+        max-height: 84px;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+            width: 5px;
+            background-color: #d4d4d4;
+            border-radius: 50px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: #818181;
+            border-radius: 50px;
+        }
+    }
+
+    .body {
+        .index {
+            border: 1px solid #afafaf;
+        }
+        grid-template-columns: $grid-template-column;
+
+        .up {
+            @include backgroundImage(-332px -331px, 17px, 18px);
+        }
+        .down {
+            @include backgroundImage(-420px -330px, 16px, 19px);
+        }
+        .add {
+            @include backgroundImage(-375px -419px, 18px, 18px);
+        }
+        .delete {
+            @include backgroundImage(-463px -111px, 18px, 18px);
+        }
+    }
+}

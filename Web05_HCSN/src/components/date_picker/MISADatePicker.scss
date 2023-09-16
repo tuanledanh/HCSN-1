@@ -1,0 +1,35 @@
+$border: 1px solid #afafaf;
+$border--invalid: 1px solid #ff0000;
+$border--focus: 1px solid #1aa4c8;
+
+$background-color--white: #fff;
+
+.t-datepicker {
+    display: block;
+    &__title {
+        display: inline-block;
+    }
+    &__wrap {
+        margin-top: 10px;
+        border: $border;
+        background-color: $background-color--white;
+        &:has(input:focus),
+        &:has(input:active) {
+            border: $border--focus;
+        }
+
+        &.focus {
+            border: $border--focus;
+        }
+
+        &.invalid {
+            border: $border--invalid !important;
+        }
+    }
+
+    &__icon {
+        .datepicker {
+            @include backgroundImage(-287px -67px, 18px, 18px);
+        }
+    }
+}

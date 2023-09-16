@@ -1,0 +1,5 @@
+@mixin backgroundImage($position, $width, $height) {
+    background-position: $position;
+    width: $width;
+    height: $height;
+}

@@ -1,0 +1,56 @@
+// Variables
+$background-color: #fff;
+$background-year: #d1edf4;
+
+.header {
+    flex: 0 0 44px;
+    background-color: $background-color;
+    &-left {
+        &__title {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+    }
+    &-right {
+        &__organization {
+            font-weight: 500;
+        }
+
+        &__year {
+            background-color: $background-year;
+            padding-left: 15px;
+            margin-left: 26px;
+            margin-right: 27px;
+            &__value {
+                width: 32px;
+                height: 30px;
+                border: none;
+                margin-left: 15px;
+                margin-right: 5px;
+            }
+            .chevron-up {
+                @include backgroundImage(-28px -338px, 8px, 5px);
+            }
+            .chevron-down {
+                @include backgroundImage(-72px -338px, 8px, 5px);
+            }
+        }
+        &__icon {
+            .bell {
+                @include backgroundImage(-332px -109px, 16px, 20px);
+            }
+            .grid {
+                @include backgroundImage(-199px -23px, 18px, 18px);
+            }
+            .circle-question {
+                @include backgroundImage(-67px -67px, 18px, 18px);
+            }
+            .circle-user {
+                @include backgroundImage(-23px -23px, 18px, 18px);
+            }
+            .chevron-down {
+                @include backgroundImage(-72px -338px, 8px, 5px);
+            }
+        }
+    }
+}

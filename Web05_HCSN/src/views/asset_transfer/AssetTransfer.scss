@@ -1,0 +1,89 @@
+$background-color: #d6ebf9;
+$background-color-header: #fff;
+$background-color-body: #fff;
+
+.asset-transfer {
+    padding: 10px 20px;
+    background-color: $background-color;
+    //  Header
+    &__header {
+        background-color: $background-color-header;
+        flex-grow: 0;
+        flex-shrink: 0;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+
+        &-left {
+            &__title {
+                font-weight: 700;
+                font-size: 1.6rem;
+            }
+            .sync {
+                @include backgroundImage(-110px -68px, 20px, 16px);
+                &.data-sync {
+                    animation: spin 1s linear infinite;
+                }
+            }
+        }
+
+        &-right {
+            .add-document {
+                @include backgroundImage(-375px -419px, 18px, 18px);
+                filter: invert(100%);
+            }
+            .print {
+                @include backgroundImage(-331px -67px, 18px, 18px);
+            }
+            .chevron-down {
+                @include backgroundImage(-72px -338px, 8px, 5px);
+            }
+            .feedback {
+                @include backgroundImage(-67px -23px, 18px, 18px);
+            }
+            .help {
+                @include backgroundImage(-67px -67px, 18px, 18px);
+            }
+        }
+    }
+    &__body {
+        flex: 1;
+        overflow: hidden;
+        max-height: calc(100% - 44px);
+        background-color: $background-color-body;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        .detail-table__caption {
+            background-color: $background-color-header;
+        }
+    }
+}
+
+.main-table {
+    // transition: all 0.3s linear;
+    &.animation {
+        transition: all 0.3s linear;
+    }
+    .edit {
+        @include backgroundImage(-156px -68px, 16px, 16px);
+    }
+    .delete {
+        @include backgroundImage(-463px -111px, 18px, 18px);
+    }
+}
+
+.detail-table {
+    &.animation {
+        transition: all 0.3s linear;
+    }
+
+    &__caption {
+        .chevron-down {
+            transition: all 0.3s linear;
+            @include backgroundImage(-332px -291px, 15px, 9px);
+        }
+
+        .chevron-down.rotate {
+            transform: rotate(180deg);
+        }
+    }
+}

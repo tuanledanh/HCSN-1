@@ -1,0 +1,164 @@
+// Variables
+$background-color--active: #1aa4c8;
+$background-color-menu: #32455a;
+$background-color-menu--active: #424755;
+$background-color--hover: #1aa4c8;
+
+$text-color-white: #fff;
+
+.title {
+    color: $text-color-white;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+// Styles
+.sidebar-item-link {
+    margin-top: 2px;
+    margin-bottom: 2px;
+    opacity: 0.6;
+}
+
+.sidebar-item {
+    &__title {
+        @extend .title;
+    }
+
+    &--active,
+    &---active {
+        opacity: 1;
+        background-color: $background-color--active;
+    }
+
+    &:hover {
+        background-color: $background-color--hover;
+    }
+
+    &:hover &__icon-1,
+    &--active &__icon-1 {
+        @include backgroundImage(-22px -198px, 20px, 21px);
+    }
+
+    &:hover &__icon-2,
+    &--active &__icon-2 {
+        @include backgroundImage(-65px -197px, 22px, 23px);
+    }
+
+    &:hover &__icon-3,
+    &--active &__icon-3 {
+        @include backgroundImage(-110px -197px, 21px, 22px);
+    }
+
+    &:hover &__icon-4,
+    &--active &__icon-4 {
+        @include backgroundImage(-153px -197px, 22px, 22px);
+    }
+
+    &:hover &__icon-5,
+    &--active &__icon-5 {
+        @include backgroundImage(-198px -200px, 20px, 17px);
+    }
+
+    &:hover &__icon-6,
+    &--active &__icon-6 {
+        @include backgroundImage(-241px -197px, 22px, 22px);
+    }
+
+    &:hover &__icon-7,
+    &--active &__icon-7 {
+        @include backgroundImage(-330px -198px, 20px, 20px);
+    }
+
+    .chevron-down {
+        @include backgroundImage(-158px -293px, 12px, 7px);
+        transition:
+            opacity 0.1s ease-in-out,
+            transform 0.2s ease-in-out;
+        opacity: 0;
+        &.show {
+            transition-delay: 0.2s;
+            opacity: 1;
+        }
+        &.show-menu {
+            transform: rotate(180deg);
+        }
+    }
+}
+
+.sidebar-item.active {
+    opacity: 1;
+    background-color: $background-color--active;
+}
+
+.sidebar-item__icon {
+    width: 44px;
+    height: 40px;
+    flex: 0 0 44px;
+
+    &-1 {
+        @include backgroundImage(-21px -153px, 22px, 22px);
+    }
+    &-2 {
+        @include backgroundImage(-65px -153px, 22px, 23px);
+    }
+    &-3 {
+        @include backgroundImage(-110px -153px, 21px, 23px);
+    }
+
+    &-4 {
+        @include backgroundImage(-153px -153px, 22px, 22px);
+    }
+
+    &-5 {
+        @include backgroundImage(-197px -155px, 22px, 18px);
+    }
+
+    &-6 {
+        @include backgroundImage(-241px -153px, 22px, 22px);
+    }
+
+    &-7 {
+        @include backgroundImage(-329px -153px, 22px, 22px);
+    }
+}
+
+.sidebar-item__menu {
+    background-color: $background-color-menu;
+
+    &__icon {
+        width: 44px;
+
+        .arrow-hidden {
+            transform: rotate(180deg);
+            display: none;
+            filter: invert(100%);
+            @include backgroundImage(-375px -246px, 18px, 12px);
+        }
+    }
+    &__title {
+        @extend .title;
+    }
+
+    &__link {
+        opacity: 0.6;
+    }
+
+    &__link:hover {
+        opacity: 1;
+        border-radius: 4px;
+        background-color: $background-color-menu--active;
+    }
+
+    &__link:hover .arrow-hidden {
+        display: block;
+    }
+}
+
+.link--active {
+    background-color: $background-color-menu--active;
+    opacity: 1 !important;
+    .arrow-hidden {
+        display: block;
+    }
+}

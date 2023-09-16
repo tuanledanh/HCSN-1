@@ -1,0 +1,8 @@
+.main-layout {
+    min-width: calc(100vw - 200px);
+    max-width: calc(100vw - 66px);
+    &__router-view {
+        flex: 1;
+        max-height: calc(100vh - 44px);
+    }
+}
