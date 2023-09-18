@@ -3,7 +3,7 @@
     :class="[
       'toast__message',
       { 'toast--center': typeToast === 'warning' || typeToast === 'export' },
-      { 'toast--bottom': typeToast === 'success' },
+      { 'toast--bottom': typeToast === 'success' || typeToast === 'update' },
     ]"
   >
     <section class="t-toast br-8 flex-column">
@@ -21,6 +21,12 @@
           <MISAIcon success></MISAIcon>
         </section>
         <section
+          class="t-toast--icon-success center"
+          v-if="typeToast === 'update'"
+        >
+          <MISAIcon success></MISAIcon>
+        </section>
+        <section
           class="t-toast--icon-warning center"
           v-if="typeToast === 'export'"
         >
@@ -33,7 +39,7 @@
                 't-toast--title-16px':
                   typeToast === 'warning' || typeToast === 'export',
               },
-              { 't-toast--title-14px': typeToast === 'success' },
+              { 't-toast--title-14px': typeToast === 'success' || typeToast === 'update'},
             ]"
           >
             <span v-html="content"></span>
@@ -78,7 +84,7 @@ export default {
       type: String,
       default: "warning",
       validator: function (value) {
-        return ["success", "warning", "export"].indexOf(value) !== -1;
+        return ["success", "warning", "export", "update"].indexOf(value) !== -1;
       },
     },
 
@@ -118,7 +124,7 @@ export default {
 .t-toast {
   background-color: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-  width: 464px;
+  width: 500px;
   padding: 14px 30px 14px 40px;
   row-gap: 30px;
 }
@@ -153,7 +159,21 @@ export default {
   box-shadow: 0 0 0 5px #baeed4;
 }
 
+.t-toast--icon-update {
+  background-color: #c8821a;
+  border-radius: 50%;
+  height: 30px;
+  aspect-ratio: 1;
+  box-shadow: 0 0 0 5px #eedaba;
+}
+
 .success {
+  background-position: -71px -512px;
+  width: 11px;
+  height: 8px;
+}
+
+.update {
   background-position: -71px -512px;
   width: 11px;
   height: 8px;

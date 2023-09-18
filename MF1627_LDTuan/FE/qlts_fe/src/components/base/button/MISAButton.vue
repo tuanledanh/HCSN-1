@@ -1,5 +1,13 @@
 <template>
-  <div :class="[{ 'button-combo': combo }, { large: large }, { basic: basic }]">
+  <div
+    :class="[
+      { 'button-combo': combo },
+      { large: large },
+      { 'large-6': large_6 },
+      { basic: basic },
+      { disabled: disabled },
+    ]"
+  >
     <button
       :disabled="disabled"
       :class="[
@@ -7,6 +15,7 @@
         'relative',
         { 'button--add-box': add_box_white },
         { 'button--add-box': add_box },
+        { loading: loading },
         { border: basic },
         { disabled: disabled },
         { 'button--main': buttonMain },
@@ -24,8 +33,10 @@
         v-if="combo"
         button
         :add="add"
+        :loading="loading"
         :add_box="add_box"
         :add_box_white="add_box_white"
+        :disabled="disabled"
       ></MISAIcon>
       <MISATooltip :bottom="bottom" :bottom_end="bottom_end" :content="content">
         <MISAIcon
@@ -33,6 +44,7 @@
           :exportIcon="exportIcon"
           :deleteIcon="deleteIcon"
           :exit="exit"
+          :disabled="disabled"
         ></MISAIcon>
       </MISATooltip>
 
@@ -85,6 +97,11 @@ export default {
 
     // Button phác thảo
     buttonOutline: {
+      type: Boolean,
+      default: false,
+    },
+    // Button load
+    loading: {
       type: Boolean,
       default: false,
     },
@@ -153,6 +170,11 @@ export default {
     },
     // Những button có width rộng hơn min width là 110px thì sẽ thêm padding
     large: {
+      type: Boolean,
+      default: false,
+    },
+    // Những button có width rộng hơn min width là 110px thì sẽ thêm padding
+    large_6: {
       type: Boolean,
       default: false,
     },
@@ -365,12 +387,54 @@ export default {
 }
 
 .disabled {
-  pointer-events: none; /* Prevents the button from being clicked */
-  opacity: 0.6;
-  cursor: not-allowed;
+  background-color: #f5f5f5 !important;
+  border-color: #d4d4d4 !important;
+  color: #000000;
+  cursor: not-allowed !important;
+}
+
+.disabled:hover {
+  background-color: #f5f5f5 !important;
+  border-color: #d4d4d4 !important;
+  color: #000000;
+  cursor: not-allowed !important;
+}
+
+.disabled .button--main {
+  background-color: #1aa4c8 !important;
+  color: white !important;
+  opacity: 0.5;
+}
+.disabled .button--main :hover {
+  background-color: #1aa4c8 !important;
+  color: white !important;
+  opacity: 0.5;
 }
 
 .large .button {
   padding-right: 13px;
+}
+
+.large-6 .button {
+  padding-right: 6px;
+}
+
+.loading {
+  padding-left: 38px !important;
+  background-color: var(--background-color-default) !important;
+  color: #000000 !important;
+}
+
+.loading:hover {
+  background-color: #d1edf4 !important;
+}
+
+.loading:focus {
+  outline: 1px solid #23cbf5 !important;
+  transition: all 0.2s linear !important;
+}
+
+.loading:active {
+  background-color: var(--background-color-default) !important;
 }
 </style>

@@ -17,6 +17,14 @@ namespace MSIA.WebFresher052023.Domain.Interface.Repository
         Task<List<TransferAsset>> GetNewestTransferAssetByAssetId(List<Guid> assetIds);
 
         /// <summary>
+        /// Lấy các chứng từ của các tài sản truyền đến
+        /// </summary>
+        /// <param name="assetIds">Danh sách id tài sản</param>
+        /// <returns>Danh sách chứng từ, có chứa id tài sản</returns>
+        /// Created by: ldtuan (17/09/2023)
+        Task<List<TransferAssetDeleteModel>> GetAllTransferAssetByAssetId(List<Guid> asssetIds);
+
+        /// <summary>
         /// Truyền vào 1 danh sách chứng từ, tìm các tài sản trong chứng từ đó, rồi tìm tất cả các chứng từ có chứa các tài sản này
         /// </summary>
         /// <param name="transferAssetIds">Danh sách id chứng từ</param>

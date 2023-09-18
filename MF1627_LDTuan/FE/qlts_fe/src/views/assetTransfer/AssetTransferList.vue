@@ -23,7 +23,7 @@
           @click="callToastDelete"
         ></MISAButton>
       </div>
-      <div class="top-right">
+      <div class="top-head-right">
         <MISAButton
           combo
           add_box_white
@@ -32,6 +32,8 @@
           @click="btnAddDocument"
           large
         ></MISAButton>
+        <MISAIcon chat></MISAIcon>
+        <MISAIcon question></MISAIcon>
       </div>
     </div>
     <div
@@ -42,7 +44,10 @@
         <!-- ------------------------Table start------------------------ -->
         <div :class="[{ table: !isResize }, { 'table-flex': isResize }]">
           <!-- ------------------------Header------------------------ -->
-          <div class="header--row row border--top">
+          <div
+            class="header--row row border--top"
+            :class="[{ 'row-expand': isChangeWidth }]"
+          >
             <div
               class="header cell display--center-center border--right border--bottom"
             >
@@ -50,7 +55,13 @@
                 type="checkbox"
                 @click="headCheckboxClick($event)"
                 :checked="
-                  selectedRowsByCheckBox.length === transferAssets.length &&
+                  transferAssets.every((transferItem) =>
+                    selectedRowsByCheckBox.some(
+                      (selectedItem) =>
+                        selectedItem.TransferAssetId ===
+                        transferItem.TransferAssetId
+                    )
+                  ) &&
                   transferAssets.length > 0 &&
                   selectedRowsByCheckBox.length > 0
                 "
@@ -106,12 +117,15 @@
               :key="transferAsset.TransferAssetId"
               :class="[
                 {
-                  'row--selected':
-                    selectedRowsByCheckBox.includes(transferAsset),
+                  'row--selected': selectedRowsByCheckBox.some(
+                    (item) =>
+                      item.TransferAssetId === transferAsset.TransferAssetId
+                  ),
                 },
                 {
                   'row--selected': selectedRows.includes(transferAsset),
                 },
+                { 'row-expand': isChangeWidth },
               ]"
               @dblclick="btnEditTransferAsset(transferAsset)"
               @click.exact.stop="callRowOnClick(transferAsset)"
@@ -123,7 +137,12 @@
               >
                 <input
                   type="checkbox"
-                  :checked="selectedRowsByCheckBox.includes(transferAsset)"
+                  :checked="
+                    selectedRowsByCheckBox.some(
+                      (item) =>
+                        item.TransferAssetId === transferAsset.TransferAssetId
+                    )
+                  "
                 />
               </div>
               <div
@@ -191,6 +210,13 @@
         </div>
         <!-- ------------------------Table end------------------------ -->
 
+        <MISACalculator
+          form="transfer-list"
+          :isChangeWidth="isChangeWidth"
+          :totalPrice="totalPrice"
+          :totalResidualValue="totalResidualValue"
+          :numberColumnLeft="5"
+        ></MISACalculator>
         <MISAPaging
           :totalRecords="totalRecordsTransfer"
           :totalPages="totalPagesTransfer"
@@ -231,8 +257,7 @@
               short
               textButton="Thông tin chi tiết"
               @click="btnAddAsset"
-              large
-              class="padding--right-4"
+              large_6
             ></MISAButton>
           </div>
           <div class="top-right">
@@ -395,6 +420,8 @@
     @reLoad="reLoad"
     :transferAssetToUpdate="transferData"
     :actionMode="actionMode"
+    @updateSuccess="toast_content_success = $event"
+    @addSuccess="toast_content_success = $event"
   ></MISAAssetTransferForm>
   <div v-if="isShowToastDelete" class="blur">
     <MISAToast typeToast="warning" :content="toast_content_delete"
@@ -435,7 +462,10 @@
     </MISAToast>
   </div>
   <div v-if="isShowToastValidateBE" class="blur">
-    <MISAToast typeToast="warning" :content="toast_content_warning + '.'" :moreInfo="moreInfo"
+    <MISAToast
+      typeToast="warning"
+      :content="toast_content_warning + '.'"
+      :moreInfo="moreInfo"
       ><MISAButton
         buttonSub
         textButton="Đóng"
@@ -444,6 +474,33 @@
         ref="button"
         :tabindex="1"
         @keydown="callCheckTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
+  <MISAToast
+    v-if="isShowToastAddSuccess"
+    typeToast="success"
+    :content="toast_content_success"
+  ></MISAToast>
+  <MISAToast
+    v-if="isShowToastUpdateSuccess"
+    typeToast="update"
+    :content="toast_content_success"
+  ></MISAToast>
+
+  <div v-if="isShowToastValidateAriseTransfer" class="blur">
+    <MISAToast
+      typeToast="warning"
+      :content="toast_content_warning + '.'"
+      :moreInfo="moreInfo"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="callCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
       ></MISAButton>
     </MISAToast>
   </div>
@@ -493,6 +550,7 @@ export default {
       // ----------------------------- Form -----------------------------
       isFormDisplay: false,
       actionMode: false,
+      isSuccessAddOrUpdate: false,
 
       // ----------------------------- Paging -----------------------------
       // Số trang hiện tại
@@ -513,6 +571,10 @@ export default {
       // Trang hiện tại
       currentPage: 1,
       currentPageTransfer: 1,
+      // Tổng nguyên giá
+      totalPrice: "0",
+      // Tổng giá trị còn lại
+      totalResidualValue: "0",
 
       // ----------------------------- Resize table -----------------------------
       // Hiển thị tooltip của icon resize
@@ -550,6 +612,10 @@ export default {
       isShowToastValidateBE: false,
       toast_content_warning: null,
       moreInfo: null,
+      isShowToastAddSuccess: false,
+      isShowToastUpdateSuccess: false,
+      toast_content_success: null,
+      isShowToastValidateAriseTransfer: false,
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
@@ -584,6 +650,7 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     pageLimitTransfer(value) {
+      console.log(this.selectedRowsByCheckBox);
       this.loadData(1, value);
     },
 
@@ -593,6 +660,7 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     pageNumberTransfer(value) {
+      console.log(this.selectedRowsByCheckBox);
       this.loadData(value, this.pageLimitTransfer);
       this.currentPageTransfer = value;
     },
@@ -625,6 +693,33 @@ export default {
           this.totalRecordsTransfer = res.data.TotalRecords;
           this.assets = [];
           this.isLoading = false;
+
+          this.callRowOnClick(this.transferAssets[0]);
+
+          var totalPrice = this.transferAssets.reduce(
+            (total, transferAsset) => {
+              return total + Math.round(transferAsset.Cost);
+            },
+            0
+          );
+          var totalResidualValue = this.transferAssets.reduce(
+            (total, transferAsset) => {
+              return total + Math.round(transferAsset.RemainingCost);
+            },
+            0
+          );
+
+          this.totalPrice = formatMoney(totalPrice);
+          this.totalResidualValue = formatMoney(totalResidualValue);
+
+          if (this.isSuccessAddOrUpdate) {
+            setTimeout(() => {
+              this.isShowToastAddSuccess = false;
+              this.isShowToastUpdateSuccess = false;
+              this.toast_content_success = null;
+              this.isSuccessAddOrUpdate = false;
+            }, 3000);
+          }
         })
         .catch((res) => {
           this.$processErrorResponse(res);
@@ -635,6 +730,15 @@ export default {
     },
 
     reLoad() {
+      this.isSuccessAddOrUpdate = true;
+      switch (this.toast_content_success) {
+        case this.$_MISAResource.VN.Form.Warning.Transfer.Success.Update:
+          this.isShowToastUpdateSuccess = true;
+          break;
+        case this.$_MISAResource.VN.Form.Warning.Transfer.Success.Add:
+          this.isShowToastAddSuccess = true;
+          break;
+      }
       this.loadData();
     },
 
@@ -758,7 +862,6 @@ export default {
 
     callRowOnClickByCheckBox(transferAsset) {
       rowOnClickByCheckBox.call(this, transferAsset, "transferAssets");
-      console.log(this.selectedRowsByCheckBox);
     },
 
     callRowOnCtrlClick(transferAsset) {
@@ -772,17 +875,26 @@ export default {
      */
     headCheckboxClick(event) {
       if (event.target.checked) {
-        for (const asset of this.transferAssets) {
-          if (!this.selectedRowsByCheckBox.includes(asset)) {
-            this.selectedRowsByCheckBox.push(asset);
+        for (const transfer of this.transferAssets) {
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) =>
+              selectedItem.TransferAssetId === transfer.TransferAssetId
+          );
+          if (index === -1) {
+            this.selectedRowsByCheckBox.push(transfer);
           }
         }
       } else {
-        for (const asset of this.transferAssets) {
-          this.selectedRowsByCheckBox.splice(asset);
+        for (const transfer of this.transferAssets) {
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) =>
+              selectedItem.TransferAssetId === transfer.TransferAssetId
+          );
+          if (index !== -1) {
+            this.selectedRowsByCheckBox.splice(index, 1);
+          }
         }
         this.selectedRows = [];
-        this.selectedRowsByCheckBox = [];
       }
     },
 
@@ -932,6 +1044,7 @@ export default {
      */
     btnAddDocument() {
       this.isFormDisplay = true;
+      this.actionMode = this.$_MISAEnum.FORM_MODE.ADD;
     },
 
     /**
@@ -940,15 +1053,34 @@ export default {
     onCloseForm() {
       this.isFormDisplay = false;
       this.transferData = null;
+      this.actionMode = null;
     },
 
     /**
      * Truyền dữ liệu và mở form thêm chứng từ để sửa đổi
      */
+    // btnEditTransferAsset(transferAsset) {
+    //   this.checkTransferAssetArise(transferAsset.TransferAssetId);
+    //   if (this.isShowToastValidateAriseTransfer == false) {
+    //     this.btnAddDocument();
+    //     this.transferData = transferAsset;
+    //     this.actionMode = this.$_MISAEnum.FORM_MODE.UPDATE;
+    //   }
+    // },
+
     btnEditTransferAsset(transferAsset) {
-      this.btnAddDocument();
-      this.transferData = transferAsset;
-      this.actionMode = this.$_MISAEnum.FORM_MODE.UPDATE;
+      this.$_MISAApi.TransferAsset.GetNewest(transferAsset.TransferAssetId)
+        .then(() => {
+          this.btnAddDocument();
+          this.transferData = transferAsset;
+          this.actionMode = this.$_MISAEnum.FORM_MODE.UPDATE;
+        })
+        .catch((res) => {
+          this.$processErrorResponse(res);
+          this.isShowToastValidateAriseTransfer = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+          this.moreInfo = res.response.data.MoreInfo;
+        });
     },
 
     /**
@@ -968,11 +1100,9 @@ export default {
       console.log(listIds);
       this.transferAssetSingle = listIds;
       this.toast_content_delete_single =
-        this.$_MISAResource.VN.Form.Warning.Delete.Single +
+        this.$_MISAResource.VN.Form.Warning.DeleteTransfer.Single +
         transferAsset.TransferAssetCode +
-        " - " +
-        transferAsset.TransferAssetName +
-        "?";
+        " không?";
       this.isShowToastDeleteSingle = true;
     },
 
@@ -1103,6 +1233,15 @@ export default {
   cursor: pointer;
 }
 
+.row-expand {
+  display: grid;
+  grid-template-columns:
+    44px 50px 120px 150px 150px 140px 200px 597px
+    120px;
+  height: 35px;
+  cursor: pointer;
+}
+
 .table-bot .row {
   grid-template-columns: 50px 120px 200px 140px 150px 180px 200px calc(
       100% - 1040px
@@ -1122,9 +1261,17 @@ export default {
   border-color: var(--table-border-color);
 }
 
-.icon-function {
+.body--row:hover > .cell > .icon-function {
   display: flex;
+}
+
+.body--row > .cell > .icon-function {
+  display: none;
   column-gap: 8px;
+}
+
+.row--selected > .cell > .icon-function {
+  display: flex;
 }
 
 .header--row {
@@ -1156,6 +1303,12 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   border-color: var(--table-border-color);
+}
+
+.top-head-right{
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
 }
 
 /* ------------------------------------------- Resize-bar ------------------------------------------- */

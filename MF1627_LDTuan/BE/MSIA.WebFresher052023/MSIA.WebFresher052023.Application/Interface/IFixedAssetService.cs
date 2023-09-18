@@ -3,6 +3,7 @@ using Domain.Entity;
 using Domain.Model;
 using MSIA.WebFresher052023.Application.Interface.Base;
 using MSIA.WebFresher052023.Application.Response.Base;
+using MSIA.WebFresher052023.Domain.Enum;
 using System.Data;
 
 namespace Application.Interface
@@ -29,7 +30,7 @@ namespace Application.Interface
         /// <param name="dtos">Danh sách truyền vào để loại những bản ghi đó ra</param>
         /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
         /// Created by: ldtuan (05/09/2023)
-        Task<BaseFilterResponse<FixedAssetDto>> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, List<FixedAssetDto> dtos);
+        Task<BaseFilterResponse<FixedAssetDto>> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, List<FixedAssetDto> dtos, List<Guid> transferAssetDetailIds);
 
         /// <summary>
         /// Lấy dữ liệu tài sản dưới dạng dataTable
@@ -38,5 +39,14 @@ namespace Application.Interface
         /// <returns>DataTable</returns>
         /// Created by: ldtuan (06/08/2023)
         Task<DataTable> ExportExcel(string idsQuery);
+
+        /// <summary>
+        /// Kiểm tra tài sản có phát sinh chứng từ không
+        /// </summary>
+        /// <param name="assetIds">Danh sách id tài sản</param>
+        /// <param name="action">Hành động như xóa, cập nhật</param>
+        /// <returns>Ném ra 1 ngoại lệ nếu có chứng từ phát sinh</returns>
+        /// Created by: ldtuan (17/09/2023)
+        Task CheckExistTransferAsync(List<Guid> assetIds, ActionMode action);
     }
 }

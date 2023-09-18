@@ -19,6 +19,16 @@ const MISAEnum = {
     // Giới tính nữ
     FEMALE: 1,
   },
+  ACTION: {
+    /// Hành động thêm mới
+    CREATE: 0,
+    /// Hành động cập nhật
+    UPDATE: 1,
+    /// Hành động xóa
+    DELETE: 2,
+    /// Không thay đổi
+    UNCHANGE: 3,
+  },
   // Mã lỗi
   HttpStatusCode: {
     // Server xử lý request HTTP thành công
@@ -37,7 +47,7 @@ const MISAEnum = {
     UnprocessableEntity: 422,
   },
   // Mã code của các phím
-  KEYCODE:{
+  KEYCODE: {
     // Phím di chuyển xuống
     DOWN: 40,
     // Phím di chuyển lên
@@ -50,10 +60,10 @@ const MISAEnum = {
     S: 83,
   },
   // Giá trị của số nguyên
-  INT:{
+  INT: {
     // Giá trị lớn nhất
     MAX_VALUE: 2147483647,
-  }
+  },
 };
 
 export default MISAEnum;

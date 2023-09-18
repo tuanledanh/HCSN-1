@@ -121,6 +121,29 @@ namespace Infrastructure.Repository
         }
 
         /// <summary>
+        /// Lấy các chứng từ của các tài sản truyền đến
+        /// </summary>
+        /// <param name="assetIds">Danh sách id tài sản</param>
+        /// <returns>Danh sách chứng từ, có chứa id tài sản</returns>
+        /// Created by: ldtuan (17/09/2023)
+        public async Task<List<TransferAssetDeleteModel>> GetAllTransferAssetByAssetId(List<Guid> assetIds)
+        {
+            string listAssetId = "";
+            if (assetIds != null && assetIds.Count > 0)
+            {
+                listAssetId = string.Join(",", assetIds.Select(assetId => assetId.ToString()));
+            }
+
+            string procedureName = "Proc_GetTransferAssetByAssetId";
+            var paramName = "p_List";
+            var dynamicParams = new DynamicParameters();
+            dynamicParams.Add(paramName, listAssetId);
+
+            var transferAsset = await _unitOfWork.Connection.QueryAsync<TransferAssetDeleteModel>(procedureName, dynamicParams, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
+            return transferAsset.ToList();
+        }
+
+        /// <summary>
         /// Truyền vào 1 danh sách chứng từ, tìm các tài sản trong chứng từ đó, rồi tìm tất cả các chứng từ có chứa các tài sản này
         /// </summary>
         /// <param name="transferAssetIds">Danh sách id chứng từ</param>

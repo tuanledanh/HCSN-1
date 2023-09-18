@@ -28,7 +28,7 @@ namespace Application.Service
         #region Methods
         public override async Task<bool> InsertAsync(ReceiverCreateDto receiverCreateDto)
         {
-            await _receiverManager.CheckDuplicateCode(receiverCreateDto.ReceiverCode);
+            await _receiverManager.CheckDuplicateCodeAsync(receiverCreateDto.ReceiverCode);
             var entity = _mapper.Map<Receiver>(receiverCreateDto);
             entity.CreatedDate = DateTime.Now;
             entity.ModifiedDate = DateTime.Now;

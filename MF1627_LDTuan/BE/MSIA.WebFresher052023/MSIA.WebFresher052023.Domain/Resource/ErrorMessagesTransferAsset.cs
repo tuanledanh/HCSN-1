@@ -9,6 +9,18 @@ namespace MSIA.WebFresher052023.Domain.Resource
         {
             return $"Tài sản <strong>{fixedAssetCode}</strong> đã có phát sinh chứng từ. Bạn không thể xóa chứng từ này";
         }
+        public static string AriseUpdate(string fixedAssetCode)
+        {
+            return $"Tài sản <strong>{fixedAssetCode}</strong> đã có phát sinh chứng từ. Bạn không thể cập nhật chứng từ này";
+        }
+        public static string AriseAssetDelete(string fixedAssetCode)
+        {
+            return $"Tài sản <strong>{fixedAssetCode}</strong> đã có phát sinh chứng từ. Bạn không thể xóa tài sản này";
+        }
+        public static string AriseAssetUpdate(string fixedAssetCode)
+        {
+            return $"Tài sản <strong>{fixedAssetCode}</strong> đã có phát sinh chứng từ. Bạn không thể cập nhật tài sản này";
+        }
         public static string Infor(List<TransferAssetDeleteModel> transfers)
         {
             var result = string.Join(", ", transfers

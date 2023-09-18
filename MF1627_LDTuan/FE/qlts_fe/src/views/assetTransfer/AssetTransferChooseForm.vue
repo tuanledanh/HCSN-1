@@ -1,5 +1,5 @@
 <template>
-  <div class="popup--child">
+  <div class="popup--child" @keyup.esc="btnCloseForm" @keydown="saveShortCut">
     <div class="popup-container border-radius-4">
       <div class="popup__header--child border--top-right border--top-left">
         <span class="header__title font-weight--500"
@@ -12,10 +12,40 @@
           ref="exit"
           content="Thoát"
           @click="btnCloseForm"
+          :tabindex="17"
+          @keydown="checkTabIndex($event, 'islast')"
         ></MISAButton>
       </div>
       <div class="popup__body--child">
         <div class="body__form">
+          <div class="search">
+            <MISAInput
+              search
+              normal
+              medium
+              placeholder="Tìm kiếm tài sản"
+              maxlength="50"
+              :tabindex="12"
+              ref="search"
+              @focus="setInputFocus('search')"
+            ></MISAInput>
+            <div
+              v-if="selectedRowsByCheckBox.length > 0"
+              class="left font-size-default"
+            >
+              <span class="font-weight--400"
+                >Đã chọn:
+                <span class="font-weight--500">{{
+                  selectedRowsByCheckBox.length
+                }}</span></span
+              >
+              <span
+                class="font-weight--500 main-color pointer"
+                @click="btnUncheckedAll"
+                >Bỏ chọn</span
+              >
+            </div>
+          </div>
           <!-- ------------------------Table start------------------------ -->
           <div class="table border-radius-4">
             <!-- ------------------------Header------------------------ -->
@@ -27,7 +57,12 @@
                   type="checkbox"
                   @click="headCheckboxClick($event)"
                   :checked="
-                    selectedRowsByCheckBox.length === assets.length &&
+                    assets.every((assetItem) =>
+                      selectedRowsByCheckBox.some(
+                        (selectedItem) =>
+                          selectedItem.FixedAssetId === assetItem.FixedAssetId
+                      )
+                    ) &&
                     assets.length > 0 &&
                     selectedRowsByCheckBox.length > 0
                   "
@@ -76,14 +111,15 @@
                 v-for="asset in assets"
                 :key="asset.FixedAssetId"
                 :class="[
-                {
-                  'row--selected':
-                    selectedRowsByCheckBox.includes(asset),
-                },
-                {
-                  'row--selected': selectedRows.includes(asset),
-                },
-              ]"
+                  {
+                    'row--selected': selectedRowsByCheckBox.some(
+                      (item) => item.FixedAssetId === asset.FixedAssetId
+                    ),
+                  },
+                  {
+                    'row--selected': selectedRows.includes(asset),
+                  },
+                ]"
                 @click.exact.stop="callRowOnClick(asset)"
                 @click.ctrl.stop="callRowOnCtrlClick(asset)"
               >
@@ -93,7 +129,11 @@
                 >
                   <input
                     type="checkbox"
-                    :checked="selectedRowsByCheckBox.includes(asset)"
+                    :checked="
+                      selectedRowsByCheckBox.some(
+                        (item) => item.FixedAssetId === asset.FixedAssetId
+                      )
+                    "
                   />
                 </div>
                 <div
@@ -160,7 +200,12 @@
             </div>
           </div>
           <!-- ------------------------Table end------------------------ -->
-
+          <MISACalculator
+            form="transfer-choose-form"
+            :totalPrice="totalPrice"
+            :totalResidualValue="totalResidualValue"
+            :numberColumnLeft="5"
+          ></MISACalculator>
           <MISAPaging
             :totalRecords="totalRecords"
             :totalPages="totalPages"
@@ -180,6 +225,8 @@
                 :api="this.$_MISAApi.Department.Api"
                 propText="DepartmentName"
                 propValue="DepartmentId"
+                ref="DepartmentId"
+                @focus="setInputFocus('DepartmentId')"
                 label="Bộ phận sử dụng mới"
                 required
                 placeholder="Bộ phận sử dụng"
@@ -190,6 +237,7 @@
                 medium
                 padding
                 input_35
+                :tabindex="13"
               ></MISACombobox>
             </div>
             <div class="content__column">
@@ -198,8 +246,8 @@
                 label="Ghi chú"
                 v-model="Description"
                 medium
-                required
-                maxlength="4"
+                maxlength="255"
+                :tabindex="14"
               ></MISAInput>
             </div>
           </div>
@@ -207,16 +255,16 @@
       </div>
       <div class="popup__footer border--bot-right border--bot-left">
         <MISAButton
-          buttonOutline
+          buttonSub
           textButton="Hủy"
-          @click="btnCancelForm"
-          :tabindex="15"
+          :tabindex="16"
+          @click="btnCloseForm"
         ></MISAButton>
         <MISAButton
           buttonMain
-          textButton="Lưu"
+          textButton="Đồng ý"
           @click="btnSaveAsset"
-          :tabindex="16"
+          :tabindex="15"
         ></MISAButton>
       </div>
     </div>
@@ -244,12 +292,17 @@ import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
 
 import { truncateText } from "../../helpers/common/format/format";
 import { formatMoney } from "../../helpers/common/format/format";
+import { formatMoneyToInt } from "../../helpers/common/format/format";
 import { AssetDepreciation } from "../../helpers/common/format/format";
 
 export default {
   name: "AssetTransferChooseForm",
   props: {
     existFixedAsset: {
+      type: Object,
+      default: null,
+    },
+    deletedAssets: {
       type: Object,
       default: null,
     },
@@ -286,6 +339,10 @@ export default {
       totalPages: 0,
       // Trang hiện tại
       currentPage: 1,
+      // Tổng nguyên giá
+      totalPrice: "0",
+      // Tổng giá trị còn lại
+      totalResidualValue: "0",
 
       // ----------------------------- CHECKBOX -----------------------------
       // Tick ô checkbox input
@@ -299,6 +356,7 @@ export default {
 
       // ----------------------------- TAB INDEX -----------------------------
       buttonFocus: null,
+      inputFocus: "search",
 
       // ----------------------------- COMBOBOX -----------------------------
       departmentFilter: null,
@@ -325,6 +383,9 @@ export default {
       this.currentPage = value;
     },
   },
+  mounted() {
+    this.$refs[this.inputFocus].focusInput();
+  },
   created() {
     // Tải danh sách option giới hạn bản ghi mỗi trang
     this.getPageLimitList();
@@ -334,13 +395,21 @@ export default {
   methods: {
     AssetDepreciation,
     formatMoney,
+    formatMoneyToInt,
     truncateText,
 
     loadData(pageNumber = this.pageNumber, pageLimit = this.pageLimit) {
+      let detailIds = null;
+      if (this.deletedAssets) {
+        detailIds = this.deletedAssets.map(
+          (item) => item.TransferAssetDetailId
+        );
+      }
       let dataFilter = {
-        pageNumber: pageNumber,
-        pageLimit: pageLimit,
+        PageNumber: pageNumber,
+        PageLimit: pageLimit,
         FixedAssetDtos: this.existFixedAsset,
+        TransferAssetDetailIds: detailIds,
       };
       this.$_MISAApi.FixedAsset.FilterForTransfer(dataFilter, {
         headers: { "Content-Type": "application/json" },
@@ -349,6 +418,22 @@ export default {
           this.assets = res.data.Data;
           this.totalPages = res.data.TotalPages;
           this.totalRecords = res.data.TotalRecords;
+
+          var totalPrice = this.assets.reduce((total, asset) => {
+            return total + Math.round(asset.Cost);
+          }, 0);
+          var totalDepreciation = this.assets.reduce((total, asset) => {
+            return (
+              total +
+              this.formatMoneyToInt(
+                (asset.Cost * (1 / asset.LifeTime)).toFixed(0)
+              )
+            );
+          }, 0);
+          var totalResidualValue = totalPrice - totalDepreciation;
+
+          this.totalPrice = formatMoney(totalPrice);
+          this.totalResidualValue = formatMoney(totalResidualValue);
         })
         .catch((res) => {
           console.log(res);
@@ -393,11 +478,11 @@ export default {
     },
 
     callRowOnClickByCheckBox(asset) {
-      rowOnClickByCheckBox.call(this, asset);
+      rowOnClickByCheckBox.call(this, asset, "assets");
     },
 
     callRowOnCtrlClick(asset) {
-      rowOnCtrlClick.call(this, asset);
+      rowOnCtrlClick.call(this, asset, "assets");
     },
 
     btnUncheckedAll() {
@@ -413,16 +498,23 @@ export default {
     headCheckboxClick(event) {
       if (event.target.checked) {
         for (const asset of this.assets) {
-          if (!this.selectedRowsByCheckBox.includes(asset)) {
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+          );
+          if (index === -1) {
             this.selectedRowsByCheckBox.push(asset);
           }
         }
       } else {
         for (const asset of this.assets) {
-          this.selectedRowsByCheckBox.splice(asset);
+          const index = this.selectedRowsByCheckBox.findIndex(
+            (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+          );
+          if (index !== -1) {
+            this.selectedRowsByCheckBox.splice(index, 1);
+          }
         }
         this.selectedRows = [];
-        this.selectedRowsByCheckBox = [];
       }
     },
 
@@ -432,7 +524,9 @@ export default {
         this.toast_content_warning =
           this.$_MISAResource.VN.Form.Warning.SelectData.TransferAsset;
         this.isShowToastValidate = true;
+        this.inputFocus = "search";
       } else if (!this.departmentFilter) {
+        this.inputFocus = "DepartmentId";
         this.toast_content_warning =
           this.$_MISAResource.VN.Form.Warning.SelectData.Department.Null;
         this.isShowToastValidate = true;
@@ -463,9 +557,17 @@ export default {
     },
 
     /**
-     * Đóng form, gửi thông tin về cho component cha để đóng nó
-     * Author: LDTUAN (21/08/2023)
+     * Bấm tổ hợp phím ctrl + s để lưu
+     * @param {*} event sự kiện khi khi nhấn ctrl
+     * Author: LDTUAN (18/09/2023)
      */
+    saveShortCut(event) {
+      var charCode = event.which ? event.which : event.keyCode;
+      if (charCode == this.$_MISAEnum.KEYCODE.S && event.ctrlKey == true) {
+        event.preventDefault();
+        this.btnSaveAsset();
+      }
+    },
 
     //------------------------------------------- COMBOBOX -------------------------------------------
     /**
@@ -480,10 +582,38 @@ export default {
     //------------------------------------------- TOAST -------------------------------------------
     btnCloseToastWarning() {
       this.isShowToastValidate = false;
+      this.toast_content_warning = null;
+      this.$refs[this.inputFocus].focusInput();
     },
 
     btnCloseForm() {
       this.$emit("onCloseForm");
+    },
+
+    //------------------------------------------- TAB INDEX -------------------------------------------
+    setInputFocus(value) {
+      this.inputFocus = value;
+    },
+
+    checkTabIndex(event, index) {
+      var charCode = event.which ? event.which : event.keyCode;
+      if (
+        index == "islast" &&
+        charCode == this.$_MISAEnum.KEYCODE.TAB &&
+        this.toast_content_warning
+      ) {
+        event.preventDefault();
+        this.buttonFocus = "button";
+        this.$refs[this.buttonFocus].focusButton();
+      } else if (
+        index == "islast" &&
+        charCode == this.$_MISAEnum.KEYCODE.TAB &&
+        !this.toast_content_warning
+      ) {
+        event.preventDefault();
+        this.inputFocus = "search";
+        this.$refs[this.inputFocus].focusInput();
+      }
     },
   },
 };
@@ -501,7 +631,7 @@ export default {
 
 .popup-container {
   width: 1100px;
-  height: 680px;
+  height: 730px;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -650,6 +780,14 @@ export default {
   column-gap: 14px;
 }
 
+.search {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  column-gap: 20px;
+}
+
 /* ------------------------------------------- Body Form ------------------------------------------- */
 .body__form {
   flex: 1;
@@ -667,7 +805,6 @@ export default {
   flex-direction: column;
   border-spacing: unset;
   overflow-y: auto;
-  padding-top: 20px;
 }
 
 .table-bot {

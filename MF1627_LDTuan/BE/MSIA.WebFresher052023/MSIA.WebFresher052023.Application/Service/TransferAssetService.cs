@@ -64,13 +64,27 @@ namespace Application.Service
             return transferAssetDto;
         }
 
-        public async Task GetNewestTransferAsset(Guid transferId, List<Guid> assetIds)
+        public async Task GetNewestTransferAsset(Guid transferId)
         {
             var transferAsset = await _transferAssetRepository.GetAsync(transferId);
             if(transferAsset == null)
             {
                 throw new Exception();
             }
+            // Để tận dụng GetAllTransferAssetOfAsset, tạo 1 list chứa id chứng từ
+            List<Guid> transferIdList = new()
+            {
+                transferId
+            };
+
+            // Lấy danh sách tài sản bên trong chứng từ này
+            var transferAssets = await _transferAssetRepository.GetAllTransferAssetOfAsset(transferIdList);
+            var assetIds = transferAssets
+                .Where(transfer => transfer.TransferAssetId == transferId)
+                .Select(transfer => transfer.FixedAssetId)
+                .ToList();
+
+
             var transferList = await _transferAssetRepository.GetNewestTransferAssetByAssetId(assetIds);
             var newestTransfer = transferList.FirstOrDefault();
             if(newestTransfer != null && newestTransfer.TransferAssetId != transferId)
@@ -107,7 +121,7 @@ namespace Application.Service
                             .Where(transfer => transfer.FixedAssetId == fixedAsset.FixedAssetId && transfer.CreatedDate > transferAsset.CreatedDate)
                             .OrderByDescending(transfer => transfer.CreatedDate)
                             .ToList();
-                throw new ValidateException(ErrorMessagesTransferAsset.Arise(fixedAsset.FixedAssetCode), ErrorMessagesTransferAsset.Infor(generatedDocument));
+                throw new ValidateException(ErrorMessagesTransferAsset.AriseUpdate(fixedAsset.FixedAssetCode), ErrorMessagesTransferAsset.Infor(generatedDocument));
             }
         }
 
@@ -140,7 +154,7 @@ namespace Application.Service
             _transferAssetManager.CheckNullRequest(transferAssetCreateDto.TransferAsset, transferAssetCreateDto.ListTransferAssetDetail);
 
             var transferAssetDto = transferAssetCreateDto.TransferAsset;
-            await _transferAssetManager.CheckDuplicateCode(transferAssetDto.TransferAssetCode);
+            await _transferAssetManager.CheckDuplicateCodeAsync(transferAssetDto.TransferAssetCode);
 
             var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(transferAssetCreateDto.ListTransferAssetDetail);
 
@@ -215,22 +229,31 @@ namespace Application.Service
             _transferAssetManager.CheckNullRequest(transferAssetUpdateDto.TransferAsset, transferAssetUpdateDto.ListTransferAssetDetail);
 
             var transferAssetDto = transferAssetUpdateDto.TransferAsset;
-            await _transferAssetManager.CheckDuplicateCode(transferAssetDto.TransferAssetCode, oldTransferAsset.TransferAssetCode);
+            await _transferAssetManager.CheckDuplicateCodeAsync(transferAssetDto.TransferAssetCode, oldTransferAsset.TransferAssetCode);
 
             // 3.Sau khi check không null thì bắt đầu lấy danh sách tài sản điều chuyển và bên người nhận
             var listTransferAssetDeatilDtos = transferAssetUpdateDto.ListTransferAssetDetail.ToList();
             var listReceiverDtos = transferAssetUpdateDto.ListReceiver.ToList();
 
-            // 4.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
+            // 4.Kiểm tra phòng ban mới và cũ của từng chi tiết chứng từ có bị trùng không
+            foreach (var detail in listTransferAssetDeatilDtos)
+            {
+                if (detail.OldDepartmentId == detail.NewDepartmentId)
+                {
+                    throw new DataException(ErrorMessages.Data);
+                }
+            }
+
+            // 5.Kiểm tra xem các tài sản và phòng ban có tồn tại trong db không
             var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(listTransferAssetDeatilDtos);
             await _transferAssetManager.CheckExistAssetAsync(listTransferAssetDetails);
 
-            // 5.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
+            // 6.Nếu ngày điều chuyển nhỏ hơn ngày chứng từ thì sai
             // Và ngày điều chuyển cũng phải lớn hơn các ngày điều chuyển của chứng từ mà tài sản hiện đang thuộc
             var listAssetIds = listTransferAssetDetails.Select(transfer => transfer.FixedAssetId).Distinct().ToList();
             await _transferAssetManager.CheckDateAsync(transferAssetDto, listAssetIds, ActionMode.Update);
 
-            // 6.Kiểm tra xem danh sách chi tiết chứng từ có tồn tại trong db hay không, áp dụng với cập nhật và xóa
+            // 7.Kiểm tra xem danh sách chi tiết chứng từ có tồn tại trong db hay không, áp dụng với cập nhật và xóa
             var listTransferAssetDetailIds = listTransferAssetDeatilDtos
                 .Where(transfer => transfer.Flag == ActionMode.Update || transfer.Flag == ActionMode.Delete)
                 .Select(transfer => transfer.TransferAssetDetailId)
@@ -242,10 +265,10 @@ namespace Application.Service
                 throw new DataException(ErrorMessages.Data);
             }
 
-            // 7.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích xóa)
+            // 8.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích xóa)
             await CheckIfCanUpdateOrDelete(ActionMode.Delete, listTransferAssetDeatilDtos, oldTransferAsset.TransferAssetId);
 
-            // 8.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích cập nhật)
+            // 9.Kiểm tra các chi tiết chứng từ này có chứng từ phát sinh trước đó không (cho mục đích cập nhật)
             await CheckIfCanUpdateOrDelete(ActionMode.Update, listTransferAssetDeatilDtos, oldTransferAsset.TransferAssetId);
 
             // ======================================================= VALIDATE END  =======================================================
@@ -273,7 +296,7 @@ namespace Application.Service
             await _unitOfWork.BeginTransactionAsync();
             try
             {
-                // Cập nhật chứng từ
+                // 3.1.Cập nhật chứng từ
                 DateTime? createdDate = oldTransferAsset.CreatedDate;
                 var transferAsset = _mapper.Map(transferAssetDto, oldTransferAsset);
                 transferAsset.SetKey(transferAssetId);
@@ -282,7 +305,7 @@ namespace Application.Service
 
                 await _transferAssetRepository.UpdateAsync(transferAsset);
 
-                // 3.1.Thêm người nhận và chi tiết chứng từ
+                // 3.2.Thêm người nhận và chi tiết chứng từ
                 if (transferDtosCreate != null)
                 {
                     List<TransferAssetDetail> transferAssetDetailsRaw = _mapper.Map<List<TransferAssetDetail>>(transferDtosCreate);
@@ -299,7 +322,7 @@ namespace Application.Service
                     await _receiverRepository.InsertMultiAsync(receivers);
                 }
 
-                // 3.2.Sửa người nhận và chi tiết chứng từ
+                // 3.3.Sửa người nhận và chi tiết chứng từ
                 if (transferDtosUpdate != null)
                 {
                     transferDtosUpdate = transferDtosUpdate.Select(item =>
@@ -328,7 +351,7 @@ namespace Application.Service
                     await _receiverRepository.UpdateMultiAsync(receivers);
                 }
 
-                // 3.3.Xóa người nhận và chi tiết chứng từ
+                // 3.4.Xóa người nhận và chi tiết chứng từ
                 if (transferDtosDelete != null)
                 {
                     List<TransferAssetDetail> transferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(transferDtosDelete);
@@ -349,7 +372,7 @@ namespace Application.Service
             catch
             {
                 await _unitOfWork.RollbackAsync();
-                return false;
+                throw;
             }
             // ======================================================= CREATE-UPDATE-DELETE END  =======================================================
             #endregion

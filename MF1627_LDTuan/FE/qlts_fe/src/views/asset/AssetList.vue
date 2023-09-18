@@ -29,6 +29,13 @@
           @filter="getDepartmentFilter"
           :inputChange="inputDepartmentNameChange"
         ></MISACombobox>
+        <MISAButton
+          combo
+          large
+          loading
+          textButton="Cập nhật dữ liệu"
+          @click="loadDataAsset"
+        ></MISAButton>
       </div>
       <div class="content-top--right">
         <MISAButton
@@ -67,7 +74,12 @@
                   type="checkbox"
                   @click="headCheckboxClick($event)"
                   :checked="
-                    selectedRows.length === assets.length &&
+                    assets.every((assetItem) =>
+                      selectedRows.some(
+                        (selectedItem) =>
+                          selectedItem.FixedAssetId === assetItem.FixedAssetId
+                      )
+                    ) &&
                     assets.length > 0 &&
                     selectedRows.length > 0
                   "
@@ -114,13 +126,21 @@
               @click.shift="rowOnShiftClick(asset)"
               @dblclick="btnEditAsset(asset)"
               @contextmenu.prevent="btnClickRight($event, asset)"
-              :class="{ 'tr--body-selected': selectedRows.includes(asset) }"
+              :class="{
+                'tr--body-selected': selectedRows.some(
+                  (item) => item.FixedAssetId === asset.FixedAssetId
+                ),
+              }"
             >
               <td class="table__body">
                 <input
                   type="checkbox"
                   :value="asset"
-                  :checked="selectedRows.includes(asset)"
+                  :checked="
+                    selectedRows.some(
+                      (item) => item.FixedAssetId === asset.FixedAssetId
+                    )
+                  "
                 />
               </td>
               <td class="table__body table__body--center">
@@ -299,6 +319,22 @@
       ></MISAButton>
     </MISAToast>
   </div>
+  <div v-if="isShowToastValidateAriseTransfer" class="blur">
+    <MISAToast
+      typeToast="warning"
+      :content="toast_content_warning + '.'"
+      :moreInfo="moreInfo"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="btnCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
 </template>
 <script>
 import { formatMoney } from "../../helpers/common/format/format";
@@ -308,7 +344,7 @@ import fileDownload from "js-file-download";
 import { truncateText } from "../../helpers/common/format/format";
 import MISAAssetForm from "./AssetForm.vue";
 
-import {rowOnClick} from "../../helpers/table/selectRow"
+import { rowOnClick } from "../../helpers/table/selectRow";
 
 //import { saveAs } from "file-saver";
 export default {
@@ -381,6 +417,8 @@ export default {
       isShowToastValidateBE: false,
       // Nội dung thông báo
       toast_content_warning: null,
+      isShowToastValidateAriseTransfer: false,
+      moreInfo: null,
 
       // =================================form=================================
       // Mở form
@@ -413,7 +451,7 @@ export default {
       mouseX: 0,
       // Tọa độ y của menu
       mouseY: 0,
-      // 
+      //
       rowIndex: -1,
       // Thông tin của bản ghi
       assetContext: null,
@@ -499,7 +537,7 @@ export default {
     // Tải danh sách option giới hạn bản ghi mỗi trang
     this.getPageLimitList();
     // Hiển thị chữ danh sách tài sản
-    this.$_emitter.emit('onDisplayContent', { message: 'Danh sách tài sản' });
+    this.$_emitter.emit("onDisplayContent", { message: "Danh sách tài sản" });
   },
   methods: {
     truncateText,
@@ -566,7 +604,6 @@ export default {
       )
         .then((res) => {
           this.assets = res.data.Data;
-          this.selectedRows = [];
           this.isLoading = false;
           this.totalPages = res.data.TotalPages;
           this.totalRecords = res.data.TotalRecords;
@@ -660,15 +697,28 @@ export default {
       if (this.selectedRows.length > 0) {
         const listIds = this.selectedRows.map((asset) => asset.FixedAssetId);
         const requestData = listIds;
-        this.$_MISAApi.FixedAsset.DeleteMany(requestData, {
-          headers: { "Content-Type": "application/json" },
-        })
-          .then(() => this.loadDataAsset())
-          .then((this.isLoading = false))
+        this.$_MISAApi.FixedAsset.CheckTransfer(
+          listIds,
+          this.$_MISAEnum.ACTION.DELETE
+        )
+          .then(() => {
+            this.$_MISAApi.FixedAsset.DeleteMany(requestData, {
+              headers: { "Content-Type": "application/json" },
+            })
+              .then(() => this.loadDataAsset())
+              .then((this.isLoading = false))
+              .catch((res) => {
+                this.$processErrorResponse(res);
+                this.isShowToastValidateBE = true;
+                this.toast_content_warning = res.response.data.UserMessage;
+              });
+          })
           .catch((res) => {
             this.$processErrorResponse(res);
-            this.isShowToastValidateBE = true;
+            this.isShowToastValidateAriseTransfer = true;
             this.toast_content_warning = res.response.data.UserMessage;
+            this.moreInfo = res.response.data.MoreInfo;
+            this.isLoading = false;
           });
       }
       this.isShowToastDelete = false;
@@ -755,6 +805,7 @@ export default {
       this.isShowToastDelete = false;
       this.isShowToastExport = false;
       this.isShowToastValidateBE = false;
+      this.isShowToastValidateAriseTransfer = false;
     },
 
     /** ------------------------Filter-------------------- */
@@ -831,13 +882,21 @@ export default {
     headCheckboxClick(event) {
       if (event.target.checked) {
         for (const asset of this.assets) {
-          if (!this.selectedRows.includes(asset)) {
+          const index = this.selectedRows.findIndex(
+            (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+          );
+          if (index === -1) {
             this.selectedRows.push(asset);
           }
         }
       } else {
         for (const asset of this.assets) {
-          this.selectedRows.splice(asset);
+          const index = this.selectedRows.findIndex(
+            (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+          );
+          if (index !== -1) {
+            this.selectedRows.splice(index, 1);
+          }
         }
       }
     },
@@ -891,7 +950,7 @@ export default {
 
     /**
      * Chuột phải để mở context mennu
-     * @param {*} event 
+     * @param {*} event
      * @param {object} asset bản ghi
      * Author: LDTUAN (09/08/2023)
      */
@@ -1017,19 +1076,15 @@ export default {
         });
     },
 
-
     /**
      * Nhấn tab để di chuyển giữa các component
-     * @param {*} event 
+     * @param {*} event
      * @param {int} index số index của các component
      * Author: LDTUAN (09/08/2023)
      */
     checkTabIndex(event, index) {
       var charCode = event.which ? event.which : event.keyCode;
-      if (
-        index == "islast" &&
-        charCode == this.$_MISAEnum.KEYCODE.TAB
-      ) {
+      if (index == "islast" && charCode == this.$_MISAEnum.KEYCODE.TAB) {
         event.preventDefault();
         this.buttonFocus = "button";
         this.$refs[this.buttonFocus].focusButton();
@@ -1039,163 +1094,163 @@ export default {
 };
 </script>
 <style scoped>
-.table-container{
-    height: calc(698px - 39px);
-    width: 100%;
-    overflow-y: auto;
-    border-radius: 3.5px;
+.table-container {
+  height: calc(698px - 39px);
+  width: 100%;
+  overflow-y: auto;
+  border-radius: 3.5px;
 }
 
 .table {
-    flex: 1;
-    width: 100%;
-    background-color: #ffffff;
-    border-spacing: unset;
-    border: unset;
-    border-radius: 3.5px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, .16);
+  flex: 1;
+  width: 100%;
+  background-color: #ffffff;
+  border-spacing: unset;
+  border: unset;
+  border-radius: 3.5px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
 }
 
-.table-container--noData{
-    overflow-y: hidden;
+.table-container--noData {
+  overflow-y: hidden;
 }
 
-.noData{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* background-color: aqua; */
-    width: 100%;
-    height: calc(698px - 70px);
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* background-color: aqua; */
+  width: 100%;
+  height: calc(698px - 70px);
 }
 
-.width-16px{
-    width: 16px;
-    max-width: 16px;
+.width-16px {
+  width: 16px;
+  max-width: 16px;
 }
 
-.width-64px{
-    width: 64px;
-    min-width: 64px;
+.width-64px {
+  width: 64px;
+  min-width: 64px;
 }
 
-.width-100px{
-    width: 100px;
-    min-width: 100px;
+.width-100px {
+  width: 100px;
+  min-width: 100px;
 }
 
-.width-120px{
-    width: 120px;
-    min-width: 120px;
+.width-120px {
+  width: 120px;
+  min-width: 120px;
 }
 
-.width-170px{
-    width: 170px;
-    min-width: 170px;
+.width-170px {
+  width: 170px;
+  min-width: 170px;
 }
 
-.width-220px{
-    width: 220px;
+.width-220px {
+  width: 220px;
 }
 
 .table__head:first-child,
 .table__body:first-child {
-    padding-left: 16px;
+  padding-left: 16px;
 }
 
 /*==================== Table head ====================*/
 
-thead{
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    background-color: #ffffff;
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: #ffffff;
 }
 
 .table__head {
-    font-family: Roboto, sans-serif;
-    font-weight: 700;
-    text-align: left;
-    height: 38px;
-    border-bottom: 1px solid #E0E0E0;
-    font-size: 15px;
-    cursor: context-menu;
+  font-family: Roboto, sans-serif;
+  font-weight: 700;
+  text-align: left;
+  height: 38px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 15px;
+  cursor: context-menu;
 }
 
-.table__head input{
-    margin: unset;
-    width: 14px;
-    height: 14px;
+.table__head input {
+  margin: unset;
+  width: 14px;
+  height: 14px;
 }
 
 .table__head--right {
-    text-align: right;
+  text-align: right;
 }
 
 .table__head--center {
-    text-align: center;
+  text-align: center;
 }
 
 /*==================== Table body ====================*/
 
-#tbodyAsset{
-    height: calc(100% - 38px);
+#tbodyAsset {
+  height: calc(100% - 38px);
 }
 
 .table__body {
-    font-family: Roboto, sans-serif;
-    font-weight: 400;
-    height: 39px;
-    border-bottom: 1px solid #E0E0E0;
-    font-size: 15px;
-    position: relative;
+  font-family: Roboto, sans-serif;
+  font-weight: 400;
+  height: 39px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 15px;
+  position: relative;
 }
 
-.table__body input{
-    margin: unset;
-    width: 14px;
-    height: 14px;
+.table__body input {
+  margin: unset;
+  width: 14px;
+  height: 14px;
 }
 
-.tr--body-selected{
-    background-color: rgba(26, 164, 200, .2);
+.tr--body-selected {
+  background-color: rgba(26, 164, 200, 0.2);
 }
 
-.tr--body{
-    cursor: pointer;
+.tr--body {
+  cursor: pointer;
 }
 
-.tr--body:hover{
-    background-color: rgba(26, 164, 200, .2);
+.tr--body:hover {
+  background-color: rgba(26, 164, 200, 0.2);
 }
 
 /* Ẩn icon edit và copy, chỉ hiện khi hover row */
-.tr--body > .table__body > .icon-function{
-    display: none;
+.tr--body > .table__body > .icon-function {
+  display: none;
 }
 
-.tr--body:hover > .table__body > .icon-function{
-    display: flex;
-    column-gap: 16px;
+.tr--body:hover > .table__body > .icon-function {
+  display: flex;
+  column-gap: 16px;
 }
 
 .table__body--right {
-    text-align: right;
+  text-align: right;
 }
 
 .table__body--center {
-    text-align: center;
+  text-align: center;
 }
 
-.table__body--center-button{
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.table__body--center-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.icon-function{
-    align-items: center;
-    justify-content: center;
-    column-gap: 16px;
-  }
+.icon-function {
+  align-items: center;
+  justify-content: center;
+  column-gap: 16px;
+}
 </style>

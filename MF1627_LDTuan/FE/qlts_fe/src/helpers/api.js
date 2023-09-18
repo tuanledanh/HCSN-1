@@ -73,6 +73,7 @@ const MISAApi = {
     GetAll: () => baseAssetAxios.get(""),
     // Api tạo bản ghi mới
     Create: (assetData) => baseAssetAxios.post("", assetData),
+    CheckTransfer: (assetIds, action) => baseAssetAxios.post("/CheckTransfer?action=" + action, assetIds),
     // Api lấy bản ghi bằng mã code
     GetByCode: (code) => baseAssetAxios.get(`/${code}`),
     // Api cập nhật
@@ -104,8 +105,8 @@ const MISAApi = {
     Api: baseTransferAssetApi,
     // Api lấy mã code mới
     GetNewCode: () => baseTransferAssetAxios.get("/GetNewCode"),
-    GetNewest: (transferAssetId, assetIds) =>
-      baseTransferAssetAxios.post(`/GetNewest/${transferAssetId}`, assetIds),
+    GetNewest: (transferAssetId) =>
+      baseTransferAssetAxios.post(`/GetNewest/${transferAssetId}`),
     /**
      * Api filter, lọc, phân trang
      * @param {Int16Array} pageNumber số trang đang ở

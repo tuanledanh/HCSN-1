@@ -25,6 +25,7 @@
           maxlength="100"
           :tabindex="tabindex"
           :error="error"
+          :disabled="disabled"
         ></MISAInput>
       </div>
       <div v-show="isShowData" class="selectOption__data" ref="list">
@@ -46,13 +47,14 @@
         </div>
       </div>
       <MISATooltip bottom content="Lọc">
-        <MISAIcon filter></MISAIcon>
+        <MISAIcon filter :disabled="disabled"></MISAIcon>
       </MISATooltip>
       <MISAIcon
         v-if="canDelete"
         exit_small
         combobox_delete
         @click="onDeleteText"
+        :disabled="disabled"
       ></MISAIcon>
       <MISAIcon v-else drop_down combobox @click="onShowData"></MISAIcon>
     </div>
@@ -66,6 +68,11 @@ export default {
   props: {
     // Height của input
     input_35: {
+      type: Boolean,
+      default: false,
+    },
+    // disabled
+    disabled: {
       type: Boolean,
       default: false,
     },
@@ -162,9 +169,7 @@ export default {
       newInput: null,
     };
   },
-  updated() {
-    
-  },
+  updated() {},
   watch: {
     /**
      * Theo dõi sự thay đổi của input text và gán lại giá trị
@@ -197,7 +202,11 @@ export default {
       } else {
         this.$emit("filter", "");
       }
-      if (this.keyCode != "Enter" && this.inputChange == null && this.newInput == null) {
+      if (
+        this.keyCode != "Enter" &&
+        this.inputChange == null &&
+        this.newInput == null
+      ) {
         this.isShowData = true;
       } else {
         this.newInput = null;

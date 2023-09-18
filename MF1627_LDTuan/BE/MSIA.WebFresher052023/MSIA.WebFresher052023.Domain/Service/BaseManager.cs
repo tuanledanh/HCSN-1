@@ -26,7 +26,7 @@ namespace MSIA.WebFresher052023.Domain.Service
         /// <param name="code">Mã code cần kiểm tra</param>
         /// <returns>Nếu mã code tồn tại thì thông báo lỗi, còn không thì không làm gì</returns>
         /// Created by: ldtuan (19/07/2023)
-        public async Task CheckDuplicateCode(string code, string? oldCode = null)
+        public async Task CheckDuplicateCodeAsync(string code, string? oldCode = null)
         {
             var existEntity = await _baseRepository.FindByCodeAsync(code);
             if (existEntity != null && existEntity.GetKey() != oldCode)
