@@ -2,6 +2,7 @@
 using MSIA.WebFresher052023.Domain.Interface.Manager.Base;
 using MSIA.WebFresher052023.Domain.Interface.Repository.Base;
 using MSIA.WebFresher052023.Domain.Model.Base;
+using MSIA.WebFresher052023.Domain.Resource;
 
 namespace MSIA.WebFresher052023.Domain.Service
 {
@@ -26,12 +27,13 @@ namespace MSIA.WebFresher052023.Domain.Service
         /// <param name="code">Mã code cần kiểm tra</param>
         /// <returns>Nếu mã code tồn tại thì thông báo lỗi, còn không thì không làm gì</returns>
         /// Created by: ldtuan (19/07/2023)
-        public async Task CheckDuplicateCodeAsync(string code, string? oldCode = null)
+        public async Task CheckDuplicateCodeAsync(string code, string? oldCode = null, string? message = null)
         {
+            message ??= ErrorMessages.Conflict;
             var existEntity = await _baseRepository.FindByCodeAsync(code);
             if (existEntity != null && existEntity.GetKey() != oldCode)
             {
-                throw new ConflictException();
+                throw new ConflictException(message);
             }
         }
         #endregion

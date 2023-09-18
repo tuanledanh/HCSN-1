@@ -154,7 +154,7 @@ namespace Application.Service
             _transferAssetManager.CheckNullRequest(transferAssetCreateDto.TransferAsset, transferAssetCreateDto.ListTransferAssetDetail);
 
             var transferAssetDto = transferAssetCreateDto.TransferAsset;
-            await _transferAssetManager.CheckDuplicateCodeAsync(transferAssetDto.TransferAssetCode);
+            await _transferAssetManager.CheckDuplicateCodeAsync(transferAssetDto.TransferAssetCode, null, ErrorMessages.DuplicateCodeTransfer);
 
             var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(transferAssetCreateDto.ListTransferAssetDetail);
 
@@ -229,7 +229,12 @@ namespace Application.Service
             _transferAssetManager.CheckNullRequest(transferAssetUpdateDto.TransferAsset, transferAssetUpdateDto.ListTransferAssetDetail);
 
             var transferAssetDto = transferAssetUpdateDto.TransferAsset;
-            await _transferAssetManager.CheckDuplicateCodeAsync(transferAssetDto.TransferAssetCode, oldTransferAsset.TransferAssetCode);
+            await _transferAssetManager.CheckDuplicateCodeAsync(transferAssetDto.TransferAssetCode, oldTransferAsset.TransferAssetCode, ErrorMessages.DuplicateCodeTransfer);
+
+            // 2.1.Không null thì gán lại id
+            DateTime? createdDate = oldTransferAsset.CreatedDate;
+            var transferAsset = _mapper.Map(transferAssetDto, oldTransferAsset);
+            transferAsset.SetKey(transferAssetId);
 
             // 3.Sau khi check không null thì bắt đầu lấy danh sách tài sản điều chuyển và bên người nhận
             var listTransferAssetDeatilDtos = transferAssetUpdateDto.ListTransferAssetDetail.ToList();
@@ -297,9 +302,6 @@ namespace Application.Service
             try
             {
                 // 3.1.Cập nhật chứng từ
-                DateTime? createdDate = oldTransferAsset.CreatedDate;
-                var transferAsset = _mapper.Map(transferAssetDto, oldTransferAsset);
-                transferAsset.SetKey(transferAssetId);
                 transferAsset.ModifiedDate = DateTime.Now;
                 transferAsset.CreatedDate = createdDate;
 

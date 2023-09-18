@@ -4,14 +4,14 @@
     :label="label"
     :required="required"
     :medium="medium"
-    @click="focusInput"
+    @click.stop="focusInput"
   ></MISALabel>
   <div v-click-outside="() => (isShowData = false)">
     <div
       id="selectOption"
       :class="['selectOption', { 'width-100per': self_adjust_size }]"
     >
-      <div class="width-100per" @click="isShowData = true">
+      <div class="width-100per" @click.stop="onShowData">
         <MISAInput
           :input_35="input_35"
           combobox
@@ -28,24 +28,31 @@
           :disabled="disabled"
         ></MISAInput>
       </div>
-      <div v-show="isShowData" class="selectOption__data" ref="list">
+      <teleport to="body">
         <div
-          class="selectOption-item"
-          :class="[
-            { 'selectOption-item--selected': item == itemSelected },
-            {
-              'selectOption-item--hover':
-                itemFilter.indexOf(item) == indexHover,
-            },
-          ]"
-          v-for="item in itemFilter"
-          :key="item[propValue]"
-          @click="onSelectItem(item)"
+          v-show="isShowData"
+          class="selectOption__data"
+          ref="list"
+          :style="{ top: top, left: left, width: rect?.width + 'px' }"
         >
-          <MISAIcon tick_true></MISAIcon>
-          <span>{{ item[propText] }}</span>
+          <div
+            class="selectOption-item"
+            :class="[
+              { 'selectOption-item--selected': item == itemSelected },
+              {
+                'selectOption-item--hover':
+                  itemFilter.indexOf(item) == indexHover,
+              },
+            ]"
+            v-for="item in itemFilter"
+            :key="item[propValue]"
+            @click.stop="onSelectItem(item)"
+          >
+            <MISAIcon tick_true></MISAIcon>
+            <span>{{ item[propText] }}</span>
+          </div>
         </div>
-      </div>
+      </teleport>
       <MISATooltip bottom content="Lọc">
         <MISAIcon filter :disabled="disabled"></MISAIcon>
       </MISATooltip>
@@ -53,10 +60,10 @@
         v-if="canDelete"
         exit_small
         combobox_delete
-        @click="onDeleteText"
+        @click.stop="onDeleteText"
         :disabled="disabled"
       ></MISAIcon>
-      <MISAIcon v-else drop_down combobox @click="onShowData"></MISAIcon>
+      <MISAIcon v-else drop_down combobox @click.stop="onShowData"></MISAIcon>
     </div>
   </div>
 </template>
@@ -167,6 +174,9 @@ export default {
       // Hiển thị icon xóa text
       canDelete: false,
       newInput: null,
+      rect: null,
+      top: null,
+      left: null,
     };
   },
   updated() {},
@@ -303,6 +313,16 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     onShowData() {
+      this.rect = this.$refs.input.getBoundingClientRect();
+      const check = window.innerHeight - this.rect.bottom - 252 > 0;
+      const rect = this.rect;
+      this.left = rect.left + "px";
+      if (check) {
+        this.top = rect.bottom + 2 + "px";
+      } else {
+        this.top = rect.top - 252 - 2 + "px";
+      }
+
       this.isShowData = !this.isShowData;
       this.$refs.input.focusInput();
     },

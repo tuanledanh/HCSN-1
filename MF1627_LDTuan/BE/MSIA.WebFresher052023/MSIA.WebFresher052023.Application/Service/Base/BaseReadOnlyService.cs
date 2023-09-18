@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MSIA.WebFresher052023.Application.Service.Base
@@ -14,6 +15,8 @@ namespace MSIA.WebFresher052023.Application.Service.Base
     public abstract class BaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> : IBaseReadOnlyService<TEntity, TModel, TEntityDto, TEntityCreateDto, TEntityUpdateDto, TEntityUpdateMultiDto> where TModel : IHasKeyModel
     {
         #region Fields
+        public virtual string TableName { get; } = typeof(TEntity).Name;
+
         protected readonly IBaseReadOnlyRepository<TEntity, TModel> _baseReadOnlyRepository;
         protected readonly IMapper _mapper;
         protected readonly IBaseManager<TEntity, TModel> _manager;
@@ -82,6 +85,7 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             var list = await _baseReadOnlyRepository.GetListByIdsAsync(ids);
             return list;
         }
+
         #endregion
     }
 }

@@ -78,7 +78,7 @@ namespace MSIA.WebFresher052023.Domain.Service
 
                     // Các trường hợp khác là khi có ít nhất 2 chứng từ trong DB trở lên
                     // Trường hợp bản thân thk cập nhật là mới nhất
-                    if (newestTransfer != null && transferAsset.TransferAssetCode == newestTransfer.TransferAssetCode && transferList.Count > 1)
+                    if (newestTransfer != null && transferAsset.TransferAssetId == newestTransfer.TransferAssetId && transferList.Count > 1)
                     {
                         newestTransfer = transferList[1];
                         // Rồi so sánh date với nhau
@@ -89,7 +89,7 @@ namespace MSIA.WebFresher052023.Domain.Service
                             throw new ValidateException(ErrorMessagesTransferAsset.InforDate(fixedAsset.FixedAssetCode, newestTransfer));
                         }
                     }// Trường hợp thk cập nhật không phải là mới nhất
-                    else if (newestTransfer != null && transferAsset.TransferAssetCode != newestTransfer.TransferAssetCode && transferList.Count > 1)
+                    else if (newestTransfer != null && transferAsset.TransferAssetId != newestTransfer.TransferAssetId && transferList.Count > 1)
                     {
                         // Rồi so sánh date với nhau
                         if (transferAsset.TransferDate <= newestTransfer.TransferDate)
