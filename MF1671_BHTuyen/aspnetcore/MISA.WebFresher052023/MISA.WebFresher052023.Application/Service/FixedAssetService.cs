@@ -4,8 +4,12 @@ using MISA.WebFresher052023.Application.Interface;
 using MISA.WebFresher052023.Application.Service.Base;
 using MISA.WebFresher052023.Domain.Entity;
 using MISA.WebFresher052023.Domain.Entity.FixedAsset;
+using MISA.WebFresher052023.Domain.Enum;
+using MISA.WebFresher052023.Domain.Exceptions;
 using MISA.WebFresher052023.Domain.Interface.FixedAsset;
 using MISA.WebFresher052023.Domain.Interface.UnitOfWork;
+using MISA.WebFresher052023.Domain.Model.FixedAsset;
+using MISA.WebFresher052023.Domain.Resource;
 
 namespace MISA.WebFresher052023.Application.Service
 {
@@ -57,7 +61,7 @@ namespace MISA.WebFresher052023.Application.Service
         public override async Task CreateAsync(FixedAssetCreateDto fixedAssetCreateDto)
         {
             // Check trùng mã code
-            await _fixedAssetManager.CheckExistByCode(fixedAssetCreateDto.FixedAssetCode);
+            await _fixedAssetManager.CheckCodeConflictAsync(fixedAssetCreateDto.FixedAssetCode);
             // Check loại tài sản có tồn tại
             await _fixedAssetManager.CheckExistByFixedAssetCategoryId(fixedAssetCreateDto.FixedAssetCategoryId);
 
@@ -69,14 +73,14 @@ namespace MISA.WebFresher052023.Application.Service
 
             var fixedAssetEntity = _mapper.Map<FixedAssetEntity>(fixedAssetCreateDto);
 
-            fixedAssetEntity.SetKeyId(Guid.NewGuid().ToString());
+            fixedAssetEntity.SetKey(Guid.NewGuid());
 
             if (fixedAssetEntity is BaseAuditEntity baseAuditEntity)
             {
                 baseAuditEntity.CreatedDate = DateTime.Now;
-                baseAuditEntity.CreatedBy = "BHTuyen";
+                baseAuditEntity.CreatedBy = VietNamese.Admin;
                 baseAuditEntity.ModifiedDate = DateTime.Now;
-                baseAuditEntity.ModifiedBy = "BHTuyen";
+                baseAuditEntity.ModifiedBy = VietNamese.Admin;
             }
 
             await _fixedAssetRepository.CreateAsync(fixedAssetEntity);
@@ -89,13 +93,14 @@ namespace MISA.WebFresher052023.Application.Service
         /// <param name="fixedAssetUpdateDto">UpdateDto</param>
         /// <returns></returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        public override async Task UpdateAsync(string dtoId, FixedAssetUpdateDto fixedAssetUpdateDto)
+        public override async Task UpdateAsync(Guid dtoId, FixedAssetUpdateDto fixedAssetUpdateDto)
         {
+            
             var fixedAssetEntity = await _fixedAssetRepository.GetAsync(dtoId);
 
-            if (fixedAssetEntity.GetKeyCode() != fixedAssetUpdateDto.GetKeyCode())
+            if (fixedAssetEntity.GetCode() != fixedAssetUpdateDto.GetCode())
             {
-                await _baseManager.CheckExistByCode(fixedAssetUpdateDto.GetKeyCode());
+                await _baseManager.CheckCodeConflictAsync(fixedAssetUpdateDto.GetCode());
             }
 
             // Check loại tài sản có tồn tại
@@ -104,42 +109,120 @@ namespace MISA.WebFresher052023.Application.Service
             // Check phòng ban có tồn tại
             await _fixedAssetManager.CheckExistByDepartmentId(fixedAssetUpdateDto.DepartmentId);
 
+            _fixedAssetManager.CheckUsingStartedDateLaterPurchaseDate(fixedAssetEntity.PurchaseDate, fixedAssetEntity.UsingStartedDate);
+
             var fixedAssetEntityNew = _mapper.Map<FixedAssetEntity>(fixedAssetUpdateDto);
 
-            if (fixedAssetEntity is BaseAuditEntity baseAuditEntity)
+            if (fixedAssetEntityNew is BaseAuditEntity baseAuditEntity)
             {
                 baseAuditEntity.ModifiedDate = DateTime.Now;
-                baseAuditEntity.ModifiedBy = "BHTuyen";
+                baseAuditEntity.ModifiedBy = VietNamese.Admin;
             }
 
-            fixedAssetEntityNew.SetKeyId(dtoId);
+            fixedAssetEntityNew.SetKey(dtoId);
             await _fixedAssetRepository.UpdateAsync(fixedAssetEntityNew);
         }
 
-        /// <summary>
-        /// Xóa nhiều Dto
-        /// </summary>
-        /// <param name="fixedAssetIds">EstateId</param>
-        /// <returns></returns>
-        /// Created By: Bùi Huy Tuyền (18/07/2023)
-        public async Task DeleteManyAsync(List<string> fixedAssetIds)
+        public async override Task DeleteAsync(Guid fixedAssetId)
         {
+            var fixedAssetIds = new List<Guid>(){
+                fixedAssetId
+            };
+
+            await _fixedAssetManager.CheckExistTransferAsset(fixedAssetIds, ActionMode.DELETE);
+
+            var fixedAssetEntity = await _fixedAssetRepository.GetAsync(fixedAssetId);
+
+            await _fixedAssetRepository.DeleteAsync(fixedAssetEntity);
+        }
+
+
+        /// <summary>
+        /// Xuất danh sách tài sản ra file excel
+        /// </summary>
+        /// <param name="fixedAssetIds">Danh sách Id của tài sản</param>
+        /// <returns>File Excel trả về</returns>
+        /// Created By: Bùi Huy Tuyền (27/07/2023)
+        public async Task<byte[]> ExportListFixedAssetToExcelAsync(List<Guid> fixedAssetIds)
+        {
+
+            if (fixedAssetIds.Count == 0)
+            {
+                throw new Exception("Không được truyền danh sách rỗng");
+            }
+
+            // Tìm kiếm danh sách tài sản theo Id
+            var fixedAssetEntities = await _fixedAssetRepository.FindManyFixedAssetAsync(fixedAssetIds);
+
+            // Kiểm tra
+            if (!fixedAssetEntities.Any())
+            {
+                throw new NotFoundException("Không tìm thấy tài sản");
+            }
+
+            if (fixedAssetIds.Count > fixedAssetEntities.Count())
+            {
+                throw new NotFoundException("Có tài sản không tồn tại");
+            }
+
+            // Chuyển sang model
+            var fixedAssetExcelModels = _mapper.Map<IEnumerable<FixedAssetExcelModel>>(fixedAssetEntities);
+
+            // Xuất ra file excel
+            var contentFile = _fixedAssetRepository.ExportListFixedAssetToExcel(fixedAssetExcelModels);
+
+            return contentFile;
+        }
+
+        public async Task<IEnumerable<FixedAssetDto>> GetFixedAssetFilterAsync(string? FixedAssetCodeOrName, string? DepartmentName, string? FixedAssetCategoryName)
+        {
+            var fixedAssetEntities = await _fixedAssetRepository.GetFixedAssetFilterAsync(FixedAssetCodeOrName, DepartmentName, FixedAssetCategoryName);
+
+            var fixedAssetDtos = _mapper.Map<IEnumerable<FixedAssetDto>>(fixedAssetEntities);
+
+            return fixedAssetDtos;
+        }
+
+        public async Task<string> GetFixedAssetCodeAsync()
+        {
+            var fixedAssetCode = await _fixedAssetRepository.GetFixedAssetCodeNewAsync();
+
+            return fixedAssetCode;
+        }
+
+        public async Task<FixedAssetPagingDto> GetFixedAssetPagingAsync(FixedAssetFilterDto fixedAssetFilterDto)
+        {
+            var fixedAssetFilterModel = _mapper.Map<FixedAssetFilterModel>(fixedAssetFilterDto);
+
+            var fixedAssetPagingModel = await _fixedAssetRepository.GetFixedAssetPagingAsync(fixedAssetFilterModel);
+
+            var fixedAssetPagingDto = _mapper.Map<FixedAssetPagingDto>(fixedAssetPagingModel);
+
+            return fixedAssetPagingDto;
+        }
+
+        public async Task DeleteManyAsync(List<Guid> fixedAssetIds)
+        {
+            await _fixedAssetManager.CheckExistTransferAsset(fixedAssetIds, ActionMode.DELETE);
+
+            if (fixedAssetIds.Count == 0)
+            {
+                throw new Exception("Không được truyền danh sách rỗng");
+            }
+
+            var fixedAssets = await _fixedAssetRepository.FindManyFixedAssetAsync(fixedAssetIds);
+
+            if (fixedAssets.Count() != fixedAssetIds.Count)
+            {
+                throw new Exception("Không thể xóa");
+            }
+
+
             await _unitOfWork.BeginTransactionAsync();
 
             try
             {
-                if (fixedAssetIds.Count == 0)
-                {
-                    throw new Exception("Không được truyền danh sách rỗng");
-                }
-
-                var fixedAssetEntities = await _fixedAssetRepository.FindManyByIdAsync(fixedAssetIds);
-
-                if (fixedAssetIds.Count > fixedAssetEntities.Count())
-                {
-                    throw new Exception("Không thể xóa");
-                }
-                await _fixedAssetRepository.DeleteManyAsync(fixedAssetEntities);
+                await _fixedAssetRepository.DeleteManyAsync(fixedAssets);
 
                 await _unitOfWork.CommitAsync();
             }
@@ -150,60 +233,14 @@ namespace MISA.WebFresher052023.Application.Service
             }
         }
 
-        /// <summary>
-        /// Tìm kiếm danh sách tài sản cần xuất ra file excel
-        /// </summary>
-        /// <param name="fixedAssetIds">Danh sách ID của tài sản</param>
-        /// <returns>Danh sách tài sản</returns>
-        /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public async Task<IEnumerable<FixedAssetExcel>> FindManyByIdAsync(List<string> fixedAssetIds)
+        public async Task<FixedAssetPagingDto> GetFixedAssetTransferPagingAsync(FixedAssetFilterDto fixedAssetFilterDto)
         {
-            try
-            {
-                var fixedAssetEntities = await _fixedAssetRepository.FindManyByIdAsync(fixedAssetIds);
+            var fixedAssetFilterModel = _mapper.Map<FixedAssetFilterModel>(fixedAssetFilterDto);
 
-                if (!fixedAssetEntities.Any())
-                {
-                    throw new Exception("Không tìm thấy tài sản");
-                }
+            var fixedAssetPagingModel = await _fixedAssetRepository.GetFixedAssetTransferPagingAsync(fixedAssetFilterModel);
 
-                if (fixedAssetIds.Count > fixedAssetEntities.Count())
-                {
-                    throw new Exception("Có tài sản không tồn tại");
-                }
+            var fixedAssetPagingDto = _mapper.Map<FixedAssetPagingDto>(fixedAssetPagingModel);
 
-                var fixedAssetExcels = _mapper.Map<List<FixedAssetExcel>>(fixedAssetEntities);
-
-                return fixedAssetExcels;
-            }
-            catch (Exception) { throw; }
-        }
-
-
-        /// <summary>
-        /// Hàm sinh mã tài sản gợi ý
-        /// </summary>
-        /// <returns>Mã tài sản</returns>
-        /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public async Task<string> GetFixedAssetCodeAsync()
-        {
-            var fixedAssetCode = await _fixedAssetRepository.GetFixedAssetCode();
-            return fixedAssetCode;
-        }
-
-        /// <summary>
-        /// Lấy ra số tài sản theo trang và bộ lọc
-        /// </summary>
-        /// <param name="fixedAssetFilterDto"></param>
-        /// <returns>Danh sách tài sản theo trang và tổng số bản ghi</returns>
-        /// Created By: Bùi Huy Tuyền (27/07/2023)
-        public async Task<FixedAssetPagingDto> GetFixedAssetPagingAsync(FixedAssetFilterDto fixedAssetFilterDto)
-        {
-            var fixedAssetFilterEntity = _mapper.Map<FixedAssetFilterEntity>(fixedAssetFilterDto);
-
-            var fixedAssetPagingEntity = await _fixedAssetRepository.GetFixedAssetPagingAsync(fixedAssetFilterEntity);
-
-            var fixedAssetPagingDto = _mapper.Map<FixedAssetPagingDto>(fixedAssetPagingEntity);
             return fixedAssetPagingDto;
         }
         #endregion

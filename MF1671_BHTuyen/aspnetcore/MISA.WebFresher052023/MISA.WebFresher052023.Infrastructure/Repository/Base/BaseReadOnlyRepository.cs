@@ -1,11 +1,10 @@
 ﻿using Dapper;
-using MISA.WebFresher052023.Domain.Entity;
 using MISA.WebFresher052023.Domain.Exceptions;
 using MISA.WebFresher052023.Domain.Interface;
 using MISA.WebFresher052023.Domain.Interface.UnitOfWork;
-using MISA.WebFresher052023.Infrastructure.ConfigDapper;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,22 +15,22 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
     {
         #region Field
         /// <summary>
-        /// 
+        /// UnitOfWork
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         protected readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
-        /// Tên bảng
+        /// Tên bảng trong DB
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public virtual string TableName { get; protected set; } = nameof(TEntity);
+        public virtual string TableNameProc { get; protected set; } = nameof(TEntity);
 
         /// <summary>
-        /// Tên bảng dạng số nhiều
+        /// Tên bảng dạng số nhiều trong Proc
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public virtual string TableNames { get; protected set; } = nameof(TEntity) + "s";
+        public virtual string TableNamesProc { get; protected set; } = nameof(TEntity) + "s";
 
         /// <summary>
         /// ID bảng
@@ -52,27 +51,21 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
         }
         #endregion
 
-        #region Public Methods
+        #region Methods
+
         /// <summary>
         /// lấy ra tất cả bản ghi
         /// </summary>
         /// <returns>Tất cả bản ghi</returns>
-        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="NotFoundException">Ngoại lệ khi không tìm thấy dữ liệu</exception>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            try
-            {
-                var procname = $"Proc_Get{TableNames}";
+            var procname = $"Proc_Get{TableNamesProc}";
 
-                IEnumerable<TEntity>? entities = await _unitOfWork.Connection.QueryAsync<TEntity>(procname, commandType: System.Data.CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
+            var entities = await _unitOfWork.Connection.QueryAsync<TEntity>(procname, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
 
-                return entities ?? throw new NotFoundException("Không tìm thấy dữ liệu");
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return entities ?? throw new NotFoundException("Không tìm thấy dữ liệu");
         }
 
         /// <summary>
@@ -80,9 +73,9 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
         /// </summary>
         /// <param name="entityId">Id của bản ghi</param>
         /// <returns>Một bản ghi</returns>
-        /// <exception cref="NotFoundException"></exception>
+        /// <exception cref="NotFoundException">Ngoại lệ khi không tìm thấy bản ghi</exception>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public async Task<TEntity> GetAsync(string entityId)
+        public async Task<TEntity> GetAsync(Guid entityId)
         {
             var entity = await FindAsync(entityId);
 
@@ -95,25 +88,16 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
         /// <param name="entityId">Id của bản ghi</param>
         /// <returns>Kết quả tìm kiếm</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public async Task<TEntity?> FindAsync(string entityId)
+        public async Task<TEntity> FindAsync(Guid entityId)
         {
-            try
-            {
-                var procname = $"Proc_Get{TableName}";
+            var procname = $"Proc_Get{TableNameProc}";
 
-                var parameter = new DynamicParameters();
+            var parameter = new DynamicParameters();
+            parameter.Add($"{TableNameId}", entityId);
 
-                parameter.Add($"{TableName}Id", entityId);
+            var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(procname, parameter, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
 
-                var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(procname, parameter, commandType: System.Data.CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
-
-                return entity;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
+            return entity;
         }
 
         /// <summary>
@@ -122,21 +106,16 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
         /// <param name="entityCode">Mã code</param>
         /// <returns>Kết quả tìm kiếm</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public async Task<TEntity?> FindByCodeAsync(string entityCode)
+        public async Task<TEntity> FindByCodeAsync(string entityCode)
         {
-            try
-            {
-                var procname = $"Proc_Get{TableName}ByCode";
+            var procname = $"Proc_Get{TableNameProc}ByCode";
 
-                var parameter = new DynamicParameters();
+            var parameter = new DynamicParameters();
+            parameter.Add($"{TableNameProc}Code", entityCode);
 
-                parameter.Add($"{TableName}Code", entityCode);
+            var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(procname, parameter, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
 
-                var entity = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TEntity>(procname, parameter, commandType: System.Data.CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
-
-                return entity;
-            }
-            catch (Exception) { throw; }
+            return entity;
         }
         #endregion
 

@@ -22,7 +22,7 @@ namespace MISA.WebFresher052023.Domain.Interface
         /// <param name="entityId">Id của bản ghi</param>
         /// <returns>Một bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task<TEntity> GetAsync(string entityId);
+        Task<TEntity> GetAsync(Guid entityId);
 
         /// <summary>
         /// Tìm kiếm một bản ghi theo Id
@@ -30,7 +30,7 @@ namespace MISA.WebFresher052023.Domain.Interface
         /// <param name="entityId">Id của bản ghi</param>
         /// <returns>Một bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task<TEntity?> FindAsync(string entityId);
+        Task<TEntity> FindAsync(Guid entityId);
 
         /// <summary>
         /// Lấy ra một bản ghi theo Code
@@ -38,7 +38,7 @@ namespace MISA.WebFresher052023.Domain.Interface
         /// <param name="entityCode">Mã của bản ghi</param>
         /// <returns>Một bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task<TEntity?> FindByCodeAsync(string entityCode);
+        Task<TEntity> FindByCodeAsync(string entityCode);
         #endregion
 
     }

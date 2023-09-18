@@ -16,7 +16,6 @@ namespace MISA.WebFresher052023.Application.Mapper
             CreateMap<FixedAssetCategoryEntity, FixedAssetCategoryDto>();
             CreateMap<FixedAssetCategoryCreateDto, FixedAssetCategoryEntity>();
             CreateMap<FixedAssetCategoryUpdateDto, FixedAssetCategoryEntity>();
-
         } 
         #endregion
     }

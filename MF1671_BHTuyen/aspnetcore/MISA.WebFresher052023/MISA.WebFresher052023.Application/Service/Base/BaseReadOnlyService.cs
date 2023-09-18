@@ -57,12 +57,12 @@ namespace MISA.WebFresher052023.Application.Service.Base
         /// <param name="dtoId"></param>
         /// <returns>Dto</returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        public async Task<TDto> GetAsync(string dtoId)
+        public async Task<TDto> GetAsync(Guid dtoId)
         {
             var entity = await _baseReadOnlyRepository.GetAsync(dtoId);
             var dto = _mapper.Map<TDto>(entity);
             return dto;
-        } 
+        }
         #endregion
     }
 }

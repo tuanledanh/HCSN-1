@@ -12,10 +12,10 @@ namespace MISA.WebFresher052023.Domain.Interface
         /// <summary>
         /// Kiểm tra mã bản ghi đã tồn tại hay không để thêm mới
         /// </summary>
-        /// <param name="entityCode">Mã của bản ghi</param>
+        /// <param name="dtoCode">Mã của bản ghi</param>
         /// <returns></returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task CheckExistByCode(string entityCode);
+        public Task CheckCodeConflictAsync(string dtoCode);
         #endregion
     }
 }

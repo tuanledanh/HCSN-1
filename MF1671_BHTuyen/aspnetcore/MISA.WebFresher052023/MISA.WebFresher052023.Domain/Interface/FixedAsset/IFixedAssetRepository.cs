@@ -1,42 +1,31 @@
 ﻿using MISA.WebFresher052023.Domain.Entity.FixedAsset;
+using MISA.WebFresher052023.Domain.Model.FixedAsset;
 
 namespace MISA.WebFresher052023.Domain.Interface.FixedAsset
 {
     public interface IFixedAssetRepository : IBaseRepository<FixedAssetEntity>
     {
         #region Tasks
-        /// <summary>
-        /// Xóa nhiều tài sản
-        /// </summary>
-        /// <param name="fixedAssetEntities">Danh sách các tài sản cần xoá</param>
-        /// <returns></returns>
-        /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public Task DeleteManyAsync(IEnumerable<FixedAssetEntity> fixedAssetEntities);
+
+        public Task<string> GetFixedAssetCodeNewAsync();
+
+        public Task<IEnumerable<FixedAssetEntity>> FindManyFixedAssetAsync(List<Guid> fixedAssetIds);
+
+        public Task<FixedAssetPagingModel> GetFixedAssetPagingAsync(FixedAssetFilterModel fixedAssetFilterModel);
+
+        public Task<FixedAssetPagingModel> GetFixedAssetTransferPagingAsync(FixedAssetFilterModel fixedAssetFilterModel);
+
+        public Task DeleteManyAsync(IEnumerable<FixedAssetEntity> fixedAssets);
 
         /// <summary>
-        /// Tìm kiếm danh sách tài sản theo mã Id
+        /// Xuất danh sách tài sản ra file excel
         /// </summary>
-        /// <param name="entityIds"></param>
-        /// <returns>Danh sách tài sản</returns>
-        /// <exception cref="NotImplementedException"></exception>
-        /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public Task<IEnumerable<FixedAssetEntity>> FindManyByIdAsync(List<string> fixedAssetEntityIds);
-
-        /// <summary>
-        /// Lấy ra số tài sản theo trang và bộ lọc
-        /// </summary>
-        /// <param name="fixedAssetFilterEntity"></param>
-        /// <returns>Danh sách tài sản theo trang và tổng số bản ghi</returns>
+        /// <param name="fixedAssetExcelModels">Danh sách các tài sản cần export</param>
+        /// <returns>File Excel trả về</returns>
         /// Created By: Bùi Huy Tuyền (27/07/2023)
-        public Task<FixedAssetPagingEntity> GetFixedAssetPagingAsync(FixedAssetFilterEntity fixedAssetFilterEntity);
+        public byte[] ExportListFixedAssetToExcel(IEnumerable<FixedAssetExcelModel> fixedAssetExcelModels);
 
-        /// <summary>
-        /// Gợi ý Mã tài sản
-        /// </summary>
-        /// <returns></returns>
-        /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public Task<string> GetFixedAssetCode(); 
+        public Task<IEnumerable<FixedAssetEntity>> GetFixedAssetFilterAsync(string? FixedAssetCodeOrName, string? DepartmentName, string? FixedAssetCategoryName);
         #endregion
-
     }
 }

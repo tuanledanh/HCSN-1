@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MISA.WebFresher052023.Domain.Interface.FixedAssetCategory
 {
-    public interface IFixedAssetCategoryManager:IBaseManager<FixedAssetCategoryEntity>
+    public interface IFixedAssetCategoryManager : IBaseManager<FixedAssetCategoryEntity>
     {
     }
 }

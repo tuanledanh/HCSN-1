@@ -39,7 +39,7 @@ namespace MISA.WebFresher052023.Domain.Tests.Service.FixedAssetCategory
 
         #region Methods Tests 
         /// <summary>
-        /// Test method CheckExistByCode khi có loại tài sản với mã code truyền vào
+        /// Test method CheckCodeConflictAsync khi có loại tài sản với mã code truyền vào
         /// </summary>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
         [Test]
@@ -51,12 +51,12 @@ namespace MISA.WebFresher052023.Domain.Tests.Service.FixedAssetCategory
             fixedAssetCategoryRepository.FindByCodeAsync(code).Returns(new FixedAssetCategoryEntity());
 
             // Act && Assert
-            Assert.ThrowsAsync<ConflictException>(async () => await fixedAssetCategoryManager.CheckExistByCode(code));
+            Assert.ThrowsAsync<ConflictException>(async () => await fixedAssetCategoryManager.CheckCodeConflictAsync(code));
             await fixedAssetCategoryRepository.Received(1).FindByCodeAsync(code);
         }
 
         /// <summary>
-        /// Test method CheckExistByCode khi không loại tài sản với mã code truyền vào (Success)
+        /// Test method CheckCodeConflictAsync khi không loại tài sản với mã code truyền vào (Success)
         /// </summary>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
         [Test]
@@ -67,7 +67,7 @@ namespace MISA.WebFresher052023.Domain.Tests.Service.FixedAssetCategory
             fixedAssetCategoryRepository.FindByCodeAsync(code).ReturnsNull();
 
             // Act 
-            await fixedAssetCategoryManager.CheckExistByCode(code);
+            await fixedAssetCategoryManager.CheckCodeConflictAsync(code);
 
             // Assert
             await fixedAssetCategoryRepository.Received(1).FindByCodeAsync(code);

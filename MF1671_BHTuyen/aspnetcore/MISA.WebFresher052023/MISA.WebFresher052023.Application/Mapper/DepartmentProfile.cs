@@ -2,7 +2,6 @@
 using MISA.WebFresher052023.Application.Dto.Department;
 using MISA.WebFresher052023.Domain.Entity.Department;
 
-
 namespace MISA.WebFresher052023.Application.Mapper
 {
     public class DepartmentProfile : Profile

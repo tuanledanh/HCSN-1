@@ -1,4 +1,4 @@
-﻿using MISA.WebFresher052023.Application.Dto.Base;
+﻿using MISA.WebFresher052023.Application.Interface.Base;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MISA.WebFresher052023.Application.Dto.Department
 {
-    public class DepartmentCreateDto : IHasKeyDto 
+    public class DepartmentCreateDto : IHasCodeDto 
     {
         #region Properties
 
@@ -16,7 +16,7 @@ namespace MISA.WebFresher052023.Application.Dto.Department
         /// Mã bộ phận
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        [Required]
+        [Required(ErrorMessage ="Mã phòng ban không được để trống")]
         [MaxLength(20, ErrorMessage = "Mã phòng ban không được vượt quá 20 ký tự")]
         public string DepartmentCode { get; set; }
 
@@ -35,7 +35,7 @@ namespace MISA.WebFresher052023.Application.Dto.Department
         /// </summary>
         /// <returns>Mã bộ phận</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public string GetKeyCode()
+        public string GetCode()
         {
             return DepartmentCode;
         } 

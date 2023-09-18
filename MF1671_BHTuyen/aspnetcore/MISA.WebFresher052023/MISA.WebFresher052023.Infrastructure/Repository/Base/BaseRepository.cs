@@ -1,14 +1,15 @@
 ﻿using Dapper;
-using MISA.WebFresher052023.Domain.Entity;
 using MISA.WebFresher052023.Domain.Interface;
+using MISA.WebFresher052023.Domain.Interface.Base;
 using MISA.WebFresher052023.Domain.Interface.UnitOfWork;
-using MISA.WebFresher052023.Infrastructure.ConfigDapper;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using static Dapper.SqlMapper;
 
 namespace MISA.WebFresher052023.Infrastructure.Repository.Base
 {
@@ -27,6 +28,27 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
 
         #region Methods
         /// <summary>
+        /// Entity cần tạo parameters
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns>Môt DynamicParameters từ Entity truyền vào</returns>
+        public DynamicParameters GetDynamicParameters(TEntity entity)
+        {
+            var type = typeof(TEntity);
+
+            var properties = type.GetProperties();
+
+            var parameters = new DynamicParameters();
+
+            foreach (var property in properties)
+            {
+                parameters.Add(property.Name, property.GetValue(entity));
+            }
+
+            return parameters;
+        }
+
+        /// <summary>
         /// Tạo mới một bản ghi
         /// </summary>
         /// <param name="entity">Bản ghi</param>
@@ -34,27 +56,10 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public async Task CreateAsync(TEntity entity)
         {
-            try
-            {
-                var procname = $"Proc_Create{TableName}";
+            var procname = $"Proc_Create{TableNameProc}";
+            var parameters = GetDynamicParameters(entity);
 
-                var type = typeof(TEntity);
-
-                var properties = type.GetProperties();
-
-                var parameters = new DynamicParameters();
-
-                foreach (var property in properties)
-                {
-                    parameters.Add(property.Name, property.GetValue(entity));
-                }
-
-                await _unitOfWork.Connection.ExecuteAsync(procname, parameters, commandType: System.Data.CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            await _unitOfWork.Connection.ExecuteAsync(procname, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
         }
 
         /// <summary>
@@ -65,27 +70,11 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public async Task UpdateAsync(TEntity entity)
         {
-            try
-            {
-                var procname = $"Proc_Update{TableName}";
+            var procname = $"Proc_Update{TableNameProc}";
 
-                var type = typeof(TEntity);
+            var parameters = GetDynamicParameters(entity);
 
-                var properties = type.GetProperties();
-
-                var parameters = new DynamicParameters();
-
-                foreach (var property in properties)
-                {
-                    parameters.Add(property.Name, property.GetValue(entity));
-                }
-
-                await _unitOfWork.Connection.ExecuteAsync(procname, parameters, commandType: System.Data.CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            await _unitOfWork.Connection.ExecuteAsync(procname, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
         }
 
         /// <summary>
@@ -96,20 +85,14 @@ namespace MISA.WebFresher052023.Infrastructure.Repository.Base
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public async Task DeleteAsync(TEntity entity)
         {
-            try
-            {
-                var procname = $"Proc_Delete{TableName}";
+            var procname = $"Proc_Delete{TableNameProc}";
 
-                var parameters= new DynamicParameters();
+            var parameters = new DynamicParameters();
 
-                parameters.Add($"{TableName}Id", entity.GetKeyId());
+            parameters.Add($"{TableNameId}", entity.GetKey());
 
-                await _unitOfWork.Connection.ExecuteAsync(procname, parameters, commandType: System.Data.CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
-            }
-            catch (Exception) { throw; }
+            await _unitOfWork.Connection.ExecuteAsync(procname, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
         }
-
         #endregion
-
     }
 }

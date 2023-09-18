@@ -10,8 +10,7 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAssetCategory
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         [Required(ErrorMessage = "Id loại tài sản không được để trống")]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "Id loại tài sản phải có độ dài 36 ký tự")]
-        public string FixedAssetCategoryId { get; set; }
+        public Guid FixedAssetCategoryId { get; set; }
 
         /// <summary>
         /// Mã loại tài sản
@@ -44,7 +43,6 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAssetCategory
         [Required(ErrorMessage = "Tỷ lệ hao mòn không được để trống")]
         [Range(0, 100, ErrorMessage = "Tỷ lệ hao mòn phải nằm trong khoảng 0 - 100")]
         public int LifeTime { get; set; }
-
         #endregion
     }
 }

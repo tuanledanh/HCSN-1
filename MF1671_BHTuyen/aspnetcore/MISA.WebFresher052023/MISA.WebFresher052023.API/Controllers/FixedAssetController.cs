@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MISA.WebFresher052023.API.Controllers.Base;
-using MISA.WebFresher052023.API.ExcelHelper;
 using MISA.WebFresher052023.Application.Dto.FixedAsset;
 using MISA.WebFresher052023.Application.Interface;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.Xml;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -36,16 +32,22 @@ namespace MISA.WebFresher052023.API.Controllers
         #endregion
 
         #region Methods
-        /// <summary>
-        /// Xóa nhiều bản ghi
-        /// </summary>
-        /// <param name="fixedAssetIds">Danh sách các mã ID của các tài sản cần xóa</param>
-        /// <returns></returns>
-        /// Created By: Bùi Huy Tuyền (19/07/2023)
-        [HttpDelete]
-        public async Task DeleteManyAsync([FromBody] List<string> fixedAssetIds)
+        [HttpGet]
+        [Route("Paging")]
+        public async Task<IActionResult> GetFixedAssetPaginAsync([FromQuery] FixedAssetFilterDto fixedAssetFilterDto)
         {
-            await _fixedAssetService.DeleteManyAsync(fixedAssetIds);
+            var fixedAssetPagingDto = await _fixedAssetService.GetFixedAssetPagingAsync(fixedAssetFilterDto);
+
+            return StatusCode( StatusCodes.Status200OK, fixedAssetPagingDto);
+        }
+        
+        [HttpPost]
+        [Route("TransferPaging")]
+        public async Task<IActionResult> GetFixedAssetTransferPaginAsync([FromBody] FixedAssetFilterDto fixedAssetFilterDto)
+        {
+            var fixedAssetPagingDto = await _fixedAssetService.GetFixedAssetTransferPagingAsync(fixedAssetFilterDto);
+
+            return StatusCode( StatusCodes.Status200OK, fixedAssetPagingDto);
         }
 
         /// <summary>
@@ -54,27 +56,12 @@ namespace MISA.WebFresher052023.API.Controllers
         /// <returns>Mã tài sản</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         [HttpGet]
-        [Route("Code")]
+        [Route("NewCode")]
         public async Task<IActionResult> GetEstateCodeAsync()
         {
             var fixedAssetCode = await _fixedAssetService.GetFixedAssetCodeAsync();
 
             return StatusCode(statusCode: StatusCodes.Status200OK, fixedAssetCode);
-        }
-
-        /// <summary>
-        /// Lấy ra danh sách tài sản theo trang và bộ lọc
-        /// </summary>
-        /// <param name="fixedAssetFilterDto">Các biến lọc</param>
-        /// <returns>Danh sách tài sản và tổng số trang</returns>
-        /// Created By: Bùi Huy Tuyền (27/07/2023)
-        [HttpGet()]
-        [Route("Paging")]
-        public async Task<IActionResult> GetFixedAssetPagingAsync([FromQuery] FixedAssetFilterDto fixedAssetFilterDto)
-        {
-            var fixedAssetPagingDto = await _fixedAssetService.GetFixedAssetPagingAsync(fixedAssetFilterDto);
-
-            return StatusCode(statusCode: StatusCodes.Status200OK, fixedAssetPagingDto);
         }
 
         /// <summary>
@@ -85,15 +72,42 @@ namespace MISA.WebFresher052023.API.Controllers
         /// Created By: Bùi Huy Tuyền (27/07/2023)
         [HttpPost()]
         [Route("Export")]
-        public async Task<IActionResult> ExportFixedAssetAsync([FromBody] List<string> fixedAssetIds)
+        public async Task<IActionResult> ExportFixedAssetAsync([FromBody] List<Guid> fixedAssetIds)
         {
-            var fixedAssetExcels = await _fixedAssetService.FindManyByIdAsync(fixedAssetIds);
+            var contentFile = await _fixedAssetService.ExportListFixedAssetToExcelAsync(fixedAssetIds);
 
-            var templateFile = Path.Combine(Directory.GetCurrentDirectory(), "TemplateExcel", "TemplateListFixedAsset.xlsx");
+            return File(contentFile, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Danh_Sach_Tai_San.xlsx");
+        }
 
-            var stream =  ExportToExcelHelper.UpdateDataIntoExcelTemplate(fixedAssetExcels, templateFile);
+        /// <summary>
+        /// Lọc tài sản theo tên, mã, phòng ban, loại tài sản
+        /// </summary>
+        /// <param name="fixedAssetCodeOrName">Tên hoặc mã tài sản</param>
+        /// <param name="departmentName">Tên phòng ban</param>
+        /// <param name="fixedAssetCategoryName">Tên loại tài sản</param>
+        /// <returns>Danh sách tài sản</returns>
+        /// Created By: Bùi Huy Tuyền (27/07/2023)
+        [HttpGet()]
+        [Route("Filter")]
+        public async Task<IActionResult> GetFixedAssetFilterAsync([FromQuery] string? fixedAssetCodeOrName, [FromQuery] string? departmentName, [FromQuery] string? fixedAssetCategoryName)
+        {
+            var fixedAssetFilter = await _fixedAssetService.GetFixedAssetFilterAsync(fixedAssetCodeOrName, departmentName, fixedAssetCategoryName);
 
-            return File(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Danh_Sach_Tai_San.xlsx");
+            return StatusCode( StatusCodes.Status200OK, fixedAssetFilter);
+        }
+
+        /// <summary>
+        /// Xóa nhiều bản ghi
+        /// </summary>
+        /// <param name="fixedAssetIds">Danh sách các mã ID của các tài sản cần xóa</param>
+        /// <returns></returns>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
+        [HttpDelete]
+        public async Task<IActionResult> DeleteManyAsync([FromBody] List<Guid> fixedAssetIds)
+        {
+            await _fixedAssetService.DeleteManyAsync(fixedAssetIds);
+
+            return StatusCode(StatusCodes.Status200OK);
         }
         #endregion
     }

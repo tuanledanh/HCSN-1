@@ -1,9 +1,9 @@
-﻿using MISA.WebFresher052023.Application.Dto.Base;
+﻿using MISA.WebFresher052023.Application.Interface.Base;
 using System.ComponentModel.DataAnnotations;
 
 namespace MISA.WebFresher052023.Application.Dto.FixedAssetCategory
 {
-    public class FixedAssetCategoryCreateDto:IHasKeyDto
+    public class FixedAssetCategoryCreateDto:IHasCodeDto
     {
         #region Properties
 
@@ -47,7 +47,7 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAssetCategory
         /// </summary>
         /// <returns>Mã loại tài sản</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2021)
-        public string GetKeyCode()
+        public string GetCode()
         {
             return this.FixedAssetCategoryCode;
         } 

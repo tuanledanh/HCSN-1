@@ -9,5 +9,6 @@ namespace MISA.WebFresher052023.Domain.Interface.department
 {
     public interface IDepartmentRepository : IBaseRepository<DepartmentEntity>
     {
+        public Task<IEnumerable<DepartmentEntity>> FindManyDepartmentAsync(List<Guid> departmentIds);
     }
 }

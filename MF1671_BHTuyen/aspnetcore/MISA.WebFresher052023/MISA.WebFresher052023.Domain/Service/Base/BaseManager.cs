@@ -23,7 +23,7 @@ namespace MISA.WebFresher052023.Domain.Service.Base
         /// Message lỗi
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public abstract string MessageError { get; set; } 
+        public abstract string MessageError { get; set; }
         #endregion
 
         #region Constructors
@@ -46,13 +46,13 @@ namespace MISA.WebFresher052023.Domain.Service.Base
         /// <returns></returns>
         /// <exception cref="ConfilctException"></exception>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public async Task CheckExistByCode(string entityCode)
+        public virtual async Task CheckCodeConflictAsync(string entityCode)
         {
             var entity = await _baseRepository.FindByCodeAsync(entityCode);
 
             if (entity != null)
             {
-                throw new ConflictException(MessageError);
+                throw new ConflictException(string.Format(MessageError, entityCode));
             }
             return;
         }

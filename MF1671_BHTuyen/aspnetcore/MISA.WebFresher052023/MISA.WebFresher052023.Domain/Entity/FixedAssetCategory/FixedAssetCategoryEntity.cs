@@ -1,54 +1,44 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using MISA.WebFresher052023.Domain.Interface.Base;
 
 namespace MISA.WebFresher052023.Domain.Entity.FixedAssetCategory
 {
-    public class FixedAssetCategoryEntity : BaseAuditEntity, IHasKeyEntity
+    public class FixedAssetCategoryEntity : BaseAuditEntity, IHasKeyEntity, IHasCodeEntity
     {
         #region Properties
         /// <summary>
         /// Id loại tài sản
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        [Required(ErrorMessage = "Id loại tài sản không được để trống")]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "Id loại tài sản phải có độ dài 36 ký tự")]
-        public string FixedAssetCategoryId { get; set; }
+        public Guid FixedAssetCategoryId { get; set; }
 
         /// <summary>
         /// Mã loại tài sản
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        [Required(ErrorMessage = "Mã loại tài sản không được để trống")]
-        [MaxLength(20, ErrorMessage = "Mã loại tài sản không được vượt quá 20 ký tự")]
         public string FixedAssetCategoryCode { get; set; }
 
         /// <summary>
         /// Tên loại tài sản
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        [Required(ErrorMessage = "Tên loại tài sản không được để trống")]
-        [MaxLength(100, ErrorMessage = "Tên loại tài sản không được vượt quá 100 ký tự")]
         public string FixedAssetCategoryName { get; set; }
 
         /// <summary>
         /// Id của đơn vị
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public string? OrganizationId { get; set; }
+        public Guid? OrganizationId { get; set; }
 
         /// <summary>
         /// Tỷ lệ hao mòn (%)
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        [Required(ErrorMessage = "Tỷ lệ hao mòn không được để trống")]
-        [Range(0, 100, ErrorMessage = "Tỷ lệ hao mòn phải nằm trong khoảng 0 - 100")]
         public float DepreciationRate { get; set; }
 
         /// <summary>
         /// Số năm sửa dụng loại tài sản
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        [Required(ErrorMessage = "Tỷ lệ hao mòn không được để trống")]
-        [Range(0, 100, ErrorMessage = "Tỷ lệ hao mòn phải nằm trong khoảng 0 - 100")]
         public int LifeTime { get; set; }
 
         /// <summary>
@@ -64,9 +54,9 @@ namespace MISA.WebFresher052023.Domain.Entity.FixedAssetCategory
         /// </summary>
         /// <returns>Id loại tài sản</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public string GetKeyId()
+        public Guid GetKey()
         {
-            return this.FixedAssetCategoryId;
+            return FixedAssetCategoryId;
         }
 
         /// <summary>
@@ -74,9 +64,9 @@ namespace MISA.WebFresher052023.Domain.Entity.FixedAssetCategory
         /// </summary>
         /// <returns>Mã loại tài sản</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public string GetKeyCode()
+        public string GetCode()
         {
-            return this.FixedAssetCategoryCode;
+            return FixedAssetCategoryCode;
         }
 
         /// <summary>
@@ -85,7 +75,7 @@ namespace MISA.WebFresher052023.Domain.Entity.FixedAssetCategory
         /// <param name="FixedAssetCategoryId">FixedAssetCategoryId</param>
         /// <returns></returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public void SetKeyId(string FixedAssetCategoryId)
+        public void SetKey(Guid FixedAssetCategoryId)
         {
             this.FixedAssetCategoryId = FixedAssetCategoryId;
         }

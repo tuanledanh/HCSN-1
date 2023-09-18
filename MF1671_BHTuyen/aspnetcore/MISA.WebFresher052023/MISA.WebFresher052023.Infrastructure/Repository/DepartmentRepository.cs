@@ -23,7 +23,6 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public DepartmentRepository(IUnitOfWork unitOfWork) : base(unitOfWork)
         {
-
         }
         #endregion
 
@@ -31,20 +30,35 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
         /// <summary>
         /// Ghi đè tên bảng
         /// </summary>
-        /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public override string TableName { get; protected set; } = "Department";
+        /// Created By: Bùi Huy Tuyền (19/07/2023) 
+        public override string TableNameProc { get; protected set; } = "Department";
 
         /// <summary>
         /// Ghi đè tên bảng dạng số nhiều
         /// </summary>
-        /// Created By: Bùi Huy Tuyền (19/07/2023) 
-        public override string TableNames { get; protected set; } = "Departments";
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
+        public override string TableNamesProc { get; protected set; } = "Departments";
 
         /// <summary>
         /// Ghi đè tên khóa chính
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public override string TableNameId { get; protected set; } = "DepartmentId";
+
+        #endregion
+
+        #region Methods
+        public async Task<IEnumerable<DepartmentEntity>> FindManyDepartmentAsync(List<Guid> departmentIds)
+        {
+            var query = $"SELECT * FROM department WHERE DepartmentId IN @DepartmentIds";
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@DepartmentIds", departmentIds.Select(departmentId=>departmentId.ToString()));
+
+            var departments =await _unitOfWork.Connection.QueryAsync<DepartmentEntity>(query,  parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
+
+            return departments;
+        } 
         #endregion
 
     }

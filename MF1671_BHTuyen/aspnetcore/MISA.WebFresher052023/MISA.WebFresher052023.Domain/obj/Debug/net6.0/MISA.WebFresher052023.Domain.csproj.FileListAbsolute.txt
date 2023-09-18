@@ -13,7 +13,6 @@ D:\workspace\C#\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\bin\Debug\net6.0\MISA.WebFresher052023.Domain.deps.json
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\bin\Debug\net6.0\MISA.WebFresher052023.Domain.dll
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\bin\Debug\net6.0\MISA.WebFresher052023.Domain.pdb
-C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\MISA.WebFresher052023.Domain.csproj.AssemblyReference.cache
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\MISA.WebFresher052023.Domain.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\MISA.WebFresher052023.Domain.AssemblyInfoInputs.cache
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\MISA.WebFresher052023.Domain.AssemblyInfo.cs
@@ -22,3 +21,5 @@ C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\refint\MISA.WebFresher052023.Domain.dll
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\MISA.WebFresher052023.Domain.pdb
 C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\ref\MISA.WebFresher052023.Domain.dll
+C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\MISA.WebFresher052023.Domain.Resource.VietNamese.resources
+C:\Users\BuiHuyTuyen\Desktop\web202305\mf1671-bhtuyen\aspnetcore\MISA.WebFresher052023\MISA.WebFresher052023.Domain\obj\Debug\net6.0\MISA.WebFresher052023.Domain.csproj.GenerateResource.cache

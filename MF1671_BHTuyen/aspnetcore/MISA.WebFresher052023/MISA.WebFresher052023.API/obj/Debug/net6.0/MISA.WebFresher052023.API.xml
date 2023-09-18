@@ -22,7 +22,7 @@
             <param name="createDto">Thông tin đối tượng cần thêm (khóa chính sẽ được cấp tự động - không cần gửi thông tin khóa chính)</param>
             <returns>IActionResult</returns>
         </member>
-        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseController`3.UpdateAsync(System.String,`2)">
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseController`3.UpdateAsync(System.Guid,`2)">
             <summary>
             Cập nhật một bản ghi
             </summary>
@@ -31,7 +31,7 @@
             <returns>IActionResult</returns>
             Created By: Bùi Huy Tuyền (19/07/2023)
         </member>
-        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseController`3.DeleteAsync(System.String)">
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseController`3.DeleteAsync(System.Guid)">
             <summary>
             Xóa một bản ghi
             </summary>
@@ -59,7 +59,7 @@
             <returns>Tất cả bản ghi</returns>
             Created By: Bùi Huy Tuyền (19/07/2023)
         </member>
-        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseReadOnlyController`1.GetAsync(System.String)">
+        <member name="M:MISA.WebFresher052023.API.Controllers.Base.BaseReadOnlyController`1.GetAsync(System.Guid)">
             <summary>
             Lấy bản ghi theo Id
             </summary>
@@ -94,14 +94,6 @@
             <param name="fixedAssetService"></param>
             Created By: Bùi Huy Tuyền (19/07/2023)
         </member>
-        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.DeleteManyAsync(System.Collections.Generic.List{System.String})">
-            <summary>
-            Xóa nhiều bản ghi
-            </summary>
-            <param name="fixedAssetIds">Danh sách các mã ID của các tài sản cần xóa</param>
-            <returns></returns>
-            Created By: Bùi Huy Tuyền (19/07/2023)
-        </member>
         <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.GetEstateCodeAsync">
             <summary>
             Lấy mã tài sản mới gợi ý
@@ -109,15 +101,7 @@
             <returns>Mã tài sản</returns>
             Created By: Bùi Huy Tuyền (19/07/2023)
         </member>
-        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.GetFixedAssetPagingAsync(MISA.WebFresher052023.Application.Dto.FixedAsset.FixedAssetFilterDto)">
-            <summary>
-            Lấy ra danh sách tài sản theo trang và bộ lọc
-            </summary>
-            <param name="fixedAssetFilterDto">Các biến lọc</param>
-            <returns>Danh sách tài sản và tổng số trang</returns>
-            Created By: Bùi Huy Tuyền (27/07/2023)
-        </member>
-        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.ExportFixedAssetAsync(System.Collections.Generic.List{System.String})">
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.ExportFixedAssetAsync(System.Collections.Generic.List{System.Guid})">
             <summary>
             Xuất danh sách tài sản ra file excel
             </summary>
@@ -125,13 +109,22 @@
             <returns>File Excel trả về</returns>
             Created By: Bùi Huy Tuyền (27/07/2023)
         </member>
-        <member name="M:MISA.WebFresher052023.API.ExcelHelper.ExportToExcelHelper.UpdateDataIntoExcelTemplate(System.Collections.Generic.IEnumerable{MISA.WebFresher052023.Application.Dto.FixedAsset.FixedAssetExcel},System.String)">
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.GetFixedAssetFilterAsync(System.String,System.String,System.String)">
             <summary>
-            Truyền dữ liệu vào file excel mẫu
+            Lọc tài sản theo tên, mã, phòng ban, loại tài sản
             </summary>
-            <param name="fixedAssetExcels">Danh sách tài sản cần xuất</param>
-            <param name="filePath">Đường dẫn đến file mẫu</param>
-            <returns>Stream</returns>
+            <param name="fixedAssetCodeOrName">Tên hoặc mã tài sản</param>
+            <param name="departmentName">Tên phòng ban</param>
+            <param name="fixedAssetCategoryName">Tên loại tài sản</param>
+            <returns>Danh sách tài sản</returns>
+            Created By: Bùi Huy Tuyền (27/07/2023)
+        </member>
+        <member name="M:MISA.WebFresher052023.API.Controllers.FixedAssetController.DeleteManyAsync(System.Collections.Generic.List{System.Guid})">
+            <summary>
+            Xóa nhiều bản ghi
+            </summary>
+            <param name="fixedAssetIds">Danh sách các mã ID của các tài sản cần xóa</param>
+            <returns></returns>
             Created By: Bùi Huy Tuyền (19/07/2023)
         </member>
         <member name="F:MISA.WebFresher052023.API.Middleware.ExceptionMiddleware._next">

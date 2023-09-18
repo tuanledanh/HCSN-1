@@ -1,6 +1,6 @@
 ﻿namespace MISA.WebFresher052023.Application.Interface
 {
-    public interface IBaseService<TDto, TCreateDto, TUpdateDto> :IBaseReadOnlyService<TDto>
+    public interface IBaseService<TDto, TCreateDto, TUpdateDto> : IBaseReadOnlyService<TDto>
     {
 
         #region Tasks
@@ -19,7 +19,7 @@
         /// <param name="dtoUpdate">DtoUpdate</param>
         /// <returns></returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task UpdateAsync(string dtoId, TUpdateDto dtoUpdate);
+        Task UpdateAsync(Guid dtoId, TUpdateDto dtoUpdate);
 
         /// <summary>
         /// Xóa Dto
@@ -27,7 +27,7 @@
         /// <param name="dtoId">ID của Dto</param>
         /// <returns></returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task DeleteAsync(string dtoId);
+        Task DeleteAsync(Guid dtoId);
         #endregion
     }
 }

@@ -35,7 +35,7 @@ namespace MISA.WebFresher052023.API.Controllers.Base
         public async Task<IActionResult> GetAllAsync()
         {
             var dtos = await _baseReadOnlyService.GetAllAsync();
-            return StatusCode(statusCode: StatusCodes
+            return StatusCode( StatusCodes
                 .Status200OK, dtos);
         }
 
@@ -46,7 +46,7 @@ namespace MISA.WebFresher052023.API.Controllers.Base
         /// <returns>Một bản ghi với Id truyền vào</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAsync(string id)
+        public async Task<IActionResult> GetAsync(Guid id)
         {
             var dto = await _baseReadOnlyService.GetAsync(id);
             return StatusCode(StatusCodes.Status200OK, dto);

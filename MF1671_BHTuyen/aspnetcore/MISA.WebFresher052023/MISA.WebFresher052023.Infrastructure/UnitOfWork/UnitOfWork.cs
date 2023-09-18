@@ -37,6 +37,9 @@ namespace MISA.WebFresher052023.Infrastructure.UnitOfWork
         public UnitOfWork(string connectionString)
         {
             _connection = new MySqlConnection(connectionString);
+            SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
+            SqlMapper.RemoveTypeMap(typeof(Guid));
+            SqlMapper.RemoveTypeMap(typeof(Guid?));
         }
         #endregion
 

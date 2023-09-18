@@ -13,11 +13,11 @@ namespace MISA.WebFresher052023.Application.Service
         /// <summary>
         /// Hàm khởi tạo
         /// </summary>
-        /// <param name="departmentRespostory"></param>
+        /// <param name="departmentRepository"></param>
         /// <param name="departmentManger"></param>
         /// <param name="mapper"></param>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public DepartmentService(IDepartmentRepository departmentRespostory, IDepartmentManager departmentManger, IMapper mapper) : base(departmentRespostory, departmentManger, mapper)
+        public DepartmentService(IDepartmentRepository departmentRepository, IDepartmentManager departmentManger, IMapper mapper) : base(departmentRepository, departmentManger, mapper)
         {
         } 
         #endregion

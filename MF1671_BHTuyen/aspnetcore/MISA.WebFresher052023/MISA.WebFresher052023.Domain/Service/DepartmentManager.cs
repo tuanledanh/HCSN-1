@@ -1,5 +1,6 @@
 ﻿using MISA.WebFresher052023.Domain.Entity.Department;
 using MISA.WebFresher052023.Domain.Interface.department;
+using MISA.WebFresher052023.Domain.Resource;
 using MISA.WebFresher052023.Domain.Service.Base;
 using System;
 using System.Collections.Generic;
@@ -15,9 +16,9 @@ namespace MISA.WebFresher052023.Domain
         /// <summary>
         /// Hàm khởi tạo
         /// </summary>
-        /// <param name="departmentRespostory"></param>
+        /// <param name="departmentRepository"></param>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public DepartmentManager(IDepartmentRepository departmentRespostory) : base(departmentRespostory)
+        public DepartmentManager(IDepartmentRepository departmentRepository) : base(departmentRepository)
         {
         }
         #endregion
@@ -27,7 +28,7 @@ namespace MISA.WebFresher052023.Domain
         /// Message lỗi
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public override string MessageError { get; set; } = "Mã bộ phận đã tồn tại"; 
+        public override string MessageError { get; set; } = VietNamese.DepartmentCodeConflict; 
         #endregion
     }
 }
