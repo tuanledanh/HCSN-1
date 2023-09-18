@@ -40,4 +40,5 @@ export function closeToastWarning() {
   this.isShowToastDeleteSingle = false;
   this.isShowToastExport = false;
   this.isShowToastValidateBE = false;
+  this.isShowToastValidateAriseTransfer = false;
 }

@@ -99,6 +99,7 @@
         { 'icon-notification': notification },
         { 'icon-utilities': utilities },
         { 'icon-question': question },
+        { 'icon-chat': chat },
         { 'icon-user': user },
         { 'icon-drop-down': drop_down },
         { 'icon-drop-down-large': drop_down_large },
@@ -246,6 +247,12 @@ export default {
 
     // Icon câu hỏi
     question: {
+      type: Boolean,
+      default: false,
+    },
+
+    // Icon chat
+    chat: {
       type: Boolean,
       default: false,
     },
@@ -552,6 +559,12 @@ export default {
   height: 18px;
 }
 
+.icon-chat {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -23px -68px;
+	width: 18px;
+	height: 18px;
+}
+
 .icon-user {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -23px -23px;
   width: 18px;
@@ -818,9 +831,9 @@ export default {
 }
 
 .icon--disabled {
+  cursor: not-allowed;
   pointer-events: none;
   opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .icon--background {

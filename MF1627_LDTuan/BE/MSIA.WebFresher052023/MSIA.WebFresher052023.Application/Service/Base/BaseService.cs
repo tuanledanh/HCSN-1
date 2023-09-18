@@ -39,7 +39,7 @@ namespace MSIA.WebFresher052023.Application.Service.Base
         public virtual async Task<bool> InsertAsync(TEntityCreateDto entityCreateDto)
         {
             var model = _mapper.Map<TModel>(entityCreateDto);
-            await _manager.CheckDuplicateCode(model.GetKey());
+            await _manager.CheckDuplicateCodeAsync(model.GetKey());
             var entity = _mapper.Map<TEntity>(entityCreateDto);
             bool result = await _baseRepository.InsertAsync(entity);
             return result;
@@ -50,7 +50,7 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             var listModels = _mapper.Map<List<TModel>>(entityCreateDtos);
             foreach (var model in listModels)
             {
-                await _manager.CheckDuplicateCode(model.GetKey());
+                await _manager.CheckDuplicateCodeAsync(model.GetKey());
             }
             var listEntities = _mapper.Map<List<TEntity>>(listModels);
             bool result = await _baseRepository.InsertMultiAsync(listEntities);
@@ -75,7 +75,7 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             var oldEntity = await _baseRepository.GetAsync(id);
             var oldModel = _mapper.Map<TModel>(oldEntity);
             var model = _mapper.Map<TModel>(entityUpdateDto);
-            await _manager.CheckDuplicateCode(model.GetKey(), oldModel.GetKey());
+            await _manager.CheckDuplicateCodeAsync(model.GetKey(), oldModel.GetKey());
             var entity = _mapper.Map(entityUpdateDto, oldEntity);
             bool result = await _baseRepository.UpdateAsync(entity);
             return result;

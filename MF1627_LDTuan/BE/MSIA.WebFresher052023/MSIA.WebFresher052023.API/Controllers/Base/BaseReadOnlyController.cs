@@ -43,15 +43,7 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         public virtual async Task<IActionResult> GetAsync([FromRoute] string code)
         {
             var asset = await _baseService.GetAsync(code);
-            if (asset == null)
-            {
-                var error = new ApiResponse { UserMessage = ErrorMessages.Conflict, ErrorCode=10000 };
-                return StatusCode(StatusCodes.Status400BadRequest, error);
-            }
-            else
-            {
-                return StatusCode(StatusCodes.Status201Created, asset);
-            }
+            return StatusCode(StatusCodes.Status201Created, asset);
         }
         /// <summary>
         /// Api thêm mới 1 bản ghi
@@ -62,16 +54,8 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] TEntityCreateDto entityCreateDto)
         {
-            var result = await _baseService.InsertAsync(entityCreateDto);
-            if (result)
-            {
-                return StatusCode(StatusCodes.Status200OK);
-            }
-            else
-            {
-                var error = new ApiResponse { UserMessage = ErrorMessages.Other };
-                return StatusCode(StatusCodes.Status400BadRequest, error);
-            }
+            await _baseService.InsertAsync(entityCreateDto);
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         /// <summary>
@@ -84,16 +68,8 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         [HttpPut("{id}")]
         public async Task<IActionResult> PutAsync([FromRoute] Guid id, [FromBody] TEntityUpdateDto entityUpdateDto)
         {
-            var result = await _baseService.UpdateAsync(id, entityUpdateDto);
-            if (result)
-            {
-                return StatusCode(StatusCodes.Status200OK);
-            }
-            else
-            {
-                var error = new ApiResponse { UserMessage = ErrorMessages.Other };
-                return StatusCode(StatusCodes.Status400BadRequest, error);
-            }
+            await _baseService.UpdateAsync(id, entityUpdateDto);
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         /// <summary>
@@ -105,17 +81,8 @@ namespace MSIA.WebFresher052023.API.Controllers.Base
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteByIdAsync([FromRoute] Guid id)
         {
-            var result = await _baseService.DeleteAsync(id);
-
-            if (result)
-            {
-                return StatusCode(StatusCodes.Status200OK);
-            }
-            else
-            {
-                var error = new ApiResponse { UserMessage = ErrorMessages.Other };
-                return StatusCode(StatusCodes.Status400BadRequest, error);
-            }
+            await _baseService.DeleteAsync(id);
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         /// <summary>

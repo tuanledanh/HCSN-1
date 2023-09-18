@@ -15,6 +15,7 @@
         'relative',
         { 'button--add-box': add_box_white },
         { 'button--add-box': add_box },
+        { loading: loading },
         { border: basic },
         { disabled: disabled },
         { 'button--main': buttonMain },
@@ -32,6 +33,7 @@
         v-if="combo"
         button
         :add="add"
+        :loading="loading"
         :add_box="add_box"
         :add_box_white="add_box_white"
         :disabled="disabled"
@@ -95,6 +97,11 @@ export default {
 
     // Button phác thảo
     buttonOutline: {
+      type: Boolean,
+      default: false,
+    },
+    // Button load
+    loading: {
       type: Boolean,
       default: false,
     },
@@ -386,15 +393,22 @@ export default {
   cursor: not-allowed !important;
 }
 
-.disabled:hover{
+.disabled:hover {
   background-color: #f5f5f5 !important;
   border-color: #d4d4d4 !important;
   color: #000000;
   cursor: not-allowed !important;
 }
 
-.disabled .button--main{
-  border: 1px solid #d4d4d4 !important;
+.disabled .button--main {
+  background-color: #1aa4c8 !important;
+  color: white !important;
+  opacity: 0.5;
+}
+.disabled .button--main :hover {
+  background-color: #1aa4c8 !important;
+  color: white !important;
+  opacity: 0.5;
 }
 
 .large .button {
@@ -405,5 +419,22 @@ export default {
   padding-right: 6px;
 }
 
+.loading {
+  padding-left: 38px !important;
+  background-color: var(--background-color-default) !important;
+  color: #000000 !important;
+}
 
+.loading:hover {
+  background-color: #d1edf4 !important;
+}
+
+.loading:focus {
+  outline: 1px solid #23cbf5 !important;
+  transition: all 0.2s linear !important;
+}
+
+.loading:active {
+  background-color: var(--background-color-default) !important;
+}
 </style>

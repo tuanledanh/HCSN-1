@@ -1,5 +1,6 @@
 ﻿using Application.DTO;
 using Application.Interface;
+using Application.Service;
 using AutoMapper;
 using ClosedXML.Excel;
 using Domain.Entity;
@@ -7,6 +8,7 @@ using Domain.Model;
 using Microsoft.AspNetCore.Mvc;
 using MSIA.WebFresher052023.API.Controllers.Base;
 using MSIA.WebFresher052023.Application.DTO.FixedAssett;
+using MSIA.WebFresher052023.Domain.Enum;
 
 namespace API.Controllers
 {
@@ -75,6 +77,13 @@ namespace API.Controllers
                     return result;
                 }
             }
+        }
+
+        [HttpPost("CheckTransfer")]
+        public async Task<IActionResult> CheckExistTransferAsync([FromBody] List<Guid> assetIds, [FromQuery] ActionMode action)
+        {
+            await _fixedAssetService.CheckExistTransferAsync(assetIds, action);
+            return StatusCode(StatusCodes.Status200OK);
         }
 
         [HttpPost("insertMulti")]

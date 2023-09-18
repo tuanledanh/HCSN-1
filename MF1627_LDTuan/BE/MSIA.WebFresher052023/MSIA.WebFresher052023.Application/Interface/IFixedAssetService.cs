@@ -3,6 +3,7 @@ using Domain.Entity;
 using Domain.Model;
 using MSIA.WebFresher052023.Application.Interface.Base;
 using MSIA.WebFresher052023.Application.Response.Base;
+using MSIA.WebFresher052023.Domain.Enum;
 using System.Data;
 
 namespace Application.Interface
@@ -38,5 +39,14 @@ namespace Application.Interface
         /// <returns>DataTable</returns>
         /// Created by: ldtuan (06/08/2023)
         Task<DataTable> ExportExcel(string idsQuery);
+
+        /// <summary>
+        /// Kiểm tra tài sản có phát sinh chứng từ không
+        /// </summary>
+        /// <param name="assetIds">Danh sách id tài sản</param>
+        /// <param name="action">Hành động như xóa, cập nhật</param>
+        /// <returns>Ném ra 1 ngoại lệ nếu có chứng từ phát sinh</returns>
+        /// Created by: ldtuan (17/09/2023)
+        Task CheckExistTransferAsync(List<Guid> assetIds, ActionMode action);
     }
 }

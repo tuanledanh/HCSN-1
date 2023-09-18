@@ -24,7 +24,7 @@ const MISAResource = {
         Edit: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này",
         Transfer: {
           Edit: {
-            ValueChange: "Dữ liệu đã thay đổi bản có muốn lưu không?",
+            ValueChange: "Dữ liệu đã thay đổi bạn có muốn lưu không?",
           },
           Add: {
             NoAsset: "Bạn chưa thêm tài sản điều chuyển",
@@ -39,6 +39,7 @@ const MISAResource = {
           },
           TransferAssetCode: "Mã chứng từ không được để trống",
           TransactionDate: "Ngày chứng từ không được để trống",
+          SmallTransactionDate: "Ngày điều chuyển phải lớn hơn hoặc bằng ngày chứng từ",
           TransferDate: "Ngày điều chuyển không được để trống",
         },
         Department: {

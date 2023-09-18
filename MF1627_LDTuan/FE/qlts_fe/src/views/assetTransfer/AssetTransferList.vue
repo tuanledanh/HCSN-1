@@ -23,7 +23,7 @@
           @click="callToastDelete"
         ></MISAButton>
       </div>
-      <div class="top-right">
+      <div class="top-head-right">
         <MISAButton
           combo
           add_box_white
@@ -32,6 +32,8 @@
           @click="btnAddDocument"
           large
         ></MISAButton>
+        <MISAIcon chat></MISAIcon>
+        <MISAIcon question></MISAIcon>
       </div>
     </div>
     <div
@@ -42,7 +44,10 @@
         <!-- ------------------------Table start------------------------ -->
         <div :class="[{ table: !isResize }, { 'table-flex': isResize }]">
           <!-- ------------------------Header------------------------ -->
-          <div class="header--row row border--top">
+          <div
+            class="header--row row border--top"
+            :class="[{ 'row-expand': isChangeWidth }]"
+          >
             <div
               class="header cell display--center-center border--right border--bottom"
             >
@@ -120,6 +125,7 @@
                 {
                   'row--selected': selectedRows.includes(transferAsset),
                 },
+                { 'row-expand': isChangeWidth },
               ]"
               @dblclick="btnEditTransferAsset(transferAsset)"
               @click.exact.stop="callRowOnClick(transferAsset)"
@@ -204,6 +210,13 @@
         </div>
         <!-- ------------------------Table end------------------------ -->
 
+        <MISACalculator
+          form="transfer-list"
+          :isChangeWidth="isChangeWidth"
+          :totalPrice="totalPrice"
+          :totalResidualValue="totalResidualValue"
+          :numberColumnLeft="5"
+        ></MISACalculator>
         <MISAPaging
           :totalRecords="totalRecordsTransfer"
           :totalPages="totalPagesTransfer"
@@ -474,6 +487,23 @@
     typeToast="update"
     :content="toast_content_success"
   ></MISAToast>
+
+  <div v-if="isShowToastValidateAriseTransfer" class="blur">
+    <MISAToast
+      typeToast="warning"
+      :content="toast_content_warning + '.'"
+      :moreInfo="moreInfo"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="callCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
 </template>
 <script>
 import MISAAssetTransferForm from "./AssetTransferForm.vue";
@@ -541,6 +571,10 @@ export default {
       // Trang hiện tại
       currentPage: 1,
       currentPageTransfer: 1,
+      // Tổng nguyên giá
+      totalPrice: "0",
+      // Tổng giá trị còn lại
+      totalResidualValue: "0",
 
       // ----------------------------- Resize table -----------------------------
       // Hiển thị tooltip của icon resize
@@ -581,6 +615,7 @@ export default {
       isShowToastAddSuccess: false,
       isShowToastUpdateSuccess: false,
       toast_content_success: null,
+      isShowToastValidateAriseTransfer: false,
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
@@ -660,6 +695,22 @@ export default {
           this.isLoading = false;
 
           this.callRowOnClick(this.transferAssets[0]);
+
+          var totalPrice = this.transferAssets.reduce(
+            (total, transferAsset) => {
+              return total + Math.round(transferAsset.Cost);
+            },
+            0
+          );
+          var totalResidualValue = this.transferAssets.reduce(
+            (total, transferAsset) => {
+              return total + Math.round(transferAsset.RemainingCost);
+            },
+            0
+          );
+
+          this.totalPrice = formatMoney(totalPrice);
+          this.totalResidualValue = formatMoney(totalResidualValue);
 
           if (this.isSuccessAddOrUpdate) {
             setTimeout(() => {
@@ -1008,10 +1059,28 @@ export default {
     /**
      * Truyền dữ liệu và mở form thêm chứng từ để sửa đổi
      */
+    // btnEditTransferAsset(transferAsset) {
+    //   this.checkTransferAssetArise(transferAsset.TransferAssetId);
+    //   if (this.isShowToastValidateAriseTransfer == false) {
+    //     this.btnAddDocument();
+    //     this.transferData = transferAsset;
+    //     this.actionMode = this.$_MISAEnum.FORM_MODE.UPDATE;
+    //   }
+    // },
+
     btnEditTransferAsset(transferAsset) {
-      this.btnAddDocument();
-      this.transferData = transferAsset;
-      this.actionMode = this.$_MISAEnum.FORM_MODE.UPDATE;
+      this.$_MISAApi.TransferAsset.GetNewest(transferAsset.TransferAssetId)
+        .then(() => {
+          this.btnAddDocument();
+          this.transferData = transferAsset;
+          this.actionMode = this.$_MISAEnum.FORM_MODE.UPDATE;
+        })
+        .catch((res) => {
+          this.$processErrorResponse(res);
+          this.isShowToastValidateAriseTransfer = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+          this.moreInfo = res.response.data.MoreInfo;
+        });
     },
 
     /**
@@ -1164,6 +1233,15 @@ export default {
   cursor: pointer;
 }
 
+.row-expand {
+  display: grid;
+  grid-template-columns:
+    44px 50px 120px 150px 150px 140px 200px 597px
+    120px;
+  height: 35px;
+  cursor: pointer;
+}
+
 .table-bot .row {
   grid-template-columns: 50px 120px 200px 140px 150px 180px 200px calc(
       100% - 1040px
@@ -1183,7 +1261,7 @@ export default {
   border-color: var(--table-border-color);
 }
 
-.body--row:hover > .cell > .icon-function{
+.body--row:hover > .cell > .icon-function {
   display: flex;
 }
 
@@ -1192,7 +1270,7 @@ export default {
   column-gap: 8px;
 }
 
-.row--selected > .cell > .icon-function{
+.row--selected > .cell > .icon-function {
   display: flex;
 }
 
@@ -1225,6 +1303,12 @@ export default {
   overflow-y: auto;
   overflow-x: hidden;
   border-color: var(--table-border-color);
+}
+
+.top-head-right{
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
 }
 
 /* ------------------------------------------- Resize-bar ------------------------------------------- */

@@ -46,9 +46,9 @@
       <MISAIcon v-if="search" input iconSearch></MISAIcon>
     </MISATooltip>
 
-    <div v-if="inputInDe" class="icon__wrapper absolute">
-      <MISAIcon pull_up @click="btnIncrease"></MISAIcon>
-      <MISAIcon drop_down @click="btnDecrease"></MISAIcon>
+    <div v-if="inputInDe" class="icon__wrapper absolute" :class="[{'disabled':disabled}]">
+      <MISAIcon pull_up @click="btnIncrease" :disabled="disabled"></MISAIcon>
+      <MISAIcon drop_down @click="btnDecrease" :disabled="disabled"></MISAIcon>
     </div>
   </div>
 </template>
@@ -322,7 +322,7 @@ export default {
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 35px;
+  height: 36px;
   position: relative;
   font-family: Roboto, sans-serif;
   font-weight: 400;
@@ -416,6 +416,10 @@ export default {
 
 .input--disabled input:hover {
   border: 1px solid #afafaf !important;
+}
+
+.disabled{
+  cursor: not-allowed;
 }
 
 .text--right {

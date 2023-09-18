@@ -34,9 +34,9 @@ namespace API.Controllers
             return StatusCode(StatusCodes.Status200OK, transferAssetList);
         }
         [HttpPost("GetNewest/{transferId}")]
-        public async Task<IActionResult> GetNewestTransferAsset([FromRoute] Guid transferId, [FromBody] List<Guid> assetIds)
+        public async Task<IActionResult> GetNewestTransferAsset([FromRoute] Guid transferId)
         {
-            await _transferAssetService.GetNewestTransferAsset(transferId, assetIds);
+            await _transferAssetService.GetNewestTransferAsset(transferId);
             return StatusCode(StatusCodes.Status200OK);
         }
     }

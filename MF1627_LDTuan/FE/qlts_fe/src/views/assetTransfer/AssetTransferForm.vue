@@ -1,5 +1,5 @@
 <template>
-  <div class="popup">
+  <div class="popup" @keyup.esc="btnCancelTransferAsset">
     <div class="popup__header">
       <span
         v-if="formMode === this.$_MISAEnum.FORM_MODE.ADD"
@@ -15,7 +15,7 @@
         bottom
         ref="exit"
         content="Thoát"
-        :tabindex="7"
+        :tabindex="11"
         @keydown="checkTabIndex($event, 'islast')"
         @click="btnCancelTransferAsset"
       ></MISAButton>
@@ -156,6 +156,7 @@
                       :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
                     >
                       <MISAIcon
+                      @click="moveUp(index)"
                         pull_up_large
                         :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                       ></MISAIcon>
@@ -164,6 +165,7 @@
                       :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
                     >
                       <MISAIcon
+                      @click="moveDown(index)"
                         drop_down_large
                         :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                       ></MISAIcon>
@@ -205,6 +207,7 @@
             medium
             placeholder="Tìm kiếm tài sản"
             maxlength="50"
+            :tabindex="7"
           ></MISAInput>
         </div>
         <div class="action--right">
@@ -238,6 +241,8 @@
             large
             @click="btnShowFormChooseAsset"
             :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+            :tabindex="8"
+            ref="ChooseAsset"
           ></MISAButton>
         </div>
       </div>
@@ -413,6 +418,7 @@
                   medium
                   padding_2
                   v-model="asset.Description"
+                  maxlength="255"
                   :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                 ></MISAInput>
               </div>
@@ -435,7 +441,13 @@
           </div>
         </div>
         <!-- ------------------------Table end------------------------ -->
-
+        <MISACalculator
+          form="transfer-form"
+          :totalPrice="totalPrice"
+          :totalResidualValue="totalResidualValue"
+          :numberColumnLeft="4"
+          :numberColumnRight="3"
+        ></MISACalculator>
         <MISAPaging
           :totalRecords="totalRecords"
           :totalPages="totalPages"
@@ -452,12 +464,14 @@
         textButton="Hủy"
         @click="btnCancelTransferAsset"
         :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+        :tabindex="10"
       ></MISAButton>
       <MISAButton
         buttonMain
         textButton="Lưu"
         @click="btnSaveTransferAsset"
         :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
+        :tabindex="9"
       ></MISAButton>
     </div>
   </div>
@@ -502,22 +516,6 @@
       ></MISAButton>
     </MISAToast>
   </div>
-  <div v-if="isShowToastValidateAriseTransfer" class="blur">
-    <MISAToast
-      typeToast="warning"
-      :content="toast_content_warning + '.'"
-      :moreInfo="moreInfo"
-      ><MISAButton
-        buttonSub
-        textButton="Đóng"
-        @click="btnCancelTransferAsset"
-        focus
-        ref="button"
-        :tabindex="1"
-        @keydown="checkTabIndex($event, 'islast')"
-      ></MISAButton>
-    </MISAToast>
-  </div>
 </template>
 <script>
 import { rowOnClick } from "../../helpers/table/selectRow";
@@ -525,6 +523,7 @@ import { rowOnCtrlClick } from "../../helpers/table/selectRow";
 import { rowOnClickByCheckBox } from "../../helpers/table/selectRow";
 import MISAAssetTransferChooseForm from "./AssetTransferChooseForm.vue";
 
+import { formatMoneyToInt } from "../../helpers/common/format/format";
 import { formatMoney } from "../../helpers/common/format/format";
 import { truncateText } from "../../helpers/common/format/format";
 import { AssetDepreciation } from "../../helpers/common/format/format";
@@ -596,6 +595,10 @@ export default {
       totalPages: 0,
       // Trang hiện tại
       currentPage: 1,
+      // Tổng nguyên giá
+      totalPrice: "0",
+      // Tổng giá trị còn lại
+      totalResidualValue: "0",
 
       // ----------------------------- Checkbox -----------------------------
       // Tick ô checkbox input
@@ -617,7 +620,6 @@ export default {
       isShowToastValueChange: false,
       toast_content_warning: null,
       isShowToastValidateBE: false,
-      isShowToastValidateAriseTransfer: false,
       moreInfo: null,
       //
       // Focus vào ô nhập liệu, ban đầu là mã chứng từ
@@ -711,6 +713,7 @@ export default {
   methods: {
     AssetDepreciation,
     formatMoney,
+    formatMoneyToInt,
     truncateText,
 
     //------------------------------------------- ADD-UPDATE CHỨNG TỪ -------------------------------------------
@@ -766,6 +769,12 @@ export default {
           this.$processErrorResponse(res);
           this.isShowToastValidateBE = true;
           this.toast_content_warning = res.response.data.UserMessage;
+          if(this.toast_content_warning.includes("Ngày điều chuyển")){
+            this.inputFocus = "TransferDate";
+          }
+          if(this.toast_content_warning.includes("Mã chứng từ")){
+            this.inputFocus = "TransferAssetCode";
+          }
         });
     },
 
@@ -993,10 +1002,7 @@ export default {
               this.toast_content_warning =
                 this.$_MISAResource.VN.Form.Warning.Transfer.Save.UnChange;
             }
-            if (
-              this.isShowToastValidateAriseTransfer ||
-              action == this.$_MISAEnum.FORM_MODE.CANCEL
-            ) {
+            if (action == this.$_MISAEnum.FORM_MODE.CANCEL) {
               this.btnCloseForm();
             }
           } else {
@@ -1006,6 +1012,7 @@ export default {
                 this.$_MISAResource.VN.Form.Warning.Transfer.Edit.ValueChange;
             } else if (action == this.$_MISAEnum.FORM_MODE.UPDATE) {
               if (!this.assets || this.assets.length <= 0) {
+                this.buttonFocus = "ChooseAsset";
                 this.isShowToastValidateBE = true;
                 this.toast_content_warning =
                   this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoAsset;
@@ -1143,6 +1150,7 @@ export default {
           this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoReceiver;
       } else {
         if (!this.assets || this.assets.length <= 0) {
+          this.buttonFocus = "ChooseAsset";
           this.isShowToastValidateBE = true;
           this.toast_content_warning =
             this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoAsset;
@@ -1286,27 +1294,12 @@ export default {
 
           this.getNewestReceiver();
           this.pagingAssetFE();
-          this.checkTransferAssetArise();
         })
         .catch((res) => {
           this.$processErrorResponse(res);
           this.isShowToastValidateBE = true;
           this.toast_content_warning = res.response.data.UserMessage;
         });
-    },
-
-    checkTransferAssetArise() {
-      let assets = JSON.parse(JSON.stringify(this.originalAssets));
-      let fixedAssetIds = assets.map((asset) => asset.FixedAssetId);
-      this.$_MISAApi.TransferAsset.GetNewest(
-        this.transferAsset.TransferAssetId,
-        fixedAssetIds
-      ).catch((res) => {
-        this.$processErrorResponse(res);
-        this.isShowToastValidateAriseTransfer = true;
-        this.toast_content_warning = res.response.data.UserMessage;
-        this.moreInfo = res.response.data.MoreInfo;
-      });
     },
 
     /**
@@ -1318,6 +1311,23 @@ export default {
     },
 
     //------------------------------------------- RECEIVER -------------------------------------------
+    moveUp(index) {
+      if (index > 0) {
+        // Đổi chỗ item tại index với item phía trên nó
+        const temp = this.receivers[index];
+        this.receivers[index] = this.receivers[index - 1];
+        this.receivers[index - 1] = temp;
+      }
+    },
+    moveDown(index) {
+      if (index < this.receivers.length - 1) {
+        // Đổi chỗ item tại index với item phía dưới nó
+        const temp = this.receivers[index];
+        this.receivers[index] = this.receivers[index + 1];
+        this.receivers[index + 1] = temp;
+      }
+    },
+    
     btnAddReceiver() {
       if (this.formMode != this.$_MISAEnum.FORM_MODE.VIEW) {
         const newReceiver = {
@@ -1441,6 +1451,20 @@ export default {
       const start = (this.currentPage - 1) * this.pageLimit;
       const end = start + this.pageLimit;
       this.pagingAsset = pagingAsset.slice(start, end);
+
+      var totalPrice = this.pagingAsset.reduce((total, asset) => {
+        return total + Math.round(asset.Cost);
+      }, 0);
+      var totalDepreciation = this.pagingAsset.reduce((total, asset) => {
+        return (
+          total +
+          this.formatMoneyToInt((asset.Cost * (1 / asset.LifeTime)).toFixed(0))
+        );
+      }, 0);
+      var totalResidualValue = totalPrice - totalDepreciation;
+
+      this.totalPrice = formatMoney(totalPrice);
+      this.totalResidualValue = formatMoney(totalResidualValue);
     },
 
     /**
@@ -1638,13 +1662,23 @@ export default {
 
     onCloseForm() {
       this.isShowFormChooseAsset = false;
+      this.buttonFocus = "ChooseAsset";
+      this.$refs[this.buttonFocus].focusButton();
+        this.buttonFocus = null;
     },
 
     //------------------------------------------- TOAST -------------------------------------------
     btnCloseToastWarning() {
       this.isShowToastValueChange = false;
       this.isShowToastValidateBE = false;
-      this.$refs[this.inputFocus].focusInput();
+      if (this.inputFocus) {
+        this.$refs[this.inputFocus].focusInput();
+        this.inputFocus = null;
+      }
+      if (this.buttonFocus) {
+        this.$refs[this.buttonFocus].focusButton();
+        this.buttonFocus = null;
+      }
     },
 
     //------------------------------------------- TAB INDEX -------------------------------------------
@@ -1695,6 +1729,14 @@ export default {
             this.$_MISAResource.VN.Form.Warning.Transfer.Add.NoReceiver;
         }
       }
+
+      if(this.transferAsset.TransferDate < this.transferAsset.TransactionDate){
+        this.inputFocus = "TransferDate";
+        this.isShowToastValidateBE = true;
+          this.toast_content_warning =
+            this.$_MISAResource.VN.Form.Warning.Transfer.SmallTransactionDate;
+      }
+
       switch ("") {
         case this.transferAsset.TransferAssetCode ?? "":
           this.inputFocus = "TransferAssetCode";
@@ -1904,7 +1946,7 @@ export default {
 .row {
   display: grid;
   grid-template-columns:
-    44px 50px 160px 180px 200px 200px 200px 200px calc(100% - 1344px)
+    44px 50px 160px 180px 200px 200px 200px 200px 295px
     110px;
   height: 35px;
   cursor: pointer;

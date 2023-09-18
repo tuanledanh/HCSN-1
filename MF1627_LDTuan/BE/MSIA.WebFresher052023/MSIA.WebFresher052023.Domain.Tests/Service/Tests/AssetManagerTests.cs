@@ -26,7 +26,7 @@ namespace MSIA.WebFresher052023.Domain.Tests.Service.Tests
 
 
             // Act & Assert
-            Assert.ThrowsAsync<ConflictException>(async () => await assetManager.CheckDuplicateCode(code));
+            Assert.ThrowsAsync<ConflictException>(async () => await assetManager.CheckDuplicateCodeAsync(code));
             assetRepository.Received(1).FindByCodeAsync(code);
         }
 
@@ -45,7 +45,7 @@ namespace MSIA.WebFresher052023.Domain.Tests.Service.Tests
 
 
             // Act & Assert
-            await assetManager.CheckDuplicateCode(code);
+            await assetManager.CheckDuplicateCodeAsync(code);
             await assetRepository.Received(1).FindByCodeAsync(code);
         } 
         #endregion

@@ -37,12 +37,12 @@
       </div>
       <div class="paging--right">
         <div class="calculator">
-          <div v-if="quantity > 0" class="quantity">{{ quantity }}</div>
-          <div v-if="price > 0" class="price">{{ price }}</div>
-          <div v-if="depreciation > 0" class="depreciation">
+          <div class="quantity">{{ quantity }}</div>
+          <div class="price">{{ price }}</div>
+          <div class="depreciation">
             {{ depreciation }}
           </div>
-          <div v-if="residualValue > 0" class="residualValue">
+          <div class="residualValue">
             {{ residualValue }}
           </div>
         </div>
@@ -82,25 +82,25 @@ export default {
     // Tổng số lượng
     quantity: {
       type: String,
-      default: "0",
+      default: "",
     },
 
     // Tổng nguyên giá
     price: {
       type: String,
-      default: "0",
+      default: "",
     },
 
     // Tổng giá trị hao mòn
     depreciation: {
       type: String,
-      default: "0",
+      default: "",
     },
 
     // Tổng giá trị còn lại
     residualValue: {
       type: String,
-      default: "0",
+      default: "",
     },
   },
   data() {
@@ -265,7 +265,7 @@ export default {
 .calculator {
   display: flex;
   flex-direction: row;
-  padding-right: 120px;
+  padding-right: 105px;
   font-weight: 700;
 }
 
@@ -275,7 +275,7 @@ export default {
 }
 
 .depreciation {
-  width: 122px;
+  width: 116px;
   text-align: right;
 }
 

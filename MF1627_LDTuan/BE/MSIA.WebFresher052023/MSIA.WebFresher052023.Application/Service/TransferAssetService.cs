@@ -64,13 +64,27 @@ namespace Application.Service
             return transferAssetDto;
         }
 
-        public async Task GetNewestTransferAsset(Guid transferId, List<Guid> assetIds)
+        public async Task GetNewestTransferAsset(Guid transferId)
         {
             var transferAsset = await _transferAssetRepository.GetAsync(transferId);
             if(transferAsset == null)
             {
                 throw new Exception();
             }
+            // Để tận dụng GetAllTransferAssetOfAsset, tạo 1 list chứa id chứng từ
+            List<Guid> transferIdList = new()
+            {
+                transferId
+            };
+
+            // Lấy danh sách tài sản bên trong chứng từ này
+            var transferAssets = await _transferAssetRepository.GetAllTransferAssetOfAsset(transferIdList);
+            var assetIds = transferAssets
+                .Where(transfer => transfer.TransferAssetId == transferId)
+                .Select(transfer => transfer.FixedAssetId)
+                .ToList();
+
+
             var transferList = await _transferAssetRepository.GetNewestTransferAssetByAssetId(assetIds);
             var newestTransfer = transferList.FirstOrDefault();
             if(newestTransfer != null && newestTransfer.TransferAssetId != transferId)
@@ -107,7 +121,7 @@ namespace Application.Service
                             .Where(transfer => transfer.FixedAssetId == fixedAsset.FixedAssetId && transfer.CreatedDate > transferAsset.CreatedDate)
                             .OrderByDescending(transfer => transfer.CreatedDate)
                             .ToList();
-                throw new ValidateException(ErrorMessagesTransferAsset.Arise(fixedAsset.FixedAssetCode), ErrorMessagesTransferAsset.Infor(generatedDocument));
+                throw new ValidateException(ErrorMessagesTransferAsset.AriseUpdate(fixedAsset.FixedAssetCode), ErrorMessagesTransferAsset.Infor(generatedDocument));
             }
         }
 
@@ -140,7 +154,7 @@ namespace Application.Service
             _transferAssetManager.CheckNullRequest(transferAssetCreateDto.TransferAsset, transferAssetCreateDto.ListTransferAssetDetail);
 
             var transferAssetDto = transferAssetCreateDto.TransferAsset;
-            await _transferAssetManager.CheckDuplicateCode(transferAssetDto.TransferAssetCode);
+            await _transferAssetManager.CheckDuplicateCodeAsync(transferAssetDto.TransferAssetCode);
 
             var listTransferAssetDetails = _mapper.Map<List<TransferAssetDetail>>(transferAssetCreateDto.ListTransferAssetDetail);
 
@@ -215,7 +229,7 @@ namespace Application.Service
             _transferAssetManager.CheckNullRequest(transferAssetUpdateDto.TransferAsset, transferAssetUpdateDto.ListTransferAssetDetail);
 
             var transferAssetDto = transferAssetUpdateDto.TransferAsset;
-            await _transferAssetManager.CheckDuplicateCode(transferAssetDto.TransferAssetCode, oldTransferAsset.TransferAssetCode);
+            await _transferAssetManager.CheckDuplicateCodeAsync(transferAssetDto.TransferAssetCode, oldTransferAsset.TransferAssetCode);
 
             // 3.Sau khi check không null thì bắt đầu lấy danh sách tài sản điều chuyển và bên người nhận
             var listTransferAssetDeatilDtos = transferAssetUpdateDto.ListTransferAssetDetail.ToList();
@@ -358,7 +372,7 @@ namespace Application.Service
             catch
             {
                 await _unitOfWork.RollbackAsync();
-                return false;
+                throw;
             }
             // ======================================================= CREATE-UPDATE-DELETE END  =======================================================
             #endregion

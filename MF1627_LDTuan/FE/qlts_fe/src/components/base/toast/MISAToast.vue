@@ -21,7 +21,7 @@
           <MISAIcon success></MISAIcon>
         </section>
         <section
-          class="t-toast--icon-update center"
+          class="t-toast--icon-success center"
           v-if="typeToast === 'update'"
         >
           <MISAIcon success></MISAIcon>
@@ -124,7 +124,7 @@ export default {
 .t-toast {
   background-color: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
-  width: 464px;
+  width: 500px;
   padding: 14px 30px 14px 40px;
   row-gap: 30px;
 }

@@ -1,7 +1,7 @@
 <template>
-  <div class="table__paging">
-    <div class="paging">
-      <div class="paging--left">
+  <div class="table__pagingFE">
+    <div class="pagingFE">
+      <div class="pagingFE--left">
         <span
           >Tổng số: <strong>{{ totalRecords }}</strong> bản ghi</span
         >
@@ -9,7 +9,7 @@
           :pageLimitList="pageLimitList"
           @filter="getPageLimit"
         ></MISADropdownList>
-        <div class="page--item">
+        <div class="page--itemFE">
           <MISAIcon
             prev
             :totalPages="totalPages"
@@ -20,8 +20,8 @@
           <div
             v-for="(page, index) in pages"
             :key="index"
-            class="paging__number"
-            :class="{ 'paging__number--active': page == pageNumber }"
+            class="pagingFE__number"
+            :class="{ 'pagingFE__number--active': page == pageNumber }"
             @click.prevent="getPageNumber(page)"
           >
             {{ page }}
@@ -35,11 +35,11 @@
           ></MISAIcon>
         </div>
       </div>
-      <div class="paging--right">
-        <div class="calculator">
+      <div class="pagingFE--right">
+        <div class="calculatorFE">
           <div v-if="quantity > 0" class="quantity">{{ quantity }}</div>
-          <div v-if="price > 0" class="price">{{ price }}</div>
-          <div v-if="depreciation > 0" class="depreciation">
+          <div v-if="price > 0" class="priceFE">{{ price }}</div>
+          <div v-if="depreciation > 0" class="depreciationFE">
             {{ depreciation }}
           </div>
           <div v-if="residualValue > 0" class="residualValue">
@@ -172,7 +172,7 @@ export default {
 </script>
 
 <style scoped>
-.paging {
+.pagingFE {
   /* border-top: 1px solid var(--background-color-table-expand-narrow); */
   background-color: #ffffff;
   height: 39px;
@@ -187,14 +187,14 @@ export default {
   box-sizing: border-box;
 }
 
-.paging--left {
+.pagingFE--left {
   display: flex;
   flex-direction: row;
   align-items: center;
   column-gap: 25px;
 }
 
-.paging--left .input--option {
+.pagingFE--left .input--option {
   width: 59px;
   height: 25px;
   box-sizing: border-box;
@@ -202,60 +202,60 @@ export default {
   margin-right: 20px;
 }
 
-.paging--left .input--option input {
+.pagingFE--left .input--option input {
   padding-left: 14px;
 }
 
-.page--item {
+.page--itemFE {
   display: flex;
   flex-direction: row;
   align-items: center;
   column-gap: 10px;
 }
 
-.page--item .icon {
+.page--itemFE .icon {
   border-radius: 4px;
   padding: 4px 6px;
 }
 
-.page--item .icon:hover {
+.page--itemFE .icon:hover {
   background-color: rgb(239, 239, 239);
 }
 
-.paging__number {
+.pagingFE__number {
   padding: 2px 6px;
   cursor: pointer;
 }
 
-.paging__number:hover {
+.pagingFE__number:hover {
   border-radius: 4px;
   background-color: rgb(239, 239, 239);
 }
 
-.paging__number--active {
+.pagingFE__number--active {
   border-radius: 4px;
   background-color: rgb(234, 234, 234);
   font-weight: 700;
 }
 
-.calculator {
+.calculatorFE {
   display: flex;
   flex-direction: row;
   padding-right: 120px;
   font-weight: 700;
 }
 
-.residualValue {
+.residualValueFE {
   width: 122px;
   text-align: right;
 }
 
-.depreciation {
+.depreciationFE {
   width: 122px;
   text-align: right;
 }
 
-.price {
+.priceFE {
   width: 122px;
   text-align: right;
 }

@@ -35,7 +35,11 @@
               maxlength="50"
               :tabindex="5"
               @keydown="checkTabIndex($event, 'isFirst')"
-              :error="isSubmitForm && (!asset.FixedAssetCode || asset.FixedAssetCode == '')"
+              :error="
+                isSubmitForm &&
+                (!asset.FixedAssetCode || asset.FixedAssetCode == '')
+              "
+              :disabled="viewOnly"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -49,7 +53,11 @@
               required
               maxlength="100"
               :tabindex="6"
-              :error="isSubmitForm && (!asset.FixedAssetName || asset.FixedAssetName == '')"
+              :error="
+                isSubmitForm &&
+                (!asset.FixedAssetName || asset.FixedAssetName == '')
+              "
+              :disabled="viewOnly"
             ></MISAInput>
           </div>
         </div>
@@ -69,7 +77,11 @@
               :inputChange="inputChange"
               maxlength="100"
               :tabindex="7"
-              :error="isSubmitForm && (!asset.DepartmentId || asset.DepartmentId == '')"
+              :error="
+                isSubmitForm &&
+                (!asset.DepartmentId || asset.DepartmentId == '')
+              "
+              :disabled="viewOnly"
             ></MISACombobox>
           </div>
           <div class="popup__column">
@@ -98,7 +110,12 @@
               :inputChange="inputChange"
               maxlength="100"
               :tabindex="8"
-              :error="isSubmitForm && (!asset.FixedAssetCategoryId || asset.FixedAssetCategoryId == '')"
+              :error="
+                isSubmitForm &&
+                (!asset.FixedAssetCategoryId ||
+                  asset.FixedAssetCategoryId == '')
+              "
+              :disabled="viewOnly"
             ></MISACombobox>
           </div>
           <div class="popup__column">
@@ -125,7 +142,14 @@
               right
               maxlength="12"
               :tabindex="9"
-              :error="isSubmitForm && (!asset.Quantity || asset.Quantity == '' || asset.Quantity == 0 || asset.Quantity == '0')"
+              :error="
+                isSubmitForm &&
+                (!asset.Quantity ||
+                  asset.Quantity == '' ||
+                  asset.Quantity == 0 ||
+                  asset.Quantity == '0')
+              "
+              :disabled="viewOnly"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -140,7 +164,14 @@
               right
               maxlength="12"
               :tabindex="10"
-              :error="isSubmitForm && (!asset.Cost || asset.Cost == '' || asset.Cost == 0 || asset.Cost == '0')"
+              :error="
+                isSubmitForm &&
+                (!asset.Cost ||
+                  asset.Cost == '' ||
+                  asset.Cost == 0 ||
+                  asset.Cost == '0')
+              "
+              :disabled="viewOnly"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -155,7 +186,14 @@
               right
               maxlength="4"
               :tabindex="11"
-              :error="isSubmitForm && (!asset.LifeTime || asset.LifeTime == '' || asset.LifeTime == 0 || asset.LifeTime == '0')"
+              :error="
+                isSubmitForm &&
+                (!asset.LifeTime ||
+                  asset.LifeTime == '' ||
+                  asset.LifeTime == 0 ||
+                  asset.LifeTime == '0')
+              "
+              :disabled="viewOnly"
             ></MISAInput>
           </div>
         </div>
@@ -187,7 +225,14 @@
               right
               maxlength="100"
               :tabindex="12"
-              :error="isSubmitForm && (!yearlyDepreciationAmount || yearlyDepreciationAmount == '' || yearlyDepreciationAmount == 0 || yearlyDepreciationAmount == '0')"
+              :error="
+                isSubmitForm &&
+                (!yearlyDepreciationAmount ||
+                  yearlyDepreciationAmount == '' ||
+                  yearlyDepreciationAmount == 0 ||
+                  yearlyDepreciationAmount == '0')
+              "
+              :disabled="viewOnly"
             ></MISAInput>
           </div>
           <div class="popup__column">
@@ -211,7 +256,14 @@
               label="Ngày mua"
               required
               :tabindex="13"
-              :error="isSubmitForm && (!asset.PurchaseDate || asset.PurchaseDate == '' || asset.PurchaseDate == 0 || asset.PurchaseDate == '0')"
+              :error="
+                isSubmitForm &&
+                (!asset.PurchaseDate ||
+                  asset.PurchaseDate == '' ||
+                  asset.PurchaseDate == 0 ||
+                  asset.PurchaseDate == '0')
+              "
+              :disabled="viewOnly"
             ></MISAInputDatePicker>
           </div>
           <div class="popup__column">
@@ -222,7 +274,14 @@
               label="Ngày bắt đầu sử dụng"
               required
               :tabindex="14"
-              :error="isSubmitForm && (!asset.StartUsingDate || asset.StartUsingDate == '' || asset.StartUsingDate == 0 || asset.StartUsingDate == '0')"
+              :error="
+                isSubmitForm &&
+                (!asset.StartUsingDate ||
+                  asset.StartUsingDate == '' ||
+                  asset.StartUsingDate == 0 ||
+                  asset.StartUsingDate == '0')
+              "
+              :disabled="viewOnly"
             ></MISAInputDatePicker>
           </div>
         </div>
@@ -233,12 +292,14 @@
           textButton="Lưu"
           @click="btnSaveAsset"
           :tabindex="16"
+          :disabled="viewOnly"
         ></MISAButton>
         <MISAButton
           buttonOutline
           textButton="Hủy"
           @click="btnCancelForm"
           :tabindex="15"
+          :disabled="viewOnly"
         ></MISAButton>
       </div>
     </div>
@@ -318,6 +379,22 @@
         ></MISAButton>
       </MISAToast>
     </div>
+    <div v-if="isShowToastValidateAriseTransfer" class="blur">
+    <MISAToast
+      typeToast="warning"
+      :content="toast_content_warning + '.'"
+      :moreInfo="moreInfo"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="btnCloseToastWarning"
+        focus
+        ref="button"
+        :tabindex="1"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton>
+    </MISAToast>
+  </div>
   </div>
 </template>
 <script>
@@ -370,6 +447,7 @@ export default {
       inputFocus: "AssetCode",
       // Focus vào ô nhập liệu, ban đầu là mã tài sản
       buttonFocus: "",
+      viewOnly: false,
 
       // =================================Toast===================================================
       // Hiển thị thông báo khi click vào icon thoát hoặc hủy
@@ -382,6 +460,8 @@ export default {
       isShowToastValidateBE: false,
       // Nội dung thông báo lỗi
       toast_content_warning: null,
+      isShowToastValidateAriseTransfer: false,
+      moreInfo: null,
 
       // =================================Clone asset===================================================
       // Mã code mới cho việc sao chép tài sản
@@ -517,14 +597,31 @@ export default {
               this.asset.FixedAssetCode = this.cloneAssetCode;
             }
           }, 0);
-
           this.isLoading = false;
+          this.checkTransferAssetArise(assetOld.FixedAssetId);
         })
         .catch((res) => {
           this.$processErrorResponse(res);
           this.isShowToastValidateBE = true;
           this.toast_content_warning = res.response.data.UserMessage;
+          this.viewOnly = true;
         });
+    },
+
+    checkTransferAssetArise(assetId) {
+      var listIds = [];
+      listIds.push(assetId);
+      this.$_MISAApi.FixedAsset.CheckTransfer(
+        listIds,
+        this.$_MISAEnum.ACTION.UPDATE
+      ).catch((res) => {
+        this.$processErrorResponse(res);
+        this.isShowToastValidateAriseTransfer = true;
+        this.toast_content_warning = res.response.data.UserMessage;
+        this.moreInfo = res.response.data.MoreInfo;
+        this.isLoading = false;
+        this.viewOnly = true;
+      });
     },
     /**
      * Lấy mã tài sản mới đế thêm mới tài sản
@@ -745,6 +842,8 @@ export default {
       this.isShowToastWarningEdit = false;
       this.isShowToastValidate = false;
       this.isShowToastValidateBE = false;
+      this.isShowToastValidateAriseTransfer = false;
+      this.moreInfo = null;
       this.toast_content_warning = null;
       if (
         !this.inputFocus ||
