@@ -130,6 +130,7 @@
               @dblclick="btnEditTransferAsset(transferAsset)"
               @click.exact.stop="callRowOnClick(transferAsset)"
               @click.ctrl.stop="callRowOnCtrlClick(transferAsset)"
+              @contextmenu.prevent="btnClickRight($event, transferAsset)"
             >
               <div
                 class="cell display--center-center border--right border--bottom"
@@ -414,6 +415,15 @@
     </div>
   </div>
   <MISALoading v-if="isLoading"></MISALoading>
+  <MISAContextMenu
+    :listItem="this.$_MISAResource.VN.ContextMenu.Transfer"
+    :isShowContextMenu="isShowContextMenu"
+    :posX="mouseX"
+    :posY="mouseY"
+    @click.stop="hideContextMenu"
+    @getItemContext="getItemContext"
+    v-click-outside="() => (isShowContextMenu = false)"
+  ></MISAContextMenu>
   <MISAAssetTransferForm
     v-if="isFormDisplay"
     @onCloseForm="onCloseForm"
@@ -619,6 +629,18 @@ export default {
 
       // ----------------------------- Tab index -----------------------------
       buttonFocus: null,
+
+      // =================================Context menu=================================
+      // Hiển thị context menu
+      isShowContextMenu: false,
+      // Tọa độ x của menu
+      mouseX: 0,
+      // Tọa độ y của menu
+      mouseY: 0,
+      //
+      rowIndex: -1,
+      // Thông tin của bản ghi
+      transferAssetContext: null,
     };
   },
   watch: {
@@ -694,8 +716,8 @@ export default {
           this.assets = [];
           this.isLoading = false;
 
-          if(this.transferAssets.length > 0)
-          this.callRowOnClick(this.transferAssets[0]);
+          if (this.transferAssets.length > 0)
+            this.callRowOnClick(this.transferAssets[0]);
 
           var totalPrice = this.transferAssets.reduce(
             (total, transferAsset) => {
@@ -751,7 +773,9 @@ export default {
       // Vì mã code có thể chứa 1 số ký tự đặc biệt như # vì thường được sử dụng để đánh dấu một phần của URL được xử lý bởi JavaScript trên trình duyệt và không được gửi lên máy chủ
       // Vì vậy trước khi gửi phải mã hóa
       // BE tự mã hóa rồi nên chỉ cần làm ở FE
-      const encodedTransferAssetCode = encodeURIComponent(this.transferAssetCode);
+      const encodedTransferAssetCode = encodeURIComponent(
+        this.transferAssetCode
+      );
       this.$_MISAApi.TransferAsset.GetByCode(encodedTransferAssetCode)
         .then((res) => {
           const assets = res.data.FixedAssetTransfers;
@@ -1121,6 +1145,49 @@ export default {
     btnDeleteSingleTransferAsset() {
       this.deleteTransferAssets(this.transferAssetSingle);
     },
+
+    //------------------------------------------- CONTEXT MENU -------------------------------------------
+    /**
+     * Chuột phải để mở context mennu
+     * @param {*} event
+     * @param {object} asset bản ghi
+     * Author: LDTUAN (09/08/2023)
+     */
+    btnClickRight(event, transferAsset) {
+      //event.preventDefault();
+      this.isShowContextMenu = true;
+      this.mouseX = event.clientX;
+      this.mouseY = event.clientY;
+      this.rowIndex = this.transferAssets.indexOf(transferAsset);
+      this.transferAssetContext = transferAsset;
+      this.selectedRows = [];
+      this.selectedRows.push(this.transferAssetContext);
+    },
+
+    /**
+     * Thực hiện hành động tương ứng với option đã chọn từ context menu
+     * @param {int} index số index nhận từ option của context menu
+     * Author: LDTUAN (09/08/2023)
+     */
+    getItemContext(index) {
+      switch (index) {
+        case 1:
+          this.btnEditTransferAsset(this.transferAssetContext);
+          break;
+        case 2:
+          this.callToastDeleteSingle(this.transferAssetContext);
+          break;
+      }
+    },
+
+    /**
+     * Tắt context menu
+     * Author: LDTUAN (09/08/2023)
+     */
+    hideContextMenu() {
+      this.isShowContextMenu = false;
+      this.rowIndex = -1;
+    },
   },
   mounted() {
     /**
@@ -1310,7 +1377,7 @@ export default {
   border-color: var(--table-border-color);
 }
 
-.top-head-right{
+.top-head-right {
   display: flex;
   align-items: center;
   column-gap: 20px;

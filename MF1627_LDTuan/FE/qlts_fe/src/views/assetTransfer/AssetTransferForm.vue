@@ -210,6 +210,17 @@
             maxlength="50"
             :tabindex="7"
           ></MISAInput>
+          <MISAButton
+            v-if="
+              formMode == this.$_MISAEnum.FORM_MODE.UPDATE &&
+              (!this.assets || this.assets.length === 0)
+            "
+            combo
+            large
+            loading
+            textButton="Load dữ liệu cũ"
+            @click="loadOldData"
+          ></MISAButton>
         </div>
         <div class="action--right">
           <div
@@ -1225,10 +1236,10 @@ export default {
       // Vì mã code có thể chứa 1 số ký tự đặc biệt như # vì thường được sử dụng để đánh dấu một phần của URL được xử lý bởi JavaScript trên trình duyệt và không được gửi lên máy chủ
       // Vì vậy trước khi gửi phải mã hóa
       // BE tự mã hóa rồi nên chỉ cần làm ở FE
-      const encodedTransferAssetCode = encodeURIComponent(oldTransferAsset.TransferAssetCode);
-      await this.$_MISAApi.TransferAsset.GetByCode(
-        encodedTransferAssetCode
-      )
+      const encodedTransferAssetCode = encodeURIComponent(
+        oldTransferAsset.TransferAssetCode
+      );
+      await this.$_MISAApi.TransferAsset.GetByCode(encodedTransferAssetCode)
         .then((res) => {
           if (res.data.ReceiverTransfers[0]) {
             this.receivers = res.data.ReceiverTransfers;
@@ -1268,10 +1279,10 @@ export default {
       // Vì mã code có thể chứa 1 số ký tự đặc biệt như # vì thường được sử dụng để đánh dấu một phần của URL được xử lý bởi JavaScript trên trình duyệt và không được gửi lên máy chủ
       // Vì vậy trước khi gửi phải mã hóa
       // BE tự mã hóa rồi nên chỉ cần làm ở FE
-      const encodedTransferAssetCode = encodeURIComponent(oldTransferAsset.TransferAssetCode);
-      await this.$_MISAApi.TransferAsset.GetByCode(
-        encodedTransferAssetCode
-      )
+      const encodedTransferAssetCode = encodeURIComponent(
+        oldTransferAsset.TransferAssetCode
+      );
+      await this.$_MISAApi.TransferAsset.GetByCode(encodedTransferAssetCode)
         .then((res) => {
           if (res.data.ReceiverTransfers[0]) {
             this.receivers = res.data.ReceiverTransfers;
@@ -1456,6 +1467,11 @@ export default {
       } else {
         this.assets = this.assets.concat(items);
       }
+      this.pagingAssetFE();
+    },
+
+    loadOldData() {
+      this.assets = JSON.parse(JSON.stringify(this.originalAssets));
       this.pagingAssetFE();
     },
 

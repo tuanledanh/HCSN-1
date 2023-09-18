@@ -39,7 +39,8 @@ const MISAResource = {
           },
           TransferAssetCode: "Mã chứng từ không được để trống",
           TransactionDate: "Ngày chứng từ không được để trống",
-          SmallTransactionDate: "Ngày điều chuyển phải lớn hơn hoặc bằng ngày chứng từ",
+          SmallTransactionDate:
+            "Ngày điều chuyển phải lớn hơn hoặc bằng ngày chứng từ",
           TransferDate: "Ngày điều chuyển không được để trống",
         },
         Department: {
@@ -127,6 +128,18 @@ const MISAResource = {
         icon: "icon-delete-black",
         text: "Xóa",
         index: 4,
+      },
+      Transfer: {
+        Update: {
+          icon: "icon-edit",
+          text: "Cập nhật",
+          index: 1,
+        },
+        Delete: {
+          icon: "icon-delete-black",
+          text: "Xóa",
+          index: 2,
+        },
       },
     },
     // Các link thành phần

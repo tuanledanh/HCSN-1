@@ -89,10 +89,12 @@ export function rowOnCtrlClick(asset, assetType) {
 
   if (index !== -1) {
     this.selectedRows.splice(index, 1);
-    if (indexCheckbox !== -1)
-      this.selectedRowsByCheckBox.splice(indexCheckbox, 1);
   } else {
     this.selectedRows.push(asset);
+  }
+  if (indexCheckbox !== -1) {
+    this.selectedRowsByCheckBox.splice(indexCheckbox, 1);
+  } else {
     this.selectedRowsByCheckBox.push(asset);
   }
   if (this.selectedRows.length == 0) {
