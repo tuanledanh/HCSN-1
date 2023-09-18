@@ -35,6 +35,7 @@
                 medium
                 required
                 maxlength="12"
+                typeOfValue="code"
                 :tabindex="3"
                 @keydown="checkTabIndex($event, 'isFirst')"
                 :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
@@ -156,7 +157,7 @@
                       :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
                     >
                       <MISAIcon
-                      @click="moveUp(index)"
+                        @click="moveUp(index)"
                         pull_up_large
                         :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                       ></MISAIcon>
@@ -165,7 +166,7 @@
                       :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
                     >
                       <MISAIcon
-                      @click="moveDown(index)"
+                        @click="moveDown(index)"
                         drop_down_large
                         :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
                       ></MISAIcon>
@@ -769,10 +770,10 @@ export default {
           this.$processErrorResponse(res);
           this.isShowToastValidateBE = true;
           this.toast_content_warning = res.response.data.UserMessage;
-          if(this.toast_content_warning.includes("Ngày điều chuyển")){
+          if (this.toast_content_warning.includes("Ngày điều chuyển")) {
             this.inputFocus = "TransferDate";
           }
-          if(this.toast_content_warning.includes("Mã chứng từ")){
+          if (this.toast_content_warning.includes("Mã chứng từ")) {
             this.inputFocus = "TransferAssetCode";
           }
         });
@@ -1186,6 +1187,12 @@ export default {
               this.$processErrorResponse(res);
               this.isShowToastValidateBE = true;
               this.toast_content_warning = res.response.data.UserMessage;
+              if (this.toast_content_warning.includes("Ngày điều chuyển")) {
+                this.inputFocus = "TransferDate";
+              }
+              if (this.toast_content_warning.includes("Mã chứng từ")) {
+                this.inputFocus = "TransferAssetCode";
+              }
             });
         }
       }
@@ -1215,8 +1222,12 @@ export default {
 
     async loadTransferDataView() {
       var oldTransferAsset = this.transferAssetToUpdate;
+      // Vì mã code có thể chứa 1 số ký tự đặc biệt như # vì thường được sử dụng để đánh dấu một phần của URL được xử lý bởi JavaScript trên trình duyệt và không được gửi lên máy chủ
+      // Vì vậy trước khi gửi phải mã hóa
+      // BE tự mã hóa rồi nên chỉ cần làm ở FE
+      const encodedTransferAssetCode = encodeURIComponent(oldTransferAsset.TransferAssetCode);
       await this.$_MISAApi.TransferAsset.GetByCode(
-        oldTransferAsset.TransferAssetCode
+        encodedTransferAssetCode
       )
         .then((res) => {
           if (res.data.ReceiverTransfers[0]) {
@@ -1254,8 +1265,12 @@ export default {
 
     async loadTransferDataUpdate() {
       var oldTransferAsset = this.transferAssetToUpdate;
+      // Vì mã code có thể chứa 1 số ký tự đặc biệt như # vì thường được sử dụng để đánh dấu một phần của URL được xử lý bởi JavaScript trên trình duyệt và không được gửi lên máy chủ
+      // Vì vậy trước khi gửi phải mã hóa
+      // BE tự mã hóa rồi nên chỉ cần làm ở FE
+      const encodedTransferAssetCode = encodeURIComponent(oldTransferAsset.TransferAssetCode);
       await this.$_MISAApi.TransferAsset.GetByCode(
-        oldTransferAsset.TransferAssetCode
+        encodedTransferAssetCode
       )
         .then((res) => {
           if (res.data.ReceiverTransfers[0]) {
@@ -1327,7 +1342,7 @@ export default {
         this.receivers[index + 1] = temp;
       }
     },
-    
+
     btnAddReceiver() {
       if (this.formMode != this.$_MISAEnum.FORM_MODE.VIEW) {
         const newReceiver = {
@@ -1664,7 +1679,7 @@ export default {
       this.isShowFormChooseAsset = false;
       this.buttonFocus = "ChooseAsset";
       this.$refs[this.buttonFocus].focusButton();
-        this.buttonFocus = null;
+      this.buttonFocus = null;
     },
 
     //------------------------------------------- TOAST -------------------------------------------
@@ -1730,11 +1745,13 @@ export default {
         }
       }
 
-      if(this.transferAsset.TransferDate < this.transferAsset.TransactionDate){
+      if (
+        this.transferAsset.TransferDate < this.transferAsset.TransactionDate
+      ) {
         this.inputFocus = "TransferDate";
         this.isShowToastValidateBE = true;
-          this.toast_content_warning =
-            this.$_MISAResource.VN.Form.Warning.Transfer.SmallTransactionDate;
+        this.toast_content_warning =
+          this.$_MISAResource.VN.Form.Warning.Transfer.SmallTransactionDate;
       }
 
       switch ("") {

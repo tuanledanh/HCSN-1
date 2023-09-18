@@ -46,7 +46,11 @@
       <MISAIcon v-if="search" input iconSearch></MISAIcon>
     </MISATooltip>
 
-    <div v-if="inputInDe" class="icon__wrapper absolute" :class="[{'disabled':disabled}]">
+    <div
+      v-if="inputInDe"
+      class="icon__wrapper absolute"
+      :class="[{ disabled: disabled }]"
+    >
       <MISAIcon pull_up @click="btnIncrease" :disabled="disabled"></MISAIcon>
       <MISAIcon drop_down @click="btnDecrease" :disabled="disabled"></MISAIcon>
     </div>
@@ -220,6 +224,9 @@ export default {
     },
   },
   methods: {
+    getBoundingClientRect(){
+      return this.$refs.input.getBoundingClientRect();
+    },
     /**
      * Hàm focus vào ô nhập liệu
      * Author: LDTUAN (02/08/2023)
@@ -274,6 +281,10 @@ export default {
           if (Number(value) > 100) value = "100";
           if (value === "") value = "0";
           this.inputValue = value;
+          break;
+        case "code":
+          value = value.replace(/([^0-9,a-z,A-Z])/g, "");
+          this.inputText = value;
           break;
         default:
           this.inputText = value;
@@ -418,7 +429,7 @@ export default {
   border: 1px solid #afafaf !important;
 }
 
-.disabled{
+.disabled {
   cursor: not-allowed;
 }
 

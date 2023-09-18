@@ -694,6 +694,7 @@ export default {
           this.assets = [];
           this.isLoading = false;
 
+          if(this.transferAssets.length > 0)
           this.callRowOnClick(this.transferAssets[0]);
 
           var totalPrice = this.transferAssets.reduce(
@@ -747,7 +748,11 @@ export default {
      * Author: LDTUAN (02/09/2023)
      */
     loadDataDetail() {
-      this.$_MISAApi.TransferAsset.GetByCode(this.transferAssetCode)
+      // Vì mã code có thể chứa 1 số ký tự đặc biệt như # vì thường được sử dụng để đánh dấu một phần của URL được xử lý bởi JavaScript trên trình duyệt và không được gửi lên máy chủ
+      // Vì vậy trước khi gửi phải mã hóa
+      // BE tự mã hóa rồi nên chỉ cần làm ở FE
+      const encodedTransferAssetCode = encodeURIComponent(this.transferAssetCode);
+      this.$_MISAApi.TransferAsset.GetByCode(encodedTransferAssetCode)
         .then((res) => {
           const assets = res.data.FixedAssetTransfers;
           this.totalRecords = assets.length;

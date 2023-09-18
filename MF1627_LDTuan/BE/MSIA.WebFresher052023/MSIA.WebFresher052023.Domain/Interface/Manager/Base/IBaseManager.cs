@@ -9,7 +9,7 @@
         /// <param name="code">Mã code cần kiểm tra</param>
         /// <returns>Nếu mã code tồn tại thì thông báo lỗi, còn không thì không làm gì</returns>
         /// Created by: ldtuan (19/07/2023)
-        Task CheckDuplicateCodeAsync(string code, string? oldCode = null);
+        Task CheckDuplicateCodeAsync(string code, string? oldCode = null, string? message = null);
         #endregion
     }
 }

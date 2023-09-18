@@ -70,7 +70,7 @@ namespace API.Middleware
                         new BaseException()
                         {
                             ErrorCode = StatusCodes.Status409Conflict,
-                            UserMessage = ErrorMessages.Conflict,
+                            UserMessage = exception.Message,
                             DevMessage = exception.Message,
                             TraceId = context.TraceIdentifier,
                             MoreInfo = exception.HelpLink

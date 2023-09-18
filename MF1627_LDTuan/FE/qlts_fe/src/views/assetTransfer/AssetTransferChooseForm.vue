@@ -1,5 +1,5 @@
 <template>
-  <div class="popup--child" @keyup.esc="btnCloseForm" @keydown="saveShortCut">
+  <div class="popup--child" @keyup.esc="btnCloseForm" @keydown="saveShortCut" tabindex="0">
     <div class="popup-container border-radius-4">
       <div class="popup__header--child border--top-right border--top-left">
         <span class="header__title font-weight--500"
