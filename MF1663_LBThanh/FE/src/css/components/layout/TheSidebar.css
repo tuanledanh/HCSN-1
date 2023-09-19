@@ -1,0 +1,55 @@
+.sidebar {
+    background-color: var(--background-sidebar);
+    width: 66px;
+    overflow-x: hidden;
+}
+
+.sidebar:not(:last-child) {
+    overflow-x: unset;
+}
+
+.sidebar__shrink > a:hover > .t-tooltip {
+    display: block;
+}
+
+.sidebar__header__icon {
+    background-position: -20px -680px;
+    height: 36px;
+    width: 36px;
+}
+
+.sidebar__body {
+    flex: 1;
+}
+
+.sidebar__footer {
+    flex: 0 0 40px;
+    border-top: 1px solid var(--border);
+    justify-content: right;
+    padding-right: 18px;
+    opacity: 0.6;
+}
+
+.sidebar__footer:not(.t-tooltip) {
+    opacity: unset;
+}
+
+.sidebar__grow > .sidebar__footer > .wrapper-icon > .sidebar__footer-icon {
+    animation: iconSidebarFooter 0.1s both;
+}
+
+.sidebar__footer-icon {
+    background-position: -329px -417px;
+    height: 22px;
+    width: 22px;
+}
+
+@keyframes iconSidebarFooter {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(180deg);
+    }
+}

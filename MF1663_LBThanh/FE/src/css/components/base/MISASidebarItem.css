@@ -1,0 +1,192 @@
+.sidebar__body-item {
+    opacity: 0.6;
+}
+
+/* .sidebar__body-item:hover, */
+.active  .sidebar__body-item {
+    opacity: 1;
+    background-color: var(--background-active-icon);
+    border-radius: 4px;
+}
+
+.sub-menu {
+    background-color: var(--background-sidebar-submenu);
+}
+
+.sub-menu .wrap-icon-sidebar {   
+    padding-left: 22px;
+}
+
+.sub-menu .sidebar__item--title{
+    color: #99a2ad;
+}
+
+.sub-menu-item:hover{
+    background-color: #48586c;
+}
+
+.sub-menu-item:hover .sub-menu-icon{
+    visibility: visible;
+}
+
+.sub-menu .sub-menu-icon{
+    background-image: url('/icon/icons8-right-arrow-50.png');
+    width: 20px;
+    height: 20px;
+    background-size: contain;
+    visibility: hidden;
+}
+
+.sidebar-icon-hidden {
+    visibility: hidden;
+}
+
+.sidebar__header__title,
+.sidebar__item--title {
+    color: var(--white);
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+    font-size: 2rem;
+    display: none;
+    word-break: break-all;
+    word-wrap: normal;
+    overflow: hidden;
+    height: 36px;
+    line-height: 36px;
+}
+
+.sidebar__item--title {
+    color: var(--white);
+    font-size: 1.3rem;
+}
+
+.down-icon-sidebar {
+    background-position: -158px -293px;
+    width: 12px;
+    height: 7px;
+}
+
+.sidebar .sidebar__header__title,
+.sidebar .sidebar__item--title {
+    display: block;
+}
+
+.sidebar__grow .sidebar-icon-hidden {
+    animation: iconHidden 0.5s forwards;
+    animation-delay: 0.2s;
+}
+
+.sidebar__body__icon-1 {
+    background-position: -21px -153px;
+    width: 22px;
+    height: 22px;
+}
+
+.sidebar__body__icon-2 {
+    background-position: -65px -153px;
+    width: 22px;
+    height: 23px;
+}
+
+.sidebar__body__icon-3 {
+    background-position: -110px -153px;
+    width: 21px;
+    height: 23px;
+}
+
+.sidebar__body__icon-4 {
+    background-position: -153px -153px;
+    width: 22px;
+    height: 22px;
+}
+
+.sidebar__body__icon-5 {
+    background-position: -197px -155px;
+    width: 22px;
+    height: 18px;
+}
+
+.sidebar__body__icon-6 {
+    background-position: -241px -153px;
+    width: 22px;
+    height: 22px;
+}
+
+.sidebar__body__icon-7 {
+    background-position: -329px -153px;
+    width: 22px;
+    height: 22px;
+}
+
+.sidebar__body-item:hover .sidebar__body__icon-1,
+.sidebar__body-item--active .sidebar__body__icon-1,
+.router-link-active > .sidebar__body-item > .wrap-icon-sidebar > .sidebar__body__icon-1 {
+    background-position: -22px -198px;
+    width: 20px;
+    height: 21px;
+}
+.sidebar__body-item:hover .sidebar__body__icon-2,
+.sidebar__body-item--active .sidebar__body__icon-2,
+.router-link-active > .sidebar__body-item > .wrap-icon-sidebar > .sidebar__body__icon-2 {
+    background-position: -65px -197px;
+    width: 22px;
+    height: 23px;
+}
+.sidebar__body-item:hover .sidebar__body__icon-3,
+.sidebar__body-item--active .sidebar__body__icon-3,
+.router-link-active > .sidebar__body-item > .wrap-icon-sidebar > .sidebar__body__icon-3 {
+    background-position: -110px -197px;
+    width: 21px;
+    height: 22px;
+}
+.sidebar__body-item:hover .sidebar__body__icon-4,
+.sidebar__body-item--active .sidebar__body__icon-4,
+.router-link-active > .sidebar__body-item > .wrap-icon-sidebar > .sidebar__body__icon-4 {
+    background-position: -153px -197px;
+    width: 22px;
+    height: 22px;
+}
+.sidebar__body-item:hover .sidebar__body__icon-5,
+.sidebar__body-item--active .sidebar__body__icon-5,
+.router-link-active > .sidebar__body-item > .wrap-icon-sidebar > .sidebar__body__icon-5 {
+    background-position: -198px -200px;
+    width: 20px;
+    height: 17px;
+}
+.sidebar__body-item:hover .sidebar__body__icon-6,
+.sidebar__body-item--active .sidebar__body__icon-6,
+.router-link-active > .sidebar__body-item > .wrap-icon-sidebar > .sidebar__body__icon-6 {
+    background-position: -240px -196px;
+    width: 23px;
+    height: 23px;
+}
+.sidebar__body-item:hover .sidebar__body__icon-7,
+.sidebar__body-item--active .sidebar__body__icon-7,
+.router-link-active > .sidebar__body-item > .wrap-icon-sidebar > .sidebar__body__icon-7 {
+    background-position: -330px -198px;
+    width: 20px;
+    height: 20px;
+}
+
+.wrap-icon-sidebar {
+    width: 44px;
+    height: 40px;
+    cursor: pointer;
+    flex: 0 0 44px;
+}
+.router-link-active > .sidebar__body-item {
+    opacity: 1;
+    background-color: var(--background-active-icon);
+    border-radius: 4px;
+}
+
+@keyframes iconHidden {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+        visibility: visible;
+    }
+}

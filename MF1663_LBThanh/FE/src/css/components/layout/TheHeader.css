@@ -1,0 +1,68 @@
+.main__header__left {
+    font-size: 1.6rem;
+}
+
+.header__right__title{
+    font-weight: 500;
+}
+
+.header__right__year {
+    background-color: var(--background-active);
+    padding-left: 15px;
+    margin-left: 26px;
+    margin-right: 27px;
+}
+
+.year {
+    width: 32px;
+    height: 30px;
+    border: none;
+    margin-left: 15px;
+    margin-right: 5px;
+}
+
+.choose-year-up {
+    background-position: -28px -338px;
+    width: 8px;
+    height: 5px;
+}
+
+.choose-year-down {
+    background-position: -72px -338px;
+    width: 8px;
+    height: 5px;
+}
+
+.notification {
+    background-position: -332px -109px;
+    width: 16px;
+    height: 20px;
+}
+
+.option {
+    background-position: -199px -23px;
+    width: 18px;
+    height: 18px;
+}
+
+.help {
+    background-position: -67px -67px;
+    width: 18px;
+    height: 18px;
+}
+
+.avatar {
+    background-position: -23px -23px;
+    width: 18px;
+    height: 18px;
+}
+
+.down {
+    background-position: -72px -338px;
+    width: 8px;
+    height: 5px;
+}
+
+.wrapper-icon:hover .t-tooltip {
+    display: block;
+}

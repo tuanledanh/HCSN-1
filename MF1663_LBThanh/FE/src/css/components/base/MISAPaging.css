@@ -1,0 +1,48 @@
+.footer__left__icon-prev {
+    background-position: -29px -246px;
+    width: 7px;
+    height: 12px;
+}
+
+.t-paging > .number__page {
+    column-gap: 7px;
+}
+
+.footer__left__icon-next {
+    background-position: -73px -246px;
+    width: 7px;
+    height: 12px;
+}
+
+.changePageNumber:not(.disable):active {
+    border-radius: 4px;
+    background-color: #e0e0e0;
+}
+.changePageNumber {
+    position: relative;
+}
+
+.changePageNumber.disable {
+    border-radius: 4px;
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.increasePageNumber::after {
+    content: '';
+    position: absolute;
+    color: var(--white);
+    background-color: var(--background-sidebar);
+    border-radius: 4px;
+    padding: 2px;
+    width: 60px;
+    top: -30px;
+    opacity: 0;
+    transition: all 0.2s ease-out;
+}
+
+.number__page--active {
+    background-color: var(--background-number-page-active);
+    border-radius: 4px;
+    font-weight: 700;
+}
