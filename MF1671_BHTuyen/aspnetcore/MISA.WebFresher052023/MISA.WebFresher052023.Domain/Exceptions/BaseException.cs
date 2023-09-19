@@ -36,10 +36,16 @@ namespace MISA.WebFresher052023.Domain.Exceptions
         public string? TraceId { get; set; }
 
         /// <summary>
+        /// Đường dẫn hỗ trợ
+        /// </summary>
+        /// CreatedBy: Bùi Huy Tuyền (19/07/2023)
+        public string? HelpLink { get; set; }
+
+        /// <summary>
         /// Thông tin thêm
         /// </summary>
         /// CreatedBy: Bùi Huy Tuyền (19/07/2023)
-        public string? MoreInfo { get; set; }
+        public List<string>? MoreInfo { get; set; }
 
         /// <summary>
         /// Lỗi

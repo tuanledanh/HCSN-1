@@ -54,7 +54,7 @@ namespace MISA.WebFresher052023.Domain.Tests.Service.Department
             departmentRepository.FindByCodeAsync(code).Returns(new DepartmentEntity());
 
             // Act && Assert
-            Assert.ThrowsAsync<ConflictException>(async () => await departmentManager.CheckExistByCode(code));
+            Assert.ThrowsAsync<ConflictException>(async () => await departmentManager.CheckCodeConflictAsync(code));
             await departmentRepository.Received(1).FindByCodeAsync(code);
         }
 
@@ -70,7 +70,7 @@ namespace MISA.WebFresher052023.Domain.Tests.Service.Department
             departmentRepository.FindByCodeAsync(code).ReturnsNull();
 
             // Act 
-            await departmentManager.CheckExistByCode(code);
+            await departmentManager.CheckCodeConflictAsync(code);
 
             // Assert
             await departmentRepository.Received(1).FindByCodeAsync(code);

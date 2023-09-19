@@ -19,7 +19,7 @@ namespace MISA.WebFresher052023.API.Controllers
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public FixedAssetCategoryController(IFixedAssetCategoryService fixedAssetCategoryService) : base(fixedAssetCategoryService)
         {
-        } 
+        }
         #endregion
     }
 }

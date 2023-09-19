@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using MISA.WebFresher052023.Application.Dto.FixedAsset;
 using MISA.WebFresher052023.Domain.Entity.FixedAsset;
+using MISA.WebFresher052023.Domain.Model.FixedAsset;
 
 namespace MISA.WebFresher052023.Application.Mapper
 {
@@ -14,11 +15,16 @@ namespace MISA.WebFresher052023.Application.Mapper
         public FixedAssetProfile()
         {
             CreateMap<FixedAssetEntity, FixedAssetDto>();
-            CreateMap<FixedAssetEntity, FixedAssetExcel>();
-            CreateMap<FixedAssetFilterDto, FixedAssetFilterEntity>();
-            CreateMap<FixedAssetPagingEntity, FixedAssetPagingDto>().ForMember(
-                dest => dest.FixedAssets, opt => opt.MapFrom(src => src.FixedAssetEntities));
+
+            CreateMap<FixedAssetEntity, FixedAssetExcelModel>();
+
+            CreateMap<FixedAssetFilterDto, FixedAssetFilterModel>();
+
+            CreateMap<FixedAssetPagingModel, FixedAssetPagingDto>().ForMember(
+                destination => destination.FixedAssets, opt => opt.MapFrom(src => src.FixedAssets));
+
             CreateMap<FixedAssetCreateDto, FixedAssetEntity>();
+
             CreateMap<FixedAssetUpdateDto, FixedAssetEntity>();
 
         }

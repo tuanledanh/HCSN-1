@@ -1,9 +1,9 @@
-﻿using MISA.WebFresher052023.Application.Dto.Base;
+﻿using MISA.WebFresher052023.Application.Interface.Base;
 using System.ComponentModel.DataAnnotations;
 
 namespace MISA.WebFresher052023.Application.Dto.FixedAsset
 {
-    public class FixedAssetUpdateDto : IHasKeyDto
+    public class FixedAssetUpdateDto : IHasCodeDto
     {
         #region Properties
         /// <summary>
@@ -27,8 +27,7 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAsset
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         [Required(ErrorMessage = "Id của phòng ban không được để trống")]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "Id phòng ban phải có độ dài 36 ký tự")]
-        public string DepartmentId { get; set; }
+        public Guid DepartmentId { get; set; }
 
         /// <summary>
         /// Mã bộ phận
@@ -51,8 +50,7 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAsset
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         [Required(ErrorMessage = "Id loại tài sản không được để trống")]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "Id loại tài sản phải có độ dài 36 ký tự")]
-        public string FixedAssetCategoryId { get; set; }
+        public Guid FixedAssetCategoryId { get; set; }
 
         /// <summary>
         /// Mã loại tài sản
@@ -95,6 +93,18 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAsset
         public double Cost { get; set; }
 
         /// <summary>
+        /// Hao mòn khấu hao lũy kế
+        /// </summary>
+        [Required(ErrorMessage = "Hao mòn khấu hao lũy kế không được để trống")]
+        public double AccumulationDepreciation { get; set; }
+
+        /// <summary>
+        /// Giá trị còn lại
+        /// </summary>
+        [Required(ErrorMessage = "Giá trị còn lại không được để trống")]
+        public double RemainderCost { get; set; }
+
+        /// <summary>
         /// Số lượng Tài sản
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
@@ -109,6 +119,14 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAsset
         [Required(ErrorMessage = "Tỷ lệ hao mòn không được để trống")]
         [Range(0, 100, ErrorMessage = "Tỷ lệ hao mòn phải nằm trong khoảng 0 - 100")]
         public float DepreciationRate { get; set; }
+
+        /// <summary>
+        /// Giá trị hao mòn năm
+        /// </summary>
+        [Required(ErrorMessage = "Giá trị hao mòn năm không được để trống")]
+        public double YearDepreciation { get; set; }
+
+      
 
         /// <summary>
         /// Năm theo dõi Tài sản
@@ -133,7 +151,7 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAsset
         /// </summary>
         /// <returns>Mã tài sản</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public string GetKeyCode()
+        public string GetCode()
         {
             return this.FixedAssetCode;
         }

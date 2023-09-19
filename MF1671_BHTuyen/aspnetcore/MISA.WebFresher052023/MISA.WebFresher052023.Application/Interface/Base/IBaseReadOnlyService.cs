@@ -3,12 +3,13 @@
     public interface IBaseReadOnlyService<TDto>
     {
         #region Tasks
+
         /// <summary>
         /// Lấy tất cả bản ghi
         /// </summary>
         /// <returns>Tất cả bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2021)
-        Task<IEnumerable<TDto>> GetAllAsync();
+        public Task<IEnumerable<TDto>> GetAllAsync();
 
         /// <summary>
         /// Lấy một bản ghi theo Id
@@ -16,7 +17,7 @@
         /// param name="dtoId">Id của Dto</param>
         /// <returns>Một cả bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2021)
-        Task<TDto> GetAsync(string dtoId); 
+        public Task<TDto> GetAsync(Guid dtoId);
         #endregion
 
     }

@@ -52,50 +52,44 @@ namespace MISA.WebFresher052023.API.Middleware
             Console.WriteLine(exception);
             httpContext.Response.ContentType = "application/json";
 
+            var baseException = new BaseException()
+            {
+                UserMessage = exception.Message,
+                TraceId = httpContext.TraceIdentifier,
+                HelpLink = exception.HelpLink,
+#if DEBUG
+                DevMessage = exception.Message,
+#else
+                DevMessage = ''
+#endif
+            };
             switch (exception)
             {
+                case UserException:
+                    httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    baseException.ErrorCode = StatusCodes.Status400BadRequest;
+                    baseException.MoreInfo = ((UserException)exception).MoreInfo;
+                    break;
                 case NotFoundException:
                     httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-                    await httpContext.Response.WriteAsync(
-                        text: new BaseException()
-                        {
-                            ErrorCode = StatusCodes.Status404NotFound,
-                            UserMessage = "Không tìm thấy tài nguyên",
-                            DevMessage = exception.Message,
-                            TraceId = httpContext.TraceIdentifier,
-                            MoreInfo = exception.HelpLink
-                        }.ToString() ?? ""
-                     );
+                    baseException.ErrorCode = StatusCodes.Status404NotFound;
                     break;
                 case ConflictException:
                     httpContext.Response.StatusCode = StatusCodes.Status409Conflict;
-                    await httpContext.Response.WriteAsync(text: new BaseException()
-                    {
-                        ErrorCode = StatusCodes.Status409Conflict,
-                        UserMessage = ((ConflictException)exception).Message,
-                        DevMessage = exception.Message,
-                        TraceId = httpContext.TraceIdentifier,
-                        MoreInfo = exception.HelpLink
-                    }.ToString() ?? "");
+                    baseException.ErrorCode = StatusCodes.Status409Conflict;
                     break;
-
+                case Exception:
+                    httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                    baseException.ErrorCode = StatusCodes.Status400BadRequest;
+                    break;
                 default:
                     httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                    await httpContext.Response.WriteAsync(text: new BaseException()
-                    {
-                        ErrorCode = httpContext.Response.StatusCode,
-                        UserMessage = "Lỗi hệ thống",
-#if DEBUG
-                        DevMessage = exception.Message,
-#else
-                    DevMessage = "",
-#endif
-                        TraceId = httpContext.TraceIdentifier,
-                        MoreInfo = exception.HelpLink
-                    }.ToString() ?? "");
+                    baseException.ErrorCode = StatusCodes.Status500InternalServerError;
                     break;
             }
-            #endregion
+
+            await httpContext.Response.WriteAsync(baseException.ToString());
         }
+        #endregion
     }
 }

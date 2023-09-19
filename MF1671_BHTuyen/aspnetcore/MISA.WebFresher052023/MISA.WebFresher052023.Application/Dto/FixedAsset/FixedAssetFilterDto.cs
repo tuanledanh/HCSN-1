@@ -1,13 +1,13 @@
-﻿using System;
+﻿using MISA.WebFresher052023.Application.Dto.Base;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MISA.WebFresher052023.Application.Dto.FixedAsset
 {
-    public class FixedAssetFilterDto
+    public class FixedAssetFilterDto 
     {
         #region Properties
         /// <summary>
@@ -28,21 +28,13 @@ namespace MISA.WebFresher052023.Application.Dto.FixedAsset
         /// Created By: Bùi Huy Tuyền (27/07/2023)
         public string? FixedAssetCategoryName { get; set; }
 
-        /// <summary>
-        /// Số tài sản trong một trang
-        /// </summary>
-        /// Created By: Bùi Huy Tuyền (27/07/2023)
-        [Required(ErrorMessage = "Số bản ghi trong một trang không được để trống")]
-        [Range(1, int.MaxValue, ErrorMessage = "Số bản ghi trong một trang phải lớn hơn 0")]
+        public List<Guid>? FixedAssetIdIgnores { get; set; }
+
+        public List<Guid>? TransferAssetDetailIdIgnores { get; set; }
+
         public int PageLimit { get; set; }
 
-        /// <summary>
-        /// Số trang hiện tại
-        /// </summary>
-        /// Created By: Bùi Huy Tuyền (27/07/2023)
-        [Required(ErrorMessage = "Số trang hiện tại không được dể trống")]
-        [Range(1, int.MaxValue, ErrorMessage = "Số trang hiện tại phải lớn hơn 0")]
-        public int PageNumber { get; set; } 
+        public int PageNumber { get; set; }
         #endregion
     }
 }

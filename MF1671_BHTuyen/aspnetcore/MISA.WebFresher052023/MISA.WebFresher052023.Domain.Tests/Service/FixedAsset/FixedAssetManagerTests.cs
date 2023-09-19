@@ -67,7 +67,7 @@ namespace MISA.WebFresher052023.Domain.Tests.Service.FixedAsset
             fixedAssetRepository.FindByCodeAsync(code).Returns(new FixedAssetEntity());
 
             // Act && Assert
-            Assert.ThrowsAsync<ConflictException>(async () => await fixedAssetManager.CheckExistByCode(code));
+            Assert.ThrowsAsync<ConflictException>(async () => await fixedAssetManager.CheckCodeConflictAsync(code));
             await fixedAssetRepository.Received(1).FindByCodeAsync(code);
         }
 
@@ -83,7 +83,7 @@ namespace MISA.WebFresher052023.Domain.Tests.Service.FixedAsset
             fixedAssetRepository.FindByCodeAsync(code).ReturnsNull();
 
             // Act
-            await fixedAssetManager.CheckExistByCode(code);
+            await fixedAssetManager.CheckCodeConflictAsync(code);
 
             // Assert
             await fixedAssetRepository.Received(1).FindByCodeAsync(code);

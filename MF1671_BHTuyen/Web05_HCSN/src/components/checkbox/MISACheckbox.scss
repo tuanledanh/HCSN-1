@@ -1,0 +1,22 @@
+$outline--focus: 3.5px solid #ade5f3;
+
+.t-checkbox {
+    transition: all 0.1s ease-out;
+    @include backgroundImage(-113px -377px, 14px, 14px);
+    object-fit: cover;
+    &:hover,
+    &:focus {
+        outline: $outline--focus;
+        border: none;
+    }
+}
+
+.t-checkbox--checked {
+    @include backgroundImage(-157px -377px, 14px, 14px);
+}
+
+.t-checkbox--disable {
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    opacity: 0.5;
+}

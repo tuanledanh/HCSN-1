@@ -125,15 +125,6 @@
             <returns>File Excel trả về</returns>
             Created By: Bùi Huy Tuyền (27/07/2023)
         </member>
-        <member name="M:MISA.WebFresher052023.API.ExcelHelper.ExportToExcelHelper.UpdateDataIntoExcelTemplate(System.Collections.Generic.IEnumerable{MISA.WebFresher052023.Application.Dto.FixedAsset.FixedAssetExcel},System.String)">
-            <summary>
-            Truyền dữ liệu vào file excel mẫu
-            </summary>
-            <param name="fixedAssetExcels">Danh sách tài sản cần xuất</param>
-            <param name="filePath">Đường dẫn đến file mẫu</param>
-            <returns>Stream</returns>
-            Created By: Bùi Huy Tuyền (19/07/2023)
-        </member>
         <member name="F:MISA.WebFresher052023.API.Middleware.ExceptionMiddleware._next">
             <summary>
             

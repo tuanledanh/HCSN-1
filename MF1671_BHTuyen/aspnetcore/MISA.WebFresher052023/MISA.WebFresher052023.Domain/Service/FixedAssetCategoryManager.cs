@@ -1,5 +1,6 @@
 ﻿using MISA.WebFresher052023.Domain.Entity.FixedAssetCategory;
 using MISA.WebFresher052023.Domain.Interface.FixedAssetCategory;
+using MISA.WebFresher052023.Domain.Resource;
 using MISA.WebFresher052023.Domain.Service.Base;
 
 namespace MISA.WebFresher052023.Domain.Service
@@ -22,7 +23,7 @@ namespace MISA.WebFresher052023.Domain.Service
         /// Message lỗi
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public override string MessageError { get; set; } = "Mã loại tài sản đã tồn tại";
+        public override string MessageError { get; set; } = VietNamese.FixedAssetCategoryCodeConflict;
         #endregion
     }
 }

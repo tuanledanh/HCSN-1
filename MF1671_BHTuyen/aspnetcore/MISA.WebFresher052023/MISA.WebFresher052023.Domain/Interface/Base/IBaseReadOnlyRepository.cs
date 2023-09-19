@@ -8,37 +8,37 @@ namespace MISA.WebFresher052023.Domain.Interface
 {
     public interface IBaseReadOnlyRepository<TEntity>
     {
-        #region Tasks
+        #region Methods
         /// <summary>
         /// Lấy ra tất cả bản ghi
         /// </summary>
         /// <returns>Danh sách bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task<IEnumerable<TEntity>> GetAllAsync();
+        public Task<IEnumerable<TEntity>> GetAllAsync();
 
         /// <summary>
         /// Lấy ra một bản ghi theo Id
         /// </summary>
-        /// <param name="entityId">Id của bản ghi</param>
+        /// <param name="id">Id của bản ghi</param>
         /// <returns>Một bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task<TEntity> GetAsync(string entityId);
+        public Task<TEntity> GetAsync(Guid id);
 
         /// <summary>
         /// Tìm kiếm một bản ghi theo Id
         /// </summary>
-        /// <param name="entityId">Id của bản ghi</param>
+        /// <param name="id">Id của bản ghi</param>
         /// <returns>Một bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task<TEntity?> FindAsync(string entityId);
+        public Task<TEntity> FindAsync(Guid id);
 
         /// <summary>
         /// Lấy ra một bản ghi theo Code
         /// </summary>
-        /// <param name="entityCode">Mã của bản ghi</param>
+        /// <param name="code">Mã của bản ghi</param>
         /// <returns>Một bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task<TEntity?> FindByCodeAsync(string entityCode);
+        public Task<TEntity> FindByCodeAsync(string code);
         #endregion
 
     }

@@ -1,8 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MISA.WebFresher052023.Application.Interface;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace MISA.WebFresher052023.API.Controllers.Base
 {
@@ -47,7 +44,7 @@ namespace MISA.WebFresher052023.API.Controllers.Base
         /// <returns>IActionResult</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(string id, [FromBody] TUpdateDto updateDto)
+        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] TUpdateDto updateDto)
         {
             await _baseService.UpdateAsync(id, updateDto);
             return StatusCode(StatusCodes.Status200OK);
@@ -60,7 +57,7 @@ namespace MISA.WebFresher052023.API.Controllers.Base
         /// <returns>IActionResult</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsync(string id)
+        public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _baseService.DeleteAsync(id);
             return StatusCode(StatusCodes.Status200OK);

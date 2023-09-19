@@ -7,24 +7,10 @@ using System.Threading.Tasks;
 
 namespace MISA.WebFresher052023.Application.Dto.FixedAsset
 {
-    public class FixedAssetPagingDto
+    public class FixedAssetPagingDto 
     {
-        #region Properties
-        /// <summary>
-        /// Tổng số bản ghi
-        /// </summary>
-        /// Created By: Bùi Huy Tuyền (27/07/2023)
-        [Required(ErrorMessage = "Tổng số bản ghi không được để trống")]
-        [Range(0, int.MaxValue, ErrorMessage = "Tổng số bản ghi không được âm")]
         public int FixedAssetTotal { get; set; }
 
-        /// <summary>
-        /// Danh sách tài sản trong một trang
-        /// </summary>
-        /// Created By: Bùi Huy Tuyền (27/07/2023)
-        [Required(ErrorMessage = "Danh sách các tài sản lọc không được để trống")]
-        public IEnumerable<FixedAssetDto> FixedAssets { get; set; } 
-        #endregion
-
+        public IEnumerable<FixedAssetDto> FixedAssets { get; set; }
     }
 }

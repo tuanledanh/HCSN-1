@@ -2,8 +2,7 @@
 
 namespace MISA.WebFresher052023.Application.Interface
 {
-    public interface IFixedAssetCategoryService:IBaseService<FixedAssetCategoryDto, FixedAssetCategoryCreateDto, FixedAssetCategoryUpdateDto>
+    public interface IFixedAssetCategoryService : IBaseService<FixedAssetCategoryDto, FixedAssetCategoryCreateDto, FixedAssetCategoryUpdateDto>
     {
-       
     }
 }

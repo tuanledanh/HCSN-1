@@ -299,6 +299,7 @@
       "MISA.WebFresher052023.Infrastructure/1.0.0": {
         "dependencies": {
           "Dapper": "2.0.143",
+          "EPPlus": "6.2.7",
           "MISA.WebFresher052023.Domain": "1.0.0",
           "MySqlConnector": "2.2.7"
         },

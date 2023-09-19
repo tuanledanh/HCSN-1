@@ -19,7 +19,7 @@ namespace MISA.WebFresher052023.API.Controllers
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public DepartmentController(IDepartmentService departmentService) : base(departmentService)
         {
-        } 
+        }
         #endregion
     }
 }

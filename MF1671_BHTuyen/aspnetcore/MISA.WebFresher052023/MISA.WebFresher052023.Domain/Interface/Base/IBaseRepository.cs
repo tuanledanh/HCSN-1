@@ -8,14 +8,14 @@ namespace MISA.WebFresher052023.Domain.Interface
 {
     public interface IBaseRepository<TEntity> : IBaseReadOnlyRepository<TEntity>
     {
-        #region Tasks
+        #region Methods
         /// <summary>
         /// Tạo mới một bản ghi
         /// </summary>
         /// <param name="entity">Dữ liệu bản ghi</param>
         /// <returns></returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task CreateAsync(TEntity entity);
+        public Task CreateAsync(TEntity entity);
 
         /// <summary>
         /// Cập nhật một bản ghi 
@@ -23,7 +23,7 @@ namespace MISA.WebFresher052023.Domain.Interface
         /// <param name="entity">Dữ liệu bản ghi</param>
         /// <returns></returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task UpdateAsync(TEntity entity);
+        public Task UpdateAsync(TEntity entity);
 
         /// <summary>
         /// Xóa một bản ghi 
@@ -31,7 +31,7 @@ namespace MISA.WebFresher052023.Domain.Interface
         /// <param name="entity">Dữ liệu bản ghi</param>
         /// <returns></returns>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        Task DeleteAsync(TEntity entity);
+        public Task DeleteAsync(TEntity entity);
         #endregion
     }
 }

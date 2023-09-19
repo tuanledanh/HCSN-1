@@ -16,8 +16,7 @@ namespace MISA.WebFresher052023.Application.Dto.Department
         /// </summary>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         [Required(ErrorMessage = "Id của phòng ban không được để trống")]
-        [StringLength(36, MinimumLength = 36, ErrorMessage = "Id phòng ban phải có độ dài 36 ký tự")]
-        public string DepartmentId { get; set; }
+        public Guid DepartmentId { get; set; }
 
         /// <summary>
         /// Mã bộ phận

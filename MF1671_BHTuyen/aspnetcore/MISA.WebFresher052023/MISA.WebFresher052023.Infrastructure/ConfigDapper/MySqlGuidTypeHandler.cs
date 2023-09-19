@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace MISA.WebFresher052023.Infrastructure.ConfigDapper
 {
     public class MySqlGuidTypeHandler : SqlMapper.TypeHandler<Guid>
-    {
+    {   
         public override Guid Parse(object value)
         {
             string? rawValue = value != null ? value.ToString() : string.Empty;
@@ -33,6 +33,6 @@ namespace MISA.WebFresher052023.Infrastructure.ConfigDapper
             {
                 parameter.Value = value.ToString();
             }
-        }
+         }
     }
 }
