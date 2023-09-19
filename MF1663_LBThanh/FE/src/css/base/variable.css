@@ -1,0 +1,106 @@
+:root {
+    /* Font color */
+    /* Background Light */
+    --text-light-title: #000000;
+    --text-light-primary: #212121;
+    --text-light-secondary: #666666;
+    --text-light-background: #c2e5fd;
+
+    /* Background Dark */
+    --text-dark-title: #ffffff;
+    --text-dark-primary: #dbdee3;
+    --text-dark-secondary: #7b8798;
+
+    --background-active: rgba(26, 164, 200, 0.2);
+    --background-active-icon: #1aa4c8;
+    --background-header-table: #f5f5f5;
+
+    /* Button Main */
+    --background-button-main-default: #1aa4c8;
+    --background-button-main-hover: #0582a2;
+    --background-button-main-active: #28b7dc;
+    --background-button-main-focus: #1aa4c8;
+    --background-button-main-disable: #8cd1e3;
+    --color-button-main: #ffffff;
+
+    /* Button Sub */
+    --border-button-sub: #1aa4c8;
+    --color-button-sub: #1aa4c8;
+    --background-button-sub-default: #ffffff;
+    --background-button-sub-hover: #d1edf4;
+    --background-button-sub-active: #ffffff;
+    --background-button-sub-focus: #ffffff;
+    --background-button-sub-disable: #ffffff;
+    --color-button-sub-disable: #8cd1e3;
+    --border-button-sub-disable: #8bd1e3;
+
+    /* Button Outline */
+    --background-button-outline-default: #ffffff;
+    --background-button-outline-hover: #1aa4c8;
+    --background-button-outline-active: #1aa4c8;
+    --background-button-outline-focus: #1aa4c8;
+    --background-button-outline-disable: #f5f5f5;
+    --color-button-outline-default: #000000;
+    --color-button-outline: #ffffff;
+    --color-button-outline-disable: #7a7a7a;
+    --border-button-outline-default: #afafaf;
+    --border-button-outline-disable: #d2d2d2;
+
+    /* Button Icon */
+    --background-button-icon-default: #ffffff;
+
+    /* Box shadow button hover */
+    --box-shadow-button-hover: #d1edf4;
+
+    /*  */
+    --background-sidebar: #1c3048;
+    --background-sidebar-submenu: #33455b;
+    --background-main-layout: #f4f7ff;
+    --background-main: #ffffff;
+    --border: #afafaf;
+    --background-number-page-active: #f5f5f5;
+    --recycle-bin: #ff3131;
+    --white: #ffffff;
+    --primary: #1aa4c8;
+    --border-active: #1aa4c8;
+    --border-table-row: #e0e0e0;
+
+    /* ------------------------ Table ------------------------ */
+    --table-border-color: #dcdcdc;
+    --table-body-hover: #d1edf4;
+    --table-body-text-color: #0026ff;
+
+    /* ------------------------ Background default ------------------------ */
+    --background-color-default: #ffffff;
+
+    /* ------------------------ Background table ------------------------ */
+    --background-color-table-head: #f5f5f5;
+
+    /* ------------------------ Background sidebar ------------------------ */
+    --background-color-main-content: #d6ebf9;
+
+    /* ------------------------ Background sidebar ------------------------ */
+    --background-color-sidebar-sub-item: #2f3443;
+    --background-color-sidebar-sub-item-hover: #424655;
+
+    /* ------------------------ Background scroll bar ------------------------ */
+    --background-color-scroll-bar: #d6d6d6;
+    --background-color-scroll-bar-hover: #c4c4c4;
+    --background-color-scroll-bar-track: #f1f1f1;
+
+    --resize-bar-color: #afafaf;
+
+    /* ------------------------ Box shadow ------------------------ */
+    --box-shadow-table: 0 3px 10px rgba(0, 0, 0, 0.16);
+
+    /* ------------------------ Transition ------------------------ */
+    --transition-02s: all ease-in-out 0.2s;
+
+    /* ------------------------ Text color ------------------------ */
+    --text-color-default: #edffff;
+    /* ------------------------ Table ------------------------ */
+
+    --grid-template-columns: 50px 50px 100px minmax(150px, 3fr) minmax(150px, 3fr)
+        minmax(150px, 3fr) minmax(50px, 1fr) repeat(3, minmax(100px, 2fr)) 140px;
+    --grid-template-columns-footer-right: minmax(50px, 1fr) repeat(3, minmax(100px, 2fr)) 140px;
+}

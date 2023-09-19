@@ -1,0 +1,65 @@
+/* Base CSS */
+@import url(./base/base.css);
+@import url(./base/font.css);
+@import url(./base/variable.css);
+
+/* Components CSS */
+@import url(./components/base/MISAButton.css);
+@import url(./components/base/MISACheckbox.css);
+@import url(./components/base/MISAInput.css);
+@import url(./components/base/MISAPopup.css);
+@import url(./components/base/MISAToast.css);
+@import url(./components/base/MISASidebarItem.css);
+@import url(./components/base/MISACombobox.css);
+@import url(./components/base/MISATooltip.css);
+@import url(./components/base/MISADropdown.css);
+@import url(./components/base/MISAPaging.css);
+@import url(./components/layout/TheHeader.css);
+@import url(./components/layout/TheMain.css);
+@import url(./components/layout/TheSidebar.css);
+
+/* View CSS */
+@import url(./views/FixedAssetTable.css);
+@import url(./views/FixedAssetRow.css);
+@import url(./views/LoadingSkeleton.css);
+
+/* Layout CSS */
+@import url(./layout/base-layout.css);
+
+html {
+    font-size: 62.5%;
+    scroll-behavior: smooth;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 400;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e0e0e0e0;
+}
+
+a {
+    text-decoration: none;
+}
+
+#app {
+    min-width: 100vw;
+    min-height: 100vh;
+}
+
+.app {
+    width: 100vw;
+    height: 100vh;
+    grid-template-columns: auto 1fr;
+}
