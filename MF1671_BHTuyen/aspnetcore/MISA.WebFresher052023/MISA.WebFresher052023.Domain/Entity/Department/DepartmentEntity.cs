@@ -52,7 +52,7 @@ namespace MISA.WebFresher052023.Domain.Entity.Department
         /// <summary>
         /// Lấy Id của phòng ban
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Mã Id của phòng ban</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public Guid GetKey()
         {
@@ -62,7 +62,7 @@ namespace MISA.WebFresher052023.Domain.Entity.Department
         /// <summary>
         /// Hàm lấy DepartmentCode
         /// </summary>
-        /// <returns>Mã phòng ban</returns>
+        /// <returns>Mã code của phòng ban</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public string GetCode()
         {
@@ -73,7 +73,6 @@ namespace MISA.WebFresher052023.Domain.Entity.Department
         /// Set DepartmentId
         /// </summary>
         /// <param name="departmentId">DepartmentId</param>
-        /// <return></return>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public void SetKey(Guid departmentId)
         {

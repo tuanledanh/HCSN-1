@@ -70,10 +70,9 @@ namespace MISA.WebFresher052023.Domain.Entity.FixedAssetCategory
         }
 
         /// <summary>
-        /// Set FixedAssetCategoryId
+        /// Gán mã Id cho loại tài sản
         /// </summary>
-        /// <param name="FixedAssetCategoryId">FixedAssetCategoryId</param>
-        /// <returns></returns>
+        /// <param name="FixedAssetCategoryId">Mã id của loại tài sản</param>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public void SetKey(Guid FixedAssetCategoryId)
         {

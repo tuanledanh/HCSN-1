@@ -6,6 +6,7 @@ export interface TableInjection {
     data: Ref<Array<Object>>
     loading: Ref<boolean>
     border?: boolean
+    showOnly?: boolean
     hasFooter?: boolean
     scrollTop: Ref<number>
     pageNumber: Ref<number>

@@ -64,6 +64,12 @@ const emit = defineEmits<{ close: []; submit: [] }>()
 
 const popup = ref<HTMLElement | null>(null)
 
+const focus = () => {
+    popup.value?.focus()
+}
+
+defineExpose({ focus })
+
 onMounted(() => {
     popup.value?.focus()
 })

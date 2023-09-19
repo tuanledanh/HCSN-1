@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using MISA.WebFresher052023.Domain.Entity.Receiver;
 using MISA.WebFresher052023.Domain.Entity.TransferAssetDetail;
 using MISA.WebFresher052023.Domain.Interface.TransferAssetDetail;
 using MISA.WebFresher052023.Domain.Interface.UnitOfWork;
@@ -16,31 +15,49 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
 {
     public class TransferAssetDetailRepository : ITransferAssetDetailRepository
     {
+        #region Fields
         private readonly IUnitOfWork _unitOfWork;
+        #endregion
 
+        #region Constructor
         public TransferAssetDetailRepository(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<TransferAssetDetailEntity>> FindManyAsync(List<Guid> transferAssetDetailIds)
+        #endregion
+
+        #region Methods
+        /// <summary>
+        /// Lấy ra danh sách tài sản điều chuyển của nhiều chứng từ điều chuyển
+        /// </summary>
+        /// <param name="transferAssetIds">Danh sách mã Id của các chứng từ điều chuyển</param>
+        /// <returns>Danh sách tài sản điều chuyển</returns>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
+        public async Task<IEnumerable<TransferAssetDetailEntity>> GetManyByTransferAssetIdsAsync(List<Guid> transferAssetIds)
         {
-            var query = $"SELECT * FROM transfer_asset_detail WHERE TransferAssetDetailId IN @TransferAssetDetailIds;";
+            var query = $"SELECT * FROM transfer_asset_detail tad WHERE TransferAssetId IN @TransferAssetIds ORDER BY tad.ModifiedDate DESC;";
             var parameters = new DynamicParameters();
-            parameters.Add("TransferAssetDetailIds", transferAssetDetailIds.Select(x => x.ToString()));
+            parameters.Add("TransferAssetIds", transferAssetIds.Select(x => x.ToString()));
 
             var transferAssetDetails = await _unitOfWork.Connection.QueryAsync<TransferAssetDetailEntity>(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
 
             return transferAssetDetails;
         }
 
-        public async Task<TransferAssetDetailPagingModel> GetTransferAssetDetailPagingAsync(TransferAssetDetailFilterModel transferAssetDetailFilterModel)
+        /// <summary>
+        /// Lấy ra danh sách tài sản điều chuyển theo chứng từ điều chuyển phân trang
+        /// </summary>
+        /// <param name="transferAssetDetailFilter">Các trường phân trang</param>
+        /// <returns>Danh sách tài sản điều chuyển</returns>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
+        public async Task<TransferAssetDetailPagingModel> GetTransferAssetDetailPagingAsync(TransferAssetDetailFilterModel transferAssetDetailFilter)
         {
             var procedureName = "Proc_GetTransferAssetDetailPaging";
 
             var parameters = new DynamicParameters();
-            parameters.Add("PageLimit", transferAssetDetailFilterModel.PageLimit);
-            parameters.Add("PageNumber", transferAssetDetailFilterModel.PageNumber);
-            parameters.Add("TransferAssetId", transferAssetDetailFilterModel.TransferAssetId);
+            parameters.Add("PageLimit", transferAssetDetailFilter.PageLimit);
+            parameters.Add("PageNumber", transferAssetDetailFilter.PageNumber);
+            parameters.Add("TransferAssetId", transferAssetDetailFilter.TransferAssetId);
 
             parameters.Add("TransferAssetDetailTotal", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
@@ -57,6 +74,29 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
             return TransferAssetDetailPagingModel;
         }
 
+        /// <summary>
+        /// Tìm kiếm nhiều tài sản điều chuyển theo nhiều mã Id
+        /// </summary>
+        /// <param name="transferAssetDetailIds">Danh sách các mã Id cần tìm kiếm</param>
+        /// <returns>Danh sách tài sản điều chuyển</returns>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
+        public async Task<IEnumerable<TransferAssetDetailEntity>> FindManyAsync(List<Guid> transferAssetDetailIds)
+        {
+            var query = $"SELECT * FROM transfer_asset_detail WHERE TransferAssetDetailId IN @TransferAssetDetailIds;";
+            var parameters = new DynamicParameters();
+            parameters.Add("TransferAssetDetailIds", transferAssetDetailIds.Select(x => x.ToString()));
+
+            var transferAssetDetails = await _unitOfWork.Connection.QueryAsync<TransferAssetDetailEntity>(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
+
+            return transferAssetDetails;
+        }
+
+        /// <summary>
+        /// Tạo mới nhiều tài sản điều chuyển của một chứng từ điều chuyển
+        /// </summary>
+        /// <param name="transferAssetDetails">Danh sách tài sản cần tạo</param>
+        /// <returns></returns>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
         public async Task CreateManyAsync(IEnumerable<TransferAssetDetailEntity> transferAssetDetails)
         {
             var value = "";
@@ -79,6 +119,12 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
             await _unitOfWork.Connection.ExecuteAsync(query, transferAssetDetails, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
         }
 
+        /// <summary>
+        /// Cập nhật nhiều tài sản điều chuyển của một chứng từ điều chuyển
+        /// </summary>
+        /// <param name="transferAssetDetails">Danh sách các tài sản cần cập nhật</param>
+        /// <returns></returns>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
         public async Task UpdateManyAsync(IEnumerable<TransferAssetDetailEntity> transferAssetDetails)
         {
             var where = "";
@@ -109,6 +155,12 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
             await _unitOfWork.Connection.ExecuteAsync(query, transferAssetDetails, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
         }
 
+        /// <summary>
+        /// Xóa nhiều tài sản điều chuyển của một chứng từ điều chuyển
+        /// </summary>
+        /// <param name="transferAssetDetails">Danh sách các tài sản cần xóa</param>
+        /// <returns></returns>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
         public async Task DeleteManyAsync(IEnumerable<TransferAssetDetailEntity> transferAssetDetails)
         {
             var query = $"DELETE FROM transfer_asset_detail WHERE TransferAssetDetailId IN @TransferAssetDetailIds;";
@@ -118,63 +170,7 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
             parameters.Add("TransferAssetDetailIds", transferAssetDetails.Select(e => e.TransferAssetDetailId.ToString()));
 
             await _unitOfWork.Connection.ExecuteAsync(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
-        }
-
-        public async Task DeleteAsync(TransferAssetDetailEntity transferAssetDetail)
-        {
-            var query = $"DELETE FROM transfer_asset_detail WHERE TransferAssetDetailId = @TransferAssetDetailId;";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("TransferAssetDetailId", transferAssetDetail.TransferAssetDetailId.ToString());
-
-            await _unitOfWork.Connection.ExecuteAsync(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
-        }
-
-        public async Task<IEnumerable<TransferAssetDetailEntity>> GetManyByTransferAssetIdsAsync(List<Guid> transferAssetIds)
-        {
-            var query = $"SELECT * FROM transfer_asset_detail WHERE TransferAssetId IN @TransferAssetIds;";
-            var parameters = new DynamicParameters();
-            parameters.Add("TransferAssetIds", transferAssetIds.Select(x => x.ToString()));
-
-            var transferAssetDetails = await _unitOfWork.Connection.QueryAsync<TransferAssetDetailEntity>(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
-
-            return transferAssetDetails;
-        }
-
-        public async Task<TransferAssetDetailEntity> FindAsync(Guid transferAssetDetailId)
-        {
-            var query = $"SELECT * FROM transfer_asset_detail WHERE TransferAssetDetailId = @TransferAssetDetailId;";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("TransferAssetDetailId", transferAssetDetailId.ToString());
-
-            var transferAssetDetail = await _unitOfWork.Connection.QueryFirstOrDefaultAsync<TransferAssetDetailEntity>(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
-
-            return transferAssetDetail;
-        }
-
-        public Task<TransferAssetDetailEntity> GetTransferAssetDetailLastetAsync(Guid FixedAssetId)
-        {
-            var query = $"SELECT * FROM transfer_asset_detail tad WHERE tad.FixedAssetId = @FixedAssetId ORDER BY tad.ModifiedDate DESC LIMIT 1;";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("FixedAssetId", FixedAssetId.ToString());
-
-            var transferAssetDetail = _unitOfWork.Connection.QueryFirstOrDefaultAsync<TransferAssetDetailEntity>(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
-
-            return transferAssetDetail;
-        }
-
-        public async Task<IEnumerable<TransferAssetDetailEntity>> GetManyByTransferAssetIdAsync(Guid transferAssetId)
-        {
-            var query = $"SELECT * FROM transfer_asset_detail WHERE TransferAssetId = @TransferAssetId;";
-
-            var parameters = new DynamicParameters();
-            parameters.Add("TransferAssetId", transferAssetId.ToString());
-
-            var transferAssetDetailEntities = await _unitOfWork.Connection.QueryAsync<TransferAssetDetailEntity>(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
-
-            return transferAssetDetailEntities;
-        }
+        } 
+        #endregion
     }
 }

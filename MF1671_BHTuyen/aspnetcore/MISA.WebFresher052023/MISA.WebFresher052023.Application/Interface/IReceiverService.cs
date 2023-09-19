@@ -10,7 +10,7 @@ namespace MISA.WebFresher052023.Application.Interface
 {
     public interface IReceiverService
     {
-        public Task<IEnumerable<ReceiverDto>> GetReceiverAsync(Guid transferAssetId);
+        public Task<IEnumerable<ReceiverDto>> GetManyByTransferAssetIdAsync(Guid transferAssetId);
 
         public Task<IEnumerable<ReceiverEntity>> FindManyByTransferAssetIdsAsync(List<Guid> transferAssetIds);
 

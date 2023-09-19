@@ -28,7 +28,7 @@ namespace MISA.WebFresher052023.Application.Service
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ReceiverDto>> GetReceiverAsync(Guid transferAssetId)
+        public async Task<IEnumerable<ReceiverDto>> GetManyByTransferAssetIdAsync(Guid transferAssetId)
         {
             var receiverEntities = await _receiverRepository.GetManyByTransferAssetIdAsync(transferAssetId);
 

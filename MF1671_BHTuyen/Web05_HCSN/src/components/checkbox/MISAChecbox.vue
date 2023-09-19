@@ -1,12 +1,13 @@
 <template>
     <section
         class="t-checkbox icon br-4"
-        :class="`${checked ? 't-checkbox--checked' : ''}`"
+        :class="`${checked ? 't-checkbox--checked' : ''} 
+        ${disable ? 't-checkbox--disable' : ''}`"
         @dblclick.stop
         @click.stop.prevent="onClick"
         tabindex="0"
         ref="checkbox"
-        @keydown.enter.stop="checked = !checked"
+        @keydown.enter.stop="onClick"
     ></section>
 </template>
 
@@ -25,6 +26,7 @@ watch(
     () => props.checked,
     (value) => {
         checked.value = value
+        console.log(checked.value)
     }
 )
 

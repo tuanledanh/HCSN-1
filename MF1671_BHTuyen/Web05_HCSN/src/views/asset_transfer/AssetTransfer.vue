@@ -29,7 +29,7 @@
                     :selected-total="listRowIdSelected.length"
                     v-else
                     @unselected="listRowIdSelected = []"
-                    @delete="deleteManyTransferAsset"
+                    @delete="showToastMessageDelete"
                 />
             </section>
 
@@ -40,7 +40,7 @@
                     :title="button_title"
                     disabled
                     padding="0 10px 0 0"
-                    @click="addTransferAsset"
+                    @click="showPopupDetailTransferAssetForCreate"
                 >
                     <template #icon-left>
                         <section class="icon add-document"></section>
@@ -78,9 +78,12 @@
                     :data="transferAssetPaging.TransferAssets"
                     :total="transferAssetPaging.TransferAssetTotal"
                     :loading="mainTableLoading"
+                    :empty-data-title="empty_transfer_asset"
+                    :empty-icon="mainTableHeight <= 250"
                     @click-row="clickRow"
                     @dbclick-row="dbclickRow"
                     v-model:rowIdFocus="transferAssetDetailFilter.TransferAssetId"
+                    v-model:rowIdHover="rowIdHover"
                     v-model:pageLimit="transferAssetFilter.PageLimit"
                     v-model:pageNumber="transferAssetFilter.PageNumber"
                     v-model:listRowIdSelected="listRowIdSelected"
@@ -146,7 +149,7 @@
                                 circle
                                 width="30px"
                                 height="30px"
-                                @click="updateTransferAsset(item)"
+                                @click="showPopupDetailTransferAssetForUpdate(item)"
                             >
                                 <template #icon>
                                     <section class="icon edit"></section>
@@ -160,7 +163,7 @@
                                 circle
                                 width="30px"
                                 height="30px"
-                                @click="deleteTransferAsset(item)"
+                                @click="showToastMessageDelete(item)"
                             >
                                 <template #icon>
                                     <section class="icon delete"></section>
@@ -224,9 +227,12 @@
                 <MISATable
                     border
                     :has-footer="false"
+                    showOnly
                     :loading="detailTableLoading"
+                    :empty-data-title="empty_transfer_asset_detail"
                     ref="detailTable"
                     id="TransferAssetDetailId"
+                    :empty-icon="mainTableHeight >= 370"
                     :data="transferAssetDetailPaging.TransferAssetDetails"
                     :total="transferAssetDetailPaging.TransferAssetDetailTotal"
                     v-model:pageLimit="transferAssetDetailFilter.PageLimit"
@@ -297,20 +303,40 @@
         </Transition>
     </section>
 
-    <!-- Toast message khi xóa -->
-    <MISAToastMessage v-model="showWarningMessage" @click-main="showWarningMessage = false">
+    <!-- Toast message validate khi xóa -->
+    <MISAToastMessage
+        v-model="showWarningMessageValidateDelete"
+        @click-main="showWarningMessageValidateDelete = false"
+    >
         <TransferAssetInfo
-            :message="warningMessage"
-            :more-info="moreInfoWaringMessage"
-            v-if="!!moreInfoWaringMessage"
+            :message="warningMessageValidateDelete"
+            :more-info="moreInfoWaringMessageValidateDetele"
         />
-        <p class="pr-20"></p>
     </MISAToastMessage>
+
+    <!-- Toast message hỏi người dùng khi xóa -->
+    <MISAToastMessage
+        v-model="showWarningMessageDelete"
+        main-button="Xóa"
+        outline-button="Hủy"
+        @click-outline="showWarningMessageDelete = false"
+        @click-main="confirmDelete"
+    >
+        <p class="pr-20" v-html="waringMessageDelete"></p>
+    </MISAToastMessage>
+
+    <!-- Toast thông báo khi gọi API -->
+    <MISAToastMessage
+        :message="successMessage"
+        v-model="showSuccessMessage"
+        :type="ToastMessageType.SUCCESS"
+    />
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, watch, computed } from 'vue'
 import { useResource } from '@/hook'
+import { ToastMessageType } from '@/enum'
 import PopupDetail from './PopupDetail.vue'
 import { transferAssetAPI, transferAssetDetailAPI } from '@/api'
 import type {
@@ -320,7 +346,8 @@ import type {
     PopupDetailMode,
     TransferAssetPaging,
     TransferAssetDetailPaging,
-    MyResponse
+    MyResponse,
+    FixedAssetPopupMode
 } from '@/types'
 import { PopupDetailMode as PopupDetailModeEnum, TableColumnType, TooltipType } from '@/enum'
 import { isAxiosError } from 'axios'
@@ -365,9 +392,19 @@ const detailTableLoading = ref<boolean>(false)
 
 const popupDetailMode = ref<PopupDetailMode>(PopupDetailModeEnum.CREATE)
 
-const warningMessage = ref<string>('')
-const showWarningMessage = ref<boolean>(false)
-const moreInfoWaringMessage = ref<string[]>([])
+const warningMessageValidateDelete = ref<string>('')
+const showWarningMessageValidateDelete = ref<boolean>(false)
+const moreInfoWaringMessageValidateDetele = ref<string[]>([])
+
+const waringMessageDelete = ref<string>('')
+
+const showWarningMessageDelete = ref<boolean>(false)
+
+const successMessage = ref<string>('')
+const showSuccessMessage = ref<boolean>(false)
+
+const rowIdHover = ref<string>('')
+
 // Computed
 const transferAssetIds = computed(() => {
     return transferAssetPaging.value.TransferAssets.map((transferAsset) => {
@@ -398,17 +435,32 @@ const getTransferAssetPaging = async () => {
 
 const deleteTransferAsset = async (transferAssetId: string) => {
     try {
-        warningMessage.value = String(3).padStart(2, '0')
-
         await transferAssetAPI.deleteTransferAsset(transferAssetId)
         transferAssetPaging.value.TransferAssets = transferAssetPaging.value.TransferAssets.filter(
             (transferAsset) => transferAsset.TransferAssetId !== transferAssetId
         )
+
+        if (transferAssetId === transferAssetDetailFilter.value.TransferAssetId) {
+            if (transferAssetPaging.value.TransferAssets.length > 0) {
+                transferAssetDetailFilter.value.TransferAssetId =
+                    transferAssetPaging.value.TransferAssets[0].TransferAssetId
+            } else {
+                transferAssetDetailPaging.value.TransferAssetDetails = []
+            }
+        }
+
+        const timmer = setTimeout(() => {
+            console.log('first')
+            showSuccessMessage.value = true
+            successMessage.value = success_delete
+            clearTimeout(timmer)
+        }, 500)
     } catch (error) {
+        console.log(error)
         if (isAxiosError<MyResponse>(error)) {
-            showWarningMessage.value = true
-            warningMessage.value = error.response?.data?.UserMessage ?? ''
-            moreInfoWaringMessage.value = error.response?.data?.MoreInfo ?? []
+            showWarningMessageValidateDelete.value = true
+            warningMessageValidateDelete.value = error.response?.data?.UserMessage ?? ''
+            moreInfoWaringMessageValidateDetele.value = error.response?.data?.MoreInfo ?? []
         }
     }
 }
@@ -419,12 +471,28 @@ const deleteManyTransferAsset = async () => {
         transferAssetPaging.value.TransferAssets = transferAssetPaging.value.TransferAssets.filter(
             (transferAsset) => !listRowIdSelected.value.includes(transferAsset.TransferAssetId)
         )
+
+        if (listRowIdSelected.value.includes(transferAssetDetailFilter.value.TransferAssetId)) {
+            if (transferAssetPaging.value.TransferAssets.length > 0) {
+                transferAssetDetailFilter.value.TransferAssetId =
+                    transferAssetPaging.value.TransferAssets[0].TransferAssetId
+            } else {
+                transferAssetDetailPaging.value.TransferAssetDetails = []
+            }
+        }
+
         listRowIdSelected.value = []
+
+        const timmer = setTimeout(() => {
+            showSuccessMessage.value = true
+            successMessage.value = success_delete
+            clearTimeout(timmer)
+        }, 500)
     } catch (error) {
         if (isAxiosError<MyResponse>(error)) {
-            showWarningMessage.value = true
-            warningMessage.value = error.response?.data?.UserMessage ?? ''
-            moreInfoWaringMessage.value = error.response?.data?.MoreInfo ?? []
+            showWarningMessageValidateDelete.value = true
+            warningMessageValidateDelete.value = error.response?.data?.UserMessage ?? ''
+            moreInfoWaringMessageValidateDetele.value = error.response?.data?.MoreInfo ?? []
         }
     }
 }
@@ -435,14 +503,46 @@ const getTransferAssetDetailPaging = async () => {
         transferAssetDetailFilter.value
     )
 
-    transferAssetDetailPaging.value = response.data
+    if (response.data.TransferAssetDetails.length > 0) {
+        transferAssetDetailPaging.value = response.data
+    } else {
+        transferAssetDetailPaging.value.TransferAssetDetails = []
+    }
+
     const timmer = setTimeout(() => {
         detailTableLoading.value = false
         clearTimeout(timmer)
     }, 500)
 }
 
-const addTransferAsset = () => {
+// Hiển thị thông báo hỏi người dùng có muốn xóa tài sản không
+const showToastMessageDelete = (item: string = '') => {
+    showWarningMessageDelete.value = true
+    if (item) {
+        const transferAsset = transferAssetPaging.value.TransferAssets.find(
+            (transferAsset) => transferAsset.TransferAssetId === item
+        )
+        waringMessageDelete.value = `${message_delete} <strong>${transferAsset?.TransferAssetCode}</strong> ${no}?`
+        console.log('Xoa 1')
+    } else {
+        waringMessageDelete.value = `<strong>${String(listRowIdSelected.value.length).padStart(
+            2,
+            '0'
+        )}</strong> ${message_delete_many}?`
+        console.log('Xoas nhieu')
+    }
+}
+
+const confirmDelete = async () => {
+    showWarningMessageDelete.value = false
+    if (listRowIdSelected.value.length > 0) {
+        await deleteManyTransferAsset()
+    } else {
+        await deleteTransferAsset(rowIdHover.value)
+    }
+}
+
+const showPopupDetailTransferAssetForCreate = () => {
     popupDetailMode.value = PopupDetailModeEnum.CREATE
     isShowPopupDetail.value = true
 }
@@ -450,17 +550,37 @@ const addTransferAsset = () => {
 const dataSync = async () => {
     sync.value = true
     await getTransferAssetPaging()
+
     const timmer = setTimeout(() => {
         sync.value = false
+        showSuccessMessage.value = true
+        successMessage.value = success_update_data
         clearTimeout(timmer)
     }, 500)
 }
 
-const popupDetailSubmit = () => {
+const popupDetailSubmit = async (popupDetailMode: FixedAssetPopupMode) => {
     transferAssetFilter.value.PageNumber = 1
+    if (popupDetailMode === PopupDetailModeEnum.CREATE) {
+        const timmer = setTimeout(() => {
+            showSuccessMessage.value = true
+            successMessage.value = success_create
+            clearTimeout(timmer)
+        }, 500)
+    } else if (popupDetailMode === PopupDetailModeEnum.UPDATE) {
+        await getTransferAssetDetailPaging()
+        const timmer = setTimeout(() => {
+            showSuccessMessage.value = true
+            successMessage.value = success_update
+            clearTimeout(timmer)
+        }, 500)
+    }
+
+    await getTransferAssetPaging()
+    await getTransferAssetDetailPaging()
 }
 
-const updateTransferAsset = (transferAssetId: string) => {
+const showPopupDetailTransferAssetForUpdate = (transferAssetId: string) => {
     transferAssetUpdate.value = transferAssetPaging.value.TransferAssets.find(
         (transferAsset) => transferAsset.TransferAssetId === transferAssetId
     )
@@ -473,7 +593,7 @@ const clickRow = (transferAssetId: string) => {
 }
 
 const dbclickRow = (transferAssetId: string) => {
-    updateTransferAsset(transferAssetId)
+    showPopupDetailTransferAssetForUpdate(transferAssetId)
 }
 
 // Watch
@@ -487,8 +607,8 @@ watch(
     }
 )
 
-watch(transferAssetDetailFilter.value, () => {
-    getTransferAssetDetailPaging()
+watch(transferAssetDetailFilter.value, async () => {
+    await getTransferAssetDetailPaging()
 })
 
 // Ref DOM
@@ -547,7 +667,16 @@ const {
         transfer_department_name,
         department_name,
         collapse,
-        expand
+        expand,
+        empty_transfer_asset,
+        empty_transfer_asset_detail,
+        message_delete,
+        no,
+        message_delete_many,
+        success_create,
+        success_delete,
+        success_update,
+        success_update_data
     }
 } = useResource()
 </script>

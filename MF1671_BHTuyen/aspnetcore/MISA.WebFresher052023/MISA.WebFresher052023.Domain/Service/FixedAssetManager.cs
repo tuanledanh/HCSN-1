@@ -92,11 +92,12 @@ namespace MISA.WebFresher052023.Domain.Service
         /// <summary>
         /// Kiểm tra tài sản có tồn tại chứng từ phát sinh không
         /// </summary>
-        /// <param name="fixedAssetId">Mã id của tài sản</param>
+        /// <param name="fixedAssetIds">Danh sách các mã id của các tài sản</param>
+        /// <param name="actionMode">Hành động sửa hay xóa</param>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public async Task CheckExistTransferAsset(List<Guid> fixedAssetIds, ActionMode actionMode)
         {
-            var fixedTransferAssetInfo = await _transferAssetRepository.GetTransferAssetsByFixedAssetIdsAsync(fixedAssetIds);
+            var fixedTransferAssetInfo = await _transferAssetRepository.GetTransferAssetsByFixedAssetIdsAsync(fixedAssetIds, null);
 
             if (fixedTransferAssetInfo.TransferAssets.Any())
             {
@@ -118,8 +119,9 @@ namespace MISA.WebFresher052023.Domain.Service
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public void CheckUsingStartedDateLaterPurchaseDate(DateTime purchaseDate, DateTime usingStartDate)
         {
-            var check = purchaseDate > usingStartDate;
-            if (check) throw new UserException(VietNamese.UsingStartedDateLaterPurchaseDate);
+            var purchaseDateOnly = DateOnly.FromDateTime(purchaseDate);
+            var usingStartDateOnly = DateOnly.FromDateTime(usingStartDate);
+            if (usingStartDateOnly < purchaseDateOnly) throw new UserException(VietNamese.UsingStartedDateLaterPurchaseDate);
             return;
         }
         #endregion

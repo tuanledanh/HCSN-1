@@ -6,7 +6,7 @@
                 'sidebar-item--active': active
             }"
             :to="to"
-            active-class="sidebar-item---active"
+            active-class="sidebar-item--active"
             @dblclick="isGrow ? (isShowMenu = !isShowMenu) : (isShowMenu = false)"
         >
             <!-- SidebarItem Icon -->

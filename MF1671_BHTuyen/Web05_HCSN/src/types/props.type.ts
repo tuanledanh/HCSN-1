@@ -57,6 +57,8 @@ export interface InputProps {
     required?: boolean
     isFocus?: boolean
 
+    maxLength?: number
+
     hasIconChangeNumber?: boolean
 }
 
@@ -104,6 +106,8 @@ export interface TableProps {
     total: number
     loading?: boolean
     emptyDataTitle?: string
+    emptyIcon?: boolean
+    showOnly?: boolean
 }
 
 export interface TableColumnProps {
@@ -119,6 +123,8 @@ export interface TableColumnProps {
     hasTotal?: boolean
     hasFormatNumber?: boolean
     hasFormatDate?: boolean
+
+    readonly?: boolean
 }
 
 export interface FixedAssetPopupProps {
@@ -147,6 +153,8 @@ export interface PopupChooseProps {
 
 export interface CheckboxProps {
     checked?: boolean
+
+    disable?: boolean
 }
 
 export interface SelectInfoProps {

@@ -72,6 +72,24 @@
     transform: translate(0, 0);
 }
 
+.delay-leave-to,
+.delay-enter-from {
+    opacity: 0;
+}
+
+.delay-enter-active {
+    transition: all 0.3s linear 0.4s;
+}
+
+.delay-leave-active {
+    transition: all 0.1s linear;
+}
+
+.delay-enter-to,
+.delay-leave-from {
+    opacity: 1;
+}
+
 @keyframes shimmer {
     100% {
         transform: translateX(100%);

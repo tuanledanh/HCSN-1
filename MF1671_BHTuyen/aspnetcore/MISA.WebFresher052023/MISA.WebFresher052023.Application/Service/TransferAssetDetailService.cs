@@ -70,12 +70,6 @@ namespace MISA.WebFresher052023.Application.Service
         public async Task CreateManyAsync(IEnumerable<TransferAssetDetailDto> transferAssetDetailCreates, Guid TransferAssetId)
         {
 
-            // Thông báo lỗi khi danh sách rỗng
-            if (!transferAssetDetailCreates.Any())
-            {
-                throw new UserException(VietNamese.EmptyList);
-            }
-
             var transferAssetDetailEntities = _mapper.Map<IEnumerable<TransferAssetDetailEntity>>(transferAssetDetailCreates);
 
             // Kiểm tra phòng ban và phòng ban điều chuyển
@@ -100,26 +94,19 @@ namespace MISA.WebFresher052023.Application.Service
         /// <summary>
         /// Cập nhật nhiều tài sản điều chuyển
         /// </summary>
-        /// <param name="transferAssetDetails">Danh sách tài sản điều chuyển</param>
+        /// <param name="transferAssetDetailUpdates">Danh sách tài sản điều chuyển</param>
         /// <returns></returns>
         /// <exception cref="UserException">Ngoại lệ của người dùng</exception>
         /// Created By: Bùi Huy Tuyền
-        public async Task UpdateManyAsync(IEnumerable<TransferAssetDetailDto> transferAssetDetails)
+        public async Task UpdateManyAsync(IEnumerable<TransferAssetDetailDto> transferAssetDetailUpdates)
         {
+            var transferAssetDetailEntities = _mapper.Map<IEnumerable<TransferAssetDetailEntity>>(transferAssetDetailUpdates);
 
-            // Thông báo lỗi khi danh sách rỗng
-            if (!transferAssetDetails.Any())
-            {
-                throw new UserException(VietNamese.EmptyList);
-            }
-
-            var transferAssetDetailEntities = _mapper.Map<IEnumerable<TransferAssetDetailEntity>>(transferAssetDetails);
-
+            // Kiểm tra phòng ban và phòng ban điều chuyển
             await _transferAssetDetailManager.CheckDepartmentAsync(transferAssetDetailEntities);
 
             foreach (var receiver in transferAssetDetailEntities)
             {
-
                 if (receiver is BaseAuditEntity baseAuditEntity)
                 {
                     baseAuditEntity.ModifiedDate = DateTime.Now;
@@ -130,29 +117,6 @@ namespace MISA.WebFresher052023.Application.Service
             await _transferAssetDetailRepository.UpdateManyAsync(transferAssetDetailEntities);
         }
 
-        /// <summary>
-        /// Xóa nhiều tài sản điều chuyển
-        /// </summary>
-        /// <param name="transferAssetDetailIds">Danh sách mã Id các tài sản cần xóa</param>
-        /// <returns></returns>
-        /// <exception cref="UserException">Ngoại lệ của người dùng</exception>
-        public async Task DeleteManyAsync(List<Guid> transferAssetDetailIds)
-        {
-            // Thông báo lỗi khi truyền danh sách rỗng
-            if (transferAssetDetailIds.Count == 0)
-            {
-                throw new UserException(VietNamese.EmptyList);
-            }
-
-            var transferAssetDetails = await _transferAssetDetailRepository.FindManyAsync(transferAssetDetailIds);
-
-            // Thông báo lỗi khi có bản khi không tồn tại
-            if (transferAssetDetails.Count() != transferAssetDetailIds.Count)
-            {
-                throw new UserException(VietNamese.NoDelete);
-            }
-            await _transferAssetDetailRepository.DeleteManyAsync(transferAssetDetails);
-        }
 
         /// <summary>
         /// Lấy nhiều tất cả sản các chứng từ
@@ -160,11 +124,13 @@ namespace MISA.WebFresher052023.Application.Service
         /// <param name="transferAssetIds">Danh sách mã Id của các chứng từ</param>
         /// <returns>Danh sách các tài sản</returns>
         /// Created By: Bùi Huy Tuyền
-        public async Task<IEnumerable<TransferAssetDetailEntity>> GetManyByTransferAssetIdsAsync(List<Guid> transferAssetIds)
+        public async Task<IEnumerable<TransferAssetDetailDto>> GetManyByTransferAssetIdsAsync(List<Guid> transferAssetIds)
         {
             var transferAssetDetails = await _transferAssetDetailRepository.GetManyByTransferAssetIdsAsync(transferAssetIds);
 
-            return transferAssetDetails;
+            var transferAssetDetailDtos = _mapper.Map<IEnumerable<TransferAssetDetailDto>>(transferAssetDetails);
+
+            return transferAssetDetailDtos;
         }
 
         /// <summary>
@@ -175,12 +141,33 @@ namespace MISA.WebFresher052023.Application.Service
         /// Created By: Bùi Huy Tuyền
         public async Task<IEnumerable<TransferAssetDetailDto>> GetManyByTransferAssetIdAsync(Guid transferAssetId)
         {
-            var transferAssetDetails = await _transferAssetDetailRepository.GetManyByTransferAssetIdAsync(transferAssetId);
+            var transferAssetIds = new List<Guid>()
+            {
+                transferAssetId
+            };
+
+            var transferAssetDetails = await _transferAssetDetailRepository.GetManyByTransferAssetIdsAsync(transferAssetIds);
 
             var transferAssetDetailDtos = _mapper.Map<IEnumerable<TransferAssetDetailDto>>(transferAssetDetails);
 
             return transferAssetDetailDtos;
         } 
+
+        /// <summary>
+        /// Xóa nhiều tài sản điều chuyển
+        /// </summary>
+        /// <param name="transferAssetDetailIds">Danh sách mã Id các tài sản cần xóa</param>
+        /// <returns></returns>
+        /// <exception cref="UserException">Ngoại lệ của người dùng</exception>
+        public async Task DeleteManyAsync(List<Guid> transferAssetDetailIds)
+        {
+           
+            await _transferAssetDetailManager.CheckDeleteManyAsync(transferAssetDetailIds);
+
+            var transferAssetDetails = await _transferAssetDetailRepository.FindManyAsync(transferAssetDetailIds);
+
+            await _transferAssetDetailRepository.DeleteManyAsync(transferAssetDetails);
+        }
         #endregion
     }
 }

@@ -73,11 +73,7 @@
                             placeholder-italic
                             :label="transfer_asset_name"
                             :placeholder="transfer_asset_name_input"
-                            :list="
-                                useDepartment().departments.map(
-                                    (department) => department.DepartmentName
-                                )
-                            "
+                            :list="departmentNameList"
                             v-model="transferDepartment.DepartmentName"
                             ref="combobox"
                         />
@@ -101,8 +97,22 @@
             </section>
 
             <!-- Thông báo validate -->
-            <MISAToastMessage v-model="showWarningMessageValidate" @click-main="confirmToast">
+            <MISAToastMessage
+                v-model="showWarningMessageValidate"
+                @click-main="confirmValidateToast"
+            >
                 <p class="pr-20">{{ warningMessageValidate }}</p>
+            </MISAToastMessage>
+
+            <!-- Thông báo hủy khai báo -->
+            <MISAToastMessage
+                v-model="showWarningMessageCancel"
+                @click-main="confirmCancelToast"
+                @click-outline="showWarningMessageCancel = false"
+                main-button="Hủy bỏ"
+                outline-button="Không"
+            >
+                <p class="pr-20">{{ warningMessageCancel }}</p>
             </MISAToastMessage>
         </section>
     </section>
@@ -119,8 +129,7 @@ import type {
     TransferAssetDetail
 } from '@/types'
 import { ref, onMounted, watch, computed } from 'vue'
-import { fixedAssetAPI } from '@/api'
-import { useDepartment } from '@/stores'
+import { departmentAPI, fixedAssetAPI } from '@/api'
 import type MISACombobox from '@/components/combobox'
 
 const props = defineProps<PopupChooseProps>()
@@ -160,16 +169,22 @@ const fixedAssetSelected = ref<FixedAsset[]>([])
 
 const warningMessageValidate = ref<string>('')
 const showWarningMessageValidate = ref<boolean>(false)
+const warningMessageCancel = ref<string>('')
+const showWarningMessageCancel = ref<boolean>(false)
+const departmentList = ref<Department[]>([])
+const departmentNameList = computed(() => departmentList.value.map((item) => item.DepartmentName))
 
 const combobox = ref<InstanceType<typeof MISACombobox> | null>(null)
+
+const getDepartment = async () => {
+    const response = await departmentAPI.getAllDepartment()
+    departmentList.value = response.data
+}
 
 const getFixedAssetPaging = async () => {
     loading.value = true
     const response = await fixedAssetAPI.getTransferAssetPaging(fixedAssetFilter.value)
     fixedAssetPaging.value = response.data
-    if (fixedAssetPaging.value.FixedAssets.length > 0)
-        rowIdFocus.value = fixedAssetPaging.value.FixedAssets[0].FixedAssetId
-    console.log(fixedAssetPaging.value.FixedAssets)
     const timmer = setTimeout(() => {
         loading.value = false
         clearTimeout(timmer)
@@ -197,12 +212,17 @@ const transferAssetDetails = computed<TransferAssetDetail[]>(() => {
     )
 })
 
-const confirmToast = () => {
+const confirmValidateToast = () => {
     showWarningMessageValidate.value = false
 
     if (transferDepartment.value.DepartmentName == '') {
         combobox.value?.focus()
     }
+}
+
+const confirmCancelToast = () => {
+    showWarningMessageCancel.value = false
+    emits('close')
 }
 
 const check = (): boolean => {
@@ -241,16 +261,15 @@ const submit = () => {
 }
 
 const close = () => {
-    emits('close')
+    showWarningMessageCancel.value = true
+    warningMessageCancel.value = message_cancel
 }
 
 watch(
     () => transferDepartment.value.DepartmentName,
     (value) => {
-        console.log('first')
-        console.log(useDepartment().departments)
-        transferDepartment.value = useDepartment().getDepartmentByName(value)
-        console.log(transferDepartment.value)
+        transferDepartment.value.DepartmentId =
+            departmentList.value.find((item) => item.DepartmentName === value)?.DepartmentId || ''
     }
 )
 
@@ -275,6 +294,7 @@ watch([() => fixedAssetFilter.value.PageLimit, () => fixedAssetFilter.value.Page
 
 onMounted(() => {
     getFixedAssetPaging()
+    getDepartment()
 })
 
 const {
@@ -293,7 +313,10 @@ const {
         transfer_asset_no_more,
         choose_transfer_department,
         transfer_department_check,
-        transfer_asset_no_choose
+        transfer_asset_no_choose,
+        cancel,
+        no,
+        message_cancel
     }
 } = useResource()
 </script>

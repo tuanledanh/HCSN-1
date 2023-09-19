@@ -191,6 +191,9 @@ $box-shadow-icon--hover: 1px 2px 4px 1px #a09e9e;
 
         &.disable {
             opacity: 0.4;
+            box-shadow: none;
+            cursor: not-allowed;
+            pointer-events: none;
         }
     }
 }

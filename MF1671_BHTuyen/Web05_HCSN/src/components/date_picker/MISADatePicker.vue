@@ -1,6 +1,6 @@
 <template>
-    <section class="t-datepicker pointer br-4" :style="`width: ${width}`" ref="wrapper">
-        <p class="t-datepicker__title" @click="clickIcon">
+    <section class="t-datepicker br-4" :style="`width: ${width}`" ref="wrapper">
+        <p class="t-datepicker__title pointer" @click="clickIcon">
             {{ label }} <span style="color: red">*</span>
         </p>
 
@@ -12,7 +12,6 @@
                 v-model="datepickerValue"
                 placeholder="dd/mm/yyyy"
                 format="DD/MM/YYYY"
-                value-format="YYYY-MM-DD"
                 type="date"
                 size="default"
                 ref="datepicker"
@@ -32,7 +31,7 @@
 import { useOnClickOutside } from '@/hook'
 import type { DatePickerProps } from '@/types'
 import { ElDatePicker, type DatePickerInstance } from 'element-plus'
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 withDefaults(defineProps<DatePickerProps>(), {
     label: 'Date',
@@ -44,10 +43,9 @@ const datepicker = ref<DatePickerInstance | null>(null)
 const wrapper = ref<HTMLElement | null>(null)
 const isShow = ref<boolean>(false)
 const isFocus = ref<boolean>(false)
-const datepickerValue = defineModel<string>({ local: true, default: '' })
+const datepickerValue = defineModel<string | Date>({ local: true, default: '' })
 
 const clickIcon = () => {
-    console.log('ll')
     isFocus.value = true
     if (isShow.value) {
         datepicker.value?.handleClose()
@@ -58,9 +56,23 @@ const clickIcon = () => {
     }
 }
 
+const focus = () => {
+    datepicker.value?.focus(true)
+    datepicker.value?.handleClose()
+}
+
+defineExpose({ focus })
+
 useOnClickOutside(wrapper, () => {
     isFocus.value = false
     isShow.value = false
+})
+
+onMounted(() => {
+    console.log(datepickerValue.value)
+})
+watch(datepickerValue, (value) => {
+    console.log(value)
 })
 </script>
 

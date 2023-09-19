@@ -64,6 +64,13 @@ $box-shadow: 0 2px 6px #caccce;
         &.active {
             background-color: $background-color--active;
         }
+
+        &.readonly {
+            cursor: not-allowed;
+        }
+        &.show-only {
+            cursor: unset !important;
+        }
     }
 
     &.fixed-left {

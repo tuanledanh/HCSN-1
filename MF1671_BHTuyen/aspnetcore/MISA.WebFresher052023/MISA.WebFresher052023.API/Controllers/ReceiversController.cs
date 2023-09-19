@@ -19,7 +19,7 @@ namespace MISA.WebFresher052023.API.Controllers
         [HttpGet("{transferAssetId}")]
         public async Task<IActionResult> GetReceiversAsync(Guid transferAssetId)
         {
-            var receivers = await _receiverService.GetReceiverAsync(transferAssetId);
+            var receivers = await _receiverService.GetManyByTransferAssetIdAsync(transferAssetId);
 
             return StatusCode(StatusCodes.Status200OK, receivers);
         }

@@ -178,7 +178,7 @@ namespace MISA.WebFresher052023.Domain.Resource {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Mã chừng từ &lt;strong&gt;{0}&lt;/strong&gt; đã tồn tại trong hệ thống..
+        ///   Looks up a localized string similar to Mã chừng từ &lt;strong&gt;{0}&lt;/strong&gt; đã tồn tại trong hệ thống. Vui lòng nhập một mã chứng từ khác..
         /// </summary>
         public static string TransferAssetCodeConflict {
             get {
@@ -228,6 +228,42 @@ namespace MISA.WebFresher052023.Domain.Resource {
         public static string TransferDateMin {
             get {
                 return ResourceManager.GetString("TransferDateMin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ngày điều chuyển cập nhật phải nằm trong khoảng &lt;strong&gt;{0} ({1}) - {2} ({3})&lt;/strong&gt;..
+        /// </summary>
+        public static string TransferDateNotInRange {
+            get {
+                return ResourceManager.GetString("TransferDateNotInRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ngày điều chuyển cập nhật phải nhỏ hơn ngày điểu chuyển của chứng từ &lt;strong&gt;{0} ({1})&lt;/strong&gt;..
+        /// </summary>
+        public static string TransferDateNotLessThanMin {
+            get {
+                return ResourceManager.GetString("TransferDateNotLessThanMin", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ngày điều chuyển phải lớn hơn ngày điểu chuyển của chứng từ &lt;strong&gt;{0} ({1})&lt;/strong&gt;..
+        /// </summary>
+        public static string TransferDateNotMoreThanMaxCreate {
+            get {
+                return ResourceManager.GetString("TransferDateNotMoreThanMaxCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ngày điều chuyển cập nhật phải lớn hơn ngày điểu chuyển của chứng từ &lt;strong&gt;{0} ({1})&lt;/strong&gt;..
+        /// </summary>
+        public static string TransferDateNotMoreThanMaxUpdate {
+            get {
+                return ResourceManager.GetString("TransferDateNotMoreThanMaxUpdate", resourceCulture);
             }
         }
         

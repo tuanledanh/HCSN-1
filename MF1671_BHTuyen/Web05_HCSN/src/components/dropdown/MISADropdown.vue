@@ -28,23 +28,25 @@
         </section>
 
         <!-- Dropdown list -->
-        <section
-            class="t-dropdown__list absolute w-100 br-4 flex flex-col row-gap-3"
-            :class="`t-dropdown__list--${position}`"
-            ref="dropdownList"
-            v-if="isShowDropdownList"
-        >
+        <Transition name="list-top">
             <section
-                v-for="(item, index) in list"
-                :key="item"
-                class="t-dropdown__item br-4 flex center"
-                :class="{ 't-dropdown__item--hover': indexHover === index }"
-                @click.prevent.stop="selectItem(item)"
-                @mouseenter="indexHover = index"
+                class="t-dropdown__list absolute w-100 br-4 flex flex-col row-gap-3"
+                :class="`t-dropdown__list--${position}`"
+                ref="dropdownList"
+                v-if="isShowDropdownList"
             >
-                {{ item }}
+                <section
+                    v-for="(item, index) in list"
+                    :key="item"
+                    class="t-dropdown__item br-4 flex center"
+                    :class="{ 't-dropdown__item--hover': indexHover === index }"
+                    @click.prevent.stop="selectItem(item)"
+                    @mouseenter="indexHover = index"
+                >
+                    {{ item }}
+                </section>
             </section>
-        </section>
+        </Transition>
     </section>
 </template>
 

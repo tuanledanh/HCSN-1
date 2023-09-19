@@ -9,9 +9,19 @@ namespace MISA.WebFresher052023.Domain.Model.FixedAsset
 {
     public class FixedAssetPagingModel
     {
+        #region Pproperties
+        /// <summary>
+        /// Tổng số bản ghi
+        /// </summary>
+        /// Created By: Bùi Huy Tuyền (27/07/2023)
         public int FixedAssetTotal { get; set; }
 
-        public IEnumerable<FixedAssetEntity> FixedAssets { get; set; }
- 
+        /// <summary>
+        /// Danh sách tài sản cần hiển thị
+        /// </summary>
+        /// Created By: Bùi Huy Tuyền (27/07/2023)
+        public IEnumerable<FixedAssetEntity> FixedAssets { get; set; } 
+        #endregion
+
     }
 }

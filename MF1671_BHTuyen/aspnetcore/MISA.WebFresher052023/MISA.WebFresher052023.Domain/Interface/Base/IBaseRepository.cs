@@ -8,7 +8,7 @@ namespace MISA.WebFresher052023.Domain.Interface
 {
     public interface IBaseRepository<TEntity> : IBaseReadOnlyRepository<TEntity>
     {
-        #region Tasks
+        #region Methods
         /// <summary>
         /// Tạo mới một bản ghi
         /// </summary>

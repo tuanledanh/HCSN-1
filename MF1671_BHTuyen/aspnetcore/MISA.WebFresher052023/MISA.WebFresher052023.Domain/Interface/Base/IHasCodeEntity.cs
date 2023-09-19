@@ -8,11 +8,13 @@ namespace MISA.WebFresher052023.Domain.Interface.Base
 {
     public interface IHasCodeEntity
     {
+        #region Methods
         /// <summary>
         /// Hàm lấy Code
         /// </summary>
-        /// <returns>Mã bản ghi</returns>
+        /// <returns>Mã code của bản ghi</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
-        public string GetCode();
+        public string GetCode(); 
+        #endregion
     }
 }

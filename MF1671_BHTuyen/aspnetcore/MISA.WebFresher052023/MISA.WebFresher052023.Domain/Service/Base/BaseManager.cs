@@ -42,9 +42,8 @@ namespace MISA.WebFresher052023.Domain.Service.Base
         /// <summary>
         /// Kiểm tra trùng mã 
         /// </summary>
-        /// <param name="entityCode">entityCode</param>
-        /// <returns></returns>
-        /// <exception cref="ConfilctException"></exception>
+        /// <param name="entityCode">Mã code của bản ghi</param>
+        /// <exception cref="ConflictException">Ngoại lệ xung đột dữ liệu</exception>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public virtual async Task CheckCodeConflictAsync(string entityCode)
         {

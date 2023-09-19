@@ -66,10 +66,10 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
         /// <summary>
         /// Xuất danh sách tài sản ra file excel
         /// </summary>
-        /// <param name="FixedAssetExcelEntities">Danh sách tài sản</param>
+        /// <param name="fixedAssetExcels">Danh sách tài sản</param>
         /// <returns>Nội dung file excel</returns>
         /// Created By: Bùi Huy Tuyền (27/07/2023)
-        public byte[] ExportListFixedAssetToExcel(IEnumerable<FixedAssetExcelModel> fixedAssetExcelModels)
+        public byte[] ExportListFixedAssetToExcel(IEnumerable<FixedAssetExcelModel> fixedAssetExcels)
         {
             var stream = new MemoryStream();
 
@@ -85,7 +85,7 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
 
                 var startRow = 2;
 
-                foreach (var fixedAssetExcelModel in fixedAssetExcelModels)
+                foreach (var fixedAssetExcelModel in fixedAssetExcels)
                 {
                     ws.Cells.SetCellValue(startRow, 0, startRow - 1);
                     startRow++;
@@ -97,7 +97,7 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
                     }
                 }
 
-                ws.Cells["B3"].LoadFromCollection(fixedAssetExcelModels);
+                ws.Cells["B3"].LoadFromCollection(fixedAssetExcels);
 
                 pck.SaveAs(stream);
 
@@ -152,19 +152,54 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
         /// <summary>
         /// Phân trang tài sản
         /// </summary>
-        /// <param name="fixedAssetFilterModel">Điều kiện phân trang</param>
+        /// <param name="fixedAssetFiltel">Điều kiện phân trang</param>
         /// <returns>Danh sách tài sản</returns>
         /// Created By: Bùi Huy Tuyền (27/07/2023)
-        public async Task<FixedAssetPagingModel> GetFixedAssetPagingAsync(FixedAssetFilterModel fixedAssetFilterModel)
+        public async Task<FixedAssetPagingModel> GetFixedAssetPagingAsync(FixedAssetFilterModel fixedAssetFiltel)
         {
             var procedureName = $"Proc_Get{TableNameProc}Paging";
 
             var parameters = new DynamicParameters();
-            parameters.Add("FixedAssetCodeOrName", fixedAssetFilterModel.FixedAssetCodeOrName);
-            parameters.Add("DepartmentName", fixedAssetFilterModel.DepartmentName);
-            parameters.Add("FixedAssetCategoryName", fixedAssetFilterModel.FixedAssetCategoryName);
-            parameters.Add("PageLimit", fixedAssetFilterModel.PageLimit);
-            parameters.Add("PageNumber", fixedAssetFilterModel.PageNumber);
+            parameters.Add("FixedAssetCodeOrName", fixedAssetFiltel.FixedAssetCodeOrName);
+            parameters.Add("DepartmentName", fixedAssetFiltel.DepartmentName);
+            parameters.Add("FixedAssetCategoryName", fixedAssetFiltel.FixedAssetCategoryName);
+            parameters.Add("PageLimit", fixedAssetFiltel.PageLimit);
+            parameters.Add("PageNumber", fixedAssetFiltel.PageNumber);
+
+            parameters.Add("FixedAssetTotal", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            var fixedAssets = await _unitOfWork.Connection.QueryAsync<FixedAssetEntity>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
+
+            var fixedAssetTotal = parameters.Get<int>("FixedAssetTotal");
+
+            var fixedAssetPagingModel = new FixedAssetPagingModel
+            {
+                FixedAssets = fixedAssets,
+                FixedAssetTotal = fixedAssetTotal
+            };
+
+            return fixedAssetPagingModel;
+        }
+
+        /// <summary>
+        /// Lấy danh sách tài sản cập nhật phòng ban mới nhất
+        /// </summary>
+        /// <param name="fixedAssetFilter"></param>
+        /// <returns>Danh sách tài sản</returns>
+        public async Task<FixedAssetPagingModel> GetFixedAssetTransferPagingAsync(FixedAssetFilterModel fixedAssetFilter)
+        {
+            var procedureName = $"Proc_Get{TableNameProc}TransferPaging";
+
+            var parameters = new DynamicParameters();
+
+            var fixedAssetIdIgnores = string.Join(",", fixedAssetFilter.FixedAssetIdIgnores);
+
+            var transferAssetDetailIdIgnores = string.Join(",", fixedAssetFilter.TransferAssetDetailIdIgnores);
+
+            parameters.Add("FixedAssetIdIgnores", fixedAssetIdIgnores);
+            parameters.Add("TransferAssetDetailIdIgnores", transferAssetDetailIdIgnores);
+            parameters.Add("PageLimit", fixedAssetFilter.PageLimit);
+            parameters.Add("PageNumber", fixedAssetFilter.PageNumber);
 
             parameters.Add("FixedAssetTotal", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
@@ -198,40 +233,6 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
             await _unitOfWork.Connection.ExecuteAsync(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
         }
 
-        /// <summary>
-        /// Lấy danh sách tài sản cập nhật phòng ban mới nhất
-        /// </summary>
-        /// <param name="fixedAssetFilterModel"></param>
-        /// <returns>Danh sách tài sản</returns>
-        public async Task<FixedAssetPagingModel> GetFixedAssetTransferPagingAsync(FixedAssetFilterModel fixedAssetFilterModel)
-        {
-            var procedureName = $"Proc_Get{TableNameProc}TransferPaging";
-
-            var parameters = new DynamicParameters();
-
-            var fixedAssetIdIgnores = string.Join(",", fixedAssetFilterModel.FixedAssetIdIgnores);
-
-            var transferAssetDetailIdIgnores = string.Join(",", fixedAssetFilterModel.TransferAssetDetailIdIgnores);
-
-            parameters.Add("FixedAssetIdIgnores", fixedAssetIdIgnores);
-            parameters.Add("TransferAssetDetailIdIgnores", transferAssetDetailIdIgnores);
-            parameters.Add("PageLimit", fixedAssetFilterModel.PageLimit);
-            parameters.Add("PageNumber", fixedAssetFilterModel.PageNumber);
-
-            parameters.Add("FixedAssetTotal", dbType: DbType.Int32, direction: ParameterDirection.Output);
-
-            var fixedAssets = await _unitOfWork.Connection.QueryAsync<FixedAssetEntity>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
-
-            var fixedAssetTotal = parameters.Get<int>("FixedAssetTotal");
-
-            var fixedAssetPagingModel = new FixedAssetPagingModel
-            {
-                FixedAssets = fixedAssets,
-                FixedAssetTotal = fixedAssetTotal
-            };
-
-            return fixedAssetPagingModel;
-        }
         #endregion
     }
 }

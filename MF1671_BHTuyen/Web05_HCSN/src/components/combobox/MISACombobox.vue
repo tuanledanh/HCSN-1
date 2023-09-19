@@ -1,11 +1,12 @@
 <template>
     <label
-        class="t-combobox pointer flex flex-col row-gap-10 relative br-4"
+        class="t-combobox flex flex-col row-gap-10 relative br-4"
+        :class="{ readonly: readonly }"
         @keydown="keyDown"
         ref="combobox"
-        @click="input?.select()"
+        @click.prevent="input?.select()"
     >
-        <p v-if="!!label" class="t-combobox__label">
+        <p v-if="!!label" class="t-combobox__label pointer">
             {{ label }} <span class="required" v-if="required">*</span>
         </p>
 
@@ -38,6 +39,8 @@
                 :placeholder="placeholder"
                 :readonly="readonly"
                 :tabindex="tabindex"
+                @click.prevent
+                @select.prevent
             />
             <!--  -->
             <section
@@ -51,6 +54,7 @@
             <!-- Icon Right -->
             <section
                 class="flex center ratio-1 h-100 pointer icon-right br-right-4"
+                :class="{ readonly: readonly }"
                 @click.prevent="clickIconRight"
             >
                 <section class="icon arrow-down" :class="{ rotate: isShowList }"></section>
@@ -220,17 +224,22 @@ const keyDown = (event: KeyboardEvent) => {
 
 //
 const clickIconRight = () => {
-    rect.value = wrapper.value!.getBoundingClientRect()
-
     if (activeIndex.value == -1) hoverIndex.value = 0
     else hoverIndex.value = activeIndex.value
 
     isShowList.value = !isShowList.value
     input!.value?.focus()
 
+    setPosition()
+}
+
+const setPosition = () => {
+    rect.value = wrapper.value!.getBoundingClientRect()
     const check = window.innerHeight - rect.value!.top - rect.value!.height - 202 > 0
+
     styleList.value.left = rect.value!.left + 'px'
     styleList.value.width = rect.value!.width + 'px'
+
     if (check) {
         positionList.value = 'bottom'
         styleList.value.top = rect.value!.bottom + 2 + 'px'
@@ -243,6 +252,7 @@ const clickIconRight = () => {
 }
 
 const clickIconClear = () => {
+    setPosition()
     comboboxValue.value = ' '
     input.value?.focus()
     hoverIndex.value = 0

@@ -102,7 +102,13 @@ const VN: ResourceData = {
         success_update: 'Cập nhật chứng từ thành công',
         success_create: 'Tạo mới chứng từ thành công',
         success_delete: 'Xóa chứng từ thành công',
-        success_update_data: 'Cập nhật dữ liệu thành công'
+        success_update_data: 'Cập nhật dữ liệu thành công',
+        empty_transfer_asset: 'Không có chứng từ điều chuyển',
+        empty_transfer_asset_detail: 'Không có tài sản điều chuyển',
+        message_delete: 'Bạn có muốn xóa chứng từ điều chuyển',
+        no: 'không',
+        message_delete_many:
+            'chứng từ đã được chọn. Bạn có muốn xóa các chứng từ này khỏi danh sách không'
     },
     transfer_asset_info: {
         show_more_info: 'Hiển chi tiết chứng từ',
@@ -130,7 +136,7 @@ const VN: ResourceData = {
         note: 'Ghi chú',
         choose_receive_department: 'Chọn ban giao nhận',
         choose_fixed_asset: 'Chọn tài sản',
-        add_receive_department_before: 'Thêm ban giao nhận từ lần nhập trước',
+        add_receive_department_recent: 'Thêm ban giao nhận từ lần nhập trước',
         fixed_asset_transfer_information: 'Thông tin tài sản điều chuyển',
         search_fixed_asset: 'Tìm kiếm tài sản',
         fixed_asset_code: 'Mã tài sản',
@@ -140,7 +146,8 @@ const VN: ResourceData = {
         department_name: 'Bộ phận sử dụng',
         transfer_department_name: 'Bộ phận điều chuyển',
         reason: 'Lý do',
-        functional: 'Chức năng'
+        functional: 'Chức năng',
+        list_detail_empty: 'Bạn chưa chọn tài sản điều chuyển nào'
     },
 
     asset_transfer_popup_choose: {
@@ -155,10 +162,14 @@ const VN: ResourceData = {
         transfer_asset_name_input: 'Chọn bộ phận sử dụng mới',
         note_input: 'Nhập ghi chú',
         note: 'Ghi chú',
-        transfer_asset_no_more: 'Không còn tài sản nào để điều chuyển',
-        transfer_asset_no_choose: 'Bạn chưa chọn tài sản điều chuyển',
+        transfer_asset_no_more: 'Không còn tài sản nào để điều chuyển.',
+        transfer_asset_no_choose: 'Bạn chưa chọn tài sản điều chuyển.',
         choose_transfer_department: 'Vui lòng chọn bộ phận sử dụng mới.',
-        transfer_department_check: 'Vui lòng chọn bộ phận sử dụng mới khác bộ phận sử dụng tài sản.'
+        transfer_department_check:
+            'Vui lòng chọn bộ phận sử dụng mới khác bộ phận sử dụng tài sản.',
+        cancel: 'Hủy bỏ',
+        no: 'Không',
+        message_cancel: 'Bạn có muốn hủy bỏ thêm tài sản điều chuyển không?'
     },
     popup: {
         title_button_cancel: 'Hủy',

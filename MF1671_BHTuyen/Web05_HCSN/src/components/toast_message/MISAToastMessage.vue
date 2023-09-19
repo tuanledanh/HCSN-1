@@ -6,10 +6,12 @@
                     <section class="t-toast-warning__body--icon">
                         <section class="icon warning"></section>
                     </section>
+
                     <section class="t-toast-warning__body--message flex item-center">
                         <slot></slot>
                     </section>
                 </main>
+
                 <footer class="t-toast-warning__footer flex justify-right item-center col-gap-10">
                     <MISAButton
                         type-button="outline"
@@ -32,6 +34,7 @@
                         width="95px"
                         padding="0 16px"
                         @click="$emit('click-main')"
+                        ref="buttonMain"
                     />
                 </footer>
             </section>
@@ -55,14 +58,16 @@
 <script setup lang="ts">
 import { ToastMessageType } from '@/enum'
 import type { ToastMessageProps } from '@/types'
-import { watch } from 'vue'
+import { watch, ref, onUpdated } from 'vue'
 import { useResource } from '@/hook'
+import type MISAButton from '../button'
 
 const props = withDefaults(defineProps<ToastMessageProps>(), {
     type: ToastMessageType.WARNING
 })
 
-const show = defineModel<boolean>({ local: true, default: false, required: false })
+const show = defineModel<boolean>({ local: true, default: false })
+const buttonMain = ref<InstanceType<typeof MISAButton> | null>(null)
 
 defineEmits<{
     'click-outline': []
@@ -88,6 +93,12 @@ watch(
         }
     }
 )
+
+onUpdated(() => {
+    if (buttonMain.value) {
+        buttonMain.value.focus()
+    }
+})
 </script>
 
 <style scoped lang="scss">

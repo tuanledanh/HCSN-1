@@ -8,14 +8,13 @@ namespace MISA.WebFresher052023.Domain.Interface
 {
     public interface IBaseManager<TEntity>
     {
-        #region Tasks
+        #region Methods
         /// <summary>
-        /// Kiểm tra mã bản ghi đã tồn tại hay không để thêm mới
+        /// Kiểm tra mã code của bản ghi đã tồn tại hay không để thêm mới hoặc cập nhật
         /// </summary>
-        /// <param name="dtoCode">Mã của bản ghi</param>
-        /// <returns></returns>
+        /// <param name="code">Mã code của bản ghi</param>
         /// Created By: Bùi Huy Tuyền (18/07/2023)
-        public Task CheckCodeConflictAsync(string dtoCode);
+        public Task CheckCodeConflictAsync(string code);
         #endregion
     }
 }

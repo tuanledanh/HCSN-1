@@ -1,5 +1,4 @@
 ﻿using MISA.WebFresher052023.Domain.Interface.Base;
-using System.ComponentModel.DataAnnotations;
 
 namespace MISA.WebFresher052023.Domain.Entity.FixedAsset
 {
@@ -151,9 +150,9 @@ namespace MISA.WebFresher052023.Domain.Entity.FixedAsset
 
         #region Methods
         /// <summary>
-        /// Lấy FixedAssetId
+        /// Lấy Id của tài sản
         /// </summary>
-        /// <returns>FixedAssetId</returns>
+        /// <returns>Mã Id của tài sản</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public Guid GetKey()
         {
@@ -161,9 +160,9 @@ namespace MISA.WebFresher052023.Domain.Entity.FixedAsset
         }
 
         /// <summary>
-        /// Lấy FixedAssetCode
+        /// Lấy mã code của tài sản
         /// </summary>
-        /// <returns>FixedAssetCode</returns>
+        /// <returns>Mã code của tài sản</returns>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public string GetCode()
         {
@@ -171,10 +170,9 @@ namespace MISA.WebFresher052023.Domain.Entity.FixedAsset
         }
 
         /// <summary>
-        /// Set FixedAssetId
+        /// Gán mã Id cho tài sản
         /// </summary>
-        /// <param name="FixedAssetId">FixedAssetId</param>
-        /// <return></return>
+        /// <param name="FixedAssetId">Mã id của tài sản</param>
         /// Created By: Bùi Huy Tuyền (19/07/2023)
         public void SetKey(Guid FixedAssetId)
         {

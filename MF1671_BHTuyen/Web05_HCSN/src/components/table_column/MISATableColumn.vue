@@ -22,7 +22,7 @@
         >
             <!-- Khi là cột Checkbox -->
             <MISAChecbox
-                v-if="type === TableColumnType.SELECTION"
+                v-if="!loading && type === TableColumnType.SELECTION"
                 @on-checked="checkAll"
                 :checked="checkedAll"
             />
@@ -36,6 +36,11 @@
             <section v-else class="fw-500 text-over">
                 {{ label }}
             </section>
+
+            <section
+                class="skeleton"
+                v-if="loading && type === TableColumnType.SELECTION"
+            ></section>
         </header>
 
         <!-- Body -->
@@ -50,11 +55,11 @@
                 <section
                     class="t-table-column__cell flex item-center justify-center h-40 pointer px-10"
                     :class="`${checkRowHover(item) ? 'hover' : ''} 
-                            ${checkRowActive(item) ? 'active' : ''}`"
+                            ${checkRowActive(item) ? 'active' : ''} 
+                            ${readonly ? 'readonly' : ''} ${showOnly ? 'show-only' : ''}`"
                     v-for="item in columnIds"
                     :key="item"
-                    @mouseover="rowIdHover = item"
-                    @mouseout="rowIdHover = ''"
+                    @mouseover="showOnly ? null : (rowIdHover = item)"
                 >
                     <section class="skeleton" v-if="loading"></section>
                     <MISAChecbox
@@ -80,11 +85,11 @@
                 <section
                     class="t-table-column__cell flex item-center justify-center h-40 pointer px-10"
                     :class="`${checkRowHover(item) ? 'hover' : ''} 
-                            ${checkRowActive(item) ? 'active' : ''}`"
+                            ${checkRowActive(item) ? 'active' : ''} ${readonly ? 'readonly' : ''} 
+                            ${showOnly ? 'show-only' : ''}`"
                     v-for="(item, index) in columnIds"
                     :key="item"
-                    @mouseover="rowIdHover = item"
-                    @mouseout="rowIdHover = ''"
+                    @mouseover="showOnly ? null : (rowIdHover = item)"
                     @click.prevent.stop="clickRow"
                     @dblclick.prevent.stop="dbclickRow"
                 >
@@ -104,11 +109,11 @@
                 <section
                     class="t-table-column__cell flex item-center justify-center h-40 pointer col-gap-10 px-10"
                     :class="`${checkRowHover(item) ? 'hover' : ''} 
-                            ${checkRowActive(item) ? 'active' : ''}`"
+                            ${checkRowActive(item) ? 'active' : ''} 
+                            ${readonly ? 'readonly' : ''} ${showOnly ? 'show-only' : ''}`"
                     v-for="(item, index) in columnIds"
                     :key="item"
-                    @mouseover="rowIdHover = item"
-                    @mouseout="rowIdHover = ''"
+                    @mouseover="showOnly ? null : (rowIdHover = item)"
                     @click.prevent.stop="clickRow"
                     @dblclick.prevent.stop="dbclickRow"
                     ref="row"
@@ -130,11 +135,11 @@
                     class="t-table-column__cell flex item-center h-40 px-10 pointer"
                     :class="`justify-${textAlign} 
                             ${checkRowHover(item[id as keyof object]) ? 'hover' : ''} 
-                            ${checkRowActive(item[id as keyof object]) ? 'active' : ''}`"
+                            ${checkRowActive(item[id as keyof object]) ? 'active' : ''} 
+                            ${readonly ? 'readonly' : ''} ${showOnly ? 'show-only' : ''}`"
                     v-for="item in columnData"
                     :key="item[id as keyof object]"
-                    @mouseover="rowIdHover = item[id as keyof object]"
-                    @mouseout="rowIdHover = ''"
+                    @mouseover="showOnly ? null : (rowIdHover = item[id as keyof object])"
                     @click.prevent.stop="clickRow"
                     @dblclick.prevent.stop="dbclickRow"
                 >
@@ -218,6 +223,7 @@ const {
     pageNumber,
     hasFooter,
     checkedAll,
+    showOnly,
     listRowIdSelected,
     loading,
     updateListRowIdSelected,

@@ -6,10 +6,20 @@ using System.Threading.Tasks;
 
 namespace MISA.WebFresher052023.Domain.Model.TransferAsset
 {
-    public class TransferAssetFilterModel 
+    public class TransferAssetFilterModel
     {
+        #region Properties
+        /// <summary>
+        /// Số lượng chứng từ tối đa trên một trang
+        /// </summary>
+        /// Created By: Bùi Huy Tuyền (27/07/2023)
         public int PageLimit { get; set; }
 
-        public int PageNumber { get; set; }
+        /// <summary>
+        /// Trang hiện tại
+        /// </summary>
+        /// Created By: Bùi Huy Tuyền (27/07/2023)
+        public int PageNumber { get; set; } 
+        #endregion
     }
 }

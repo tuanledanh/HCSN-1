@@ -48,17 +48,23 @@ namespace MISA.WebFresher052023.Infrastructure.Repository
         #endregion
 
         #region Methods
-        public async Task<IEnumerable<DepartmentEntity>> FindManyDepartmentAsync(List<Guid> departmentIds)
+        /// <summary>
+        /// Tìm kiếm nhiều phòng ban theo mã ID
+        /// </summary>
+        /// <param name="departmentIds">Danh sách các mã Id cần tìm kiếm</param>
+        /// <returns>Danh sách phòng ban</returns>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
+        public async Task<IEnumerable<DepartmentEntity>> FindManyAsync(List<Guid> departmentIds)
         {
             var query = $"SELECT * FROM department WHERE DepartmentId IN @DepartmentIds";
 
             var parameters = new DynamicParameters();
-            parameters.Add("@DepartmentIds", departmentIds.Select(departmentId=>departmentId.ToString()));
+            parameters.Add("@DepartmentIds", departmentIds.Select(departmentId => departmentId.ToString()));
 
-            var departments =await _unitOfWork.Connection.QueryAsync<DepartmentEntity>(query,  parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
+            var departments = await _unitOfWork.Connection.QueryAsync<DepartmentEntity>(query, parameters, commandType: CommandType.Text, transaction: _unitOfWork.Transaction);
 
             return departments;
-        } 
+        }
         #endregion
 
     }

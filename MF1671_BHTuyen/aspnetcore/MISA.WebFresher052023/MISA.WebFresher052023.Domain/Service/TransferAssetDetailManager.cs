@@ -14,60 +14,101 @@ namespace MISA.WebFresher052023.Domain.Service
 {
     public class TransferAssetDetailManager : ITransferAssetDetailManager
     {
+        #region Field
         private readonly ITransferAssetDetailRepository _transferAssetDetailRepository;
-        private readonly IDepartmentRepository _departmentRepository;
-        private readonly IFixedAssetRepository _fixedAssetRepository;
 
+        private readonly IDepartmentRepository _departmentRepository;
+
+        private readonly IFixedAssetRepository _fixedAssetRepository;
+        #endregion
+
+        #region Constructor
         public TransferAssetDetailManager(ITransferAssetDetailRepository transferAssetDetailRepository, IDepartmentRepository departmentRepository, IFixedAssetRepository fixedAssetRepository)
         {
             _transferAssetDetailRepository = transferAssetDetailRepository;
             _departmentRepository = departmentRepository;
             _fixedAssetRepository = fixedAssetRepository;
         }
+        #endregion
 
-        public async Task CheckDepartmentAsync(IEnumerable<TransferAssetDetailEntity> transferAssetDetailEntities)
+        #region Methods
+        /// <summary>
+        /// Kiểm tra phòng ban khi thêm hoặc sửa tài sản điều chuyển
+        /// </summary>
+        /// <param name="transferAssetDetails">Danh sách tài sản điều chuyển</param>
+        /// <returns></returns>
+        /// <exception cref="UserException">Ngoại lên người dùng</exception>
+        /// <exception cref="NotFoundException">Ngoại lệ không tồn tại</exception>
+        /// <exception cref="ConflictException">Ngoại lệ xung đột</exception>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
+        public async Task CheckDepartmentAsync(IEnumerable<TransferAssetDetailEntity> transferAssetDetails)
         {
+            // Thông báo lỗi khi danh sách rỗng
+            if (!transferAssetDetails.Any())
+            {
+                throw new UserException(VietNamese.EmptyList);
+            }
+
             // Kiểm tra tài sản có tồn tại không
-            var fixedAssetIds = transferAssetDetailEntities.Select(x => x.FixedAssetId).Distinct().ToList();
+            var fixedAssetIds = transferAssetDetails.Select(x => x.FixedAssetId).Distinct().ToList();
 
             var fixedAssets = await _fixedAssetRepository.FindManyFixedAssetAsync(fixedAssetIds);
+
             if (fixedAssets.Count() != fixedAssetIds.Count)
             {
+                // Có tài sản không tồn tại
                 throw new NotFoundException(VietNamese.FixedAssetNotExist);
             }
 
             // Kiểm tra phòng ban có tồn tại không
-            var departmentIds = transferAssetDetailEntities.Select(x => x.DepartmentId).Distinct().ToList();
-            var transferDepartmentIds = transferAssetDetailEntities.Select(x => x.TransferDepartmentId).Distinct().ToList();
+            var departmentIds = transferAssetDetails.Select(x => x.DepartmentId).Distinct().ToList();
 
-            var departments = await _departmentRepository.FindManyDepartmentAsync(departmentIds);
+            var transferDepartmentIds = transferAssetDetails.Select(x => x.TransferDepartmentId).Distinct().ToList();
 
-            var transferDepartments = await _departmentRepository.FindManyDepartmentAsync(transferDepartmentIds);
+            var departments = await _departmentRepository.FindManyAsync(departmentIds);
+
+            var transferDepartments = await _departmentRepository.FindManyAsync(transferDepartmentIds);
+
             if (departments.Count() != departmentIds.Count || transferDepartments.Count() != transferDepartmentIds.Count)
             {
+                // Có phòng ban không tồn tại
                 throw new NotFoundException(VietNamese.DepartmentNotExist);
             }
 
             // Kiểm tra phòng ban mới không được trùng phòng ban cũ
-            foreach (var transferAssetDetailEntity in transferAssetDetailEntities)
+            foreach (var transferAssetDetail in transferAssetDetails)
             {
-                if (transferAssetDetailEntity.DepartmentId == transferAssetDetailEntity.TransferDepartmentId)
+                if (transferAssetDetail.DepartmentId == transferAssetDetail.TransferDepartmentId)
                 {
                     throw new ConflictException(VietNamese.TransferDepartmentDiffDepartment);
                 }
             }
         }
 
-        public async Task DeleteCheckerAsync(Guid FixedAssetIds, Guid TransferAssetId)
+        /// <summary>
+        /// Kiểm tra khi xóa nhiều tài sản điều chuyển
+        /// </summary>
+        /// <param name="transferAssetDetailIds">Danh sách ID tài sản điều chuyển cần xóa</param>
+        /// <returns></returns>
+        /// <exception cref="UserException"></exception>
+        /// Created By: Bùi Huy Tuyền (19/07/2023)
+        public async Task CheckDeleteManyAsync(List<Guid> transferAssetDetailIds)
         {
-            var transferAssetDetails = await _transferAssetDetailRepository.GetTransferAssetDetailLastetAsync(FixedAssetIds);
-
-            if (transferAssetDetails != null && transferAssetDetails.TransferAssetId != TransferAssetId)
+            // Thông báo lỗi khi truyền danh sách rỗng
+            if (transferAssetDetailIds.Count == 0)
             {
-                throw new Exception("Tài sản đã có phát sinh chứng từ");
+                throw new UserException(VietNamese.EmptyList);
             }
-            return;
-        }
+
+            var transferAssetDetails = await _transferAssetDetailRepository.FindManyAsync(transferAssetDetailIds);
+
+            // Thông báo lỗi khi có bản khi không tồn tại
+            if (transferAssetDetailIds.Count != transferAssetDetails.Count())
+            {
+                throw new UserException(VietNamese.NoDelete);
+            }
+        } 
+        #endregion
 
 
     }

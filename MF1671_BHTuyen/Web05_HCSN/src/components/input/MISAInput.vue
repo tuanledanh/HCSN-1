@@ -1,6 +1,6 @@
 <template>
-    <label class="t-input pointer flex flex-col row-gap-10 br-4" :style="`width: ${width}; `">
-        <p v-if="!!label" class="t-input__label">
+    <label class="t-input flex flex-col row-gap-10 br-4" :style="`width: ${width}; `">
+        <p v-if="!!label" class="t-input__label pointer">
             {{ label }} <span class="required" v-if="required">*</span>
         </p>
 
@@ -74,7 +74,8 @@ const props = withDefaults(defineProps<InputProps>(), {
     tabindex: '0',
     type: InputType.TEXT,
     isFocus: false,
-    hasIconChangeNumber: false
+    hasIconChangeNumber: false,
+    maxLength: 255
 })
 
 const slots = defineSlots<{
@@ -90,6 +91,12 @@ defineEmits<{
 const inputValue = defineModel<string | number>({ local: true, default: '' })
 
 const isFocus = computed(() => props.isFocus)
+
+const focus = () => {
+    input.value?.focus()
+}
+
+defineExpose({ focus })
 
 watch(isFocus, (value) => {
     if (value) {
@@ -116,10 +123,16 @@ watch(inputValue, (value) => {
     }
 
     if (props.type === InputType.CODE) {
-        if (inputValue.value.toString().length <= 20) {
-            inputValue.value = formatText(value)
+        if (inputValue.value.toString().length <= props.maxLength) {
+            inputValue.value = formatCode(value)
         } else {
-            inputValue.value = formatText(value.toString().slice(0, 20))
+            inputValue.value = formatCode(value.toString().slice(0, props.maxLength))
+        }
+    }
+
+    if (props.type === InputType.TEXT) {
+        if (inputValue.value.toString().length > props.maxLength) {
+            inputValue.value = value.toString().slice(0, props.maxLength)
         }
     }
 })
@@ -142,7 +155,7 @@ const formatNumber = (number: string | number) =>
         .replace(/\./g, '')
         .replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 
-const formatText = (text: number | string) => text.toString().replace(/([^0-9,a-z,A-Z])/g, '')
+const formatCode = (text: number | string) => text.toString().replace(/([^0-9,a-z,A-Z])/g, '')
 
 const input = ref<HTMLInputElement | null>(null)
 </script>

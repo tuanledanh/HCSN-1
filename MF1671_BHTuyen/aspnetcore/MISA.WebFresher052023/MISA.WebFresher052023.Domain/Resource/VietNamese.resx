@@ -161,7 +161,7 @@
     <value>Bạn không thể chỉnh sửa tài sản này.</value>
   </data>
   <data name="TransferAssetCodeConflict" xml:space="preserve">
-    <value>Mã chừng từ &lt;strong&gt;{0}&lt;/strong&gt; đã tồn tại trong hệ thống.</value>
+    <value>Mã chừng từ &lt;strong&gt;{0}&lt;/strong&gt; đã tồn tại trong hệ thống. Vui lòng nhập một mã chứng từ khác.</value>
     <comment>Thông báo lỗi khi mã chứng từ bị trùng</comment>
   </data>
   <data name="TransferAssetDetailNotAdd" xml:space="preserve">
@@ -180,6 +180,18 @@
   <data name="TransferDateMin" xml:space="preserve">
     <value>Ngày điều chuyển cập nhật phải lớn hơn hoặc bằng ngày &lt;strong&gt;{0}&lt;/strong&gt;.</value>
     <comment>Thông báo khoảng ngày điều chuyển tài sản được phép cập nhật khi trong chứng từ không có tài sản phát sinh chứng từ sau</comment>
+  </data>
+  <data name="TransferDateNotInRange" xml:space="preserve">
+    <value>Ngày điều chuyển cập nhật phải nằm trong khoảng &lt;strong&gt;{0} ({1}) - {2} ({3})&lt;/strong&gt;.</value>
+  </data>
+  <data name="TransferDateNotLessThanMin" xml:space="preserve">
+    <value>Ngày điều chuyển cập nhật phải nhỏ hơn ngày điểu chuyển của chứng từ &lt;strong&gt;{0} ({1})&lt;/strong&gt;.</value>
+  </data>
+  <data name="TransferDateNotMoreThanMaxCreate" xml:space="preserve">
+    <value>Ngày điều chuyển phải lớn hơn ngày điểu chuyển của chứng từ &lt;strong&gt;{0} ({1})&lt;/strong&gt;.</value>
+  </data>
+  <data name="TransferDateNotMoreThanMaxUpdate" xml:space="preserve">
+    <value>Ngày điều chuyển cập nhật phải lớn hơn ngày điểu chuyển của chứng từ &lt;strong&gt;{0} ({1})&lt;/strong&gt;.</value>
   </data>
   <data name="TransferDateRange" xml:space="preserve">
     <value>Ngày điều chuyển cập nhật phải nằm trong khoảng &lt;strong&gt;{0} - {1}&lt;/strong&gt;.</value>

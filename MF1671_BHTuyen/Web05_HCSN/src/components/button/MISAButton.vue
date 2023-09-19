@@ -7,7 +7,7 @@
         :style="`height: ${height};padding: ${padding};width: ${width};border: ${
             border ? '' : 'none'
         }`"
-        :tabindex="tabindex"
+        :tabindex="disable ? '-1' : tabindex"
         ref="button"
         @click="clickButton"
         @keydown.enter.stop="clickButton"
@@ -78,6 +78,10 @@ const slots = defineSlots<{
 // Ref đến Button
 const button = ref<HTMLElement | null>(null)
 
+const focus = () => {
+    button.value?.focus()
+}
+
 // Khai báo Emit
 const emit = defineEmits<{
     click: []
@@ -88,6 +92,10 @@ const clickButton = () => {
     button.value?.focus()
     emit('click')
 }
+
+defineExpose({
+    focus
+})
 </script>
 
 <style scoped lang="scss">

@@ -3,17 +3,22 @@
         class="t-table flex flex-col"
         :class="`${border ? 'border' : ''}`"
         :style="`width: ${width}; ${style};`"
-        ref="table"
     >
         <section class="t-table__column br-4 flex">
             <slot></slot>
             <!-- Hiển thị khi Table không có dữ liệu -->
-            <section class="empty-data flex flex-col item-center" v-if="data.length == 0">
-                <section class="empty-data__icon"></section>
-                <section class="empty-data__title" v-if="!!emptyDataTitle">
-                    {{ emptyDataTitle }}
+            <Transition name="delay">
+                <section
+                    class="empty-data flex flex-col item-center"
+                    :class="{ 'without-footer': !hasFooter }"
+                    v-if="emptyIcon ? !emptyIcon : data.length === 0"
+                >
+                    <section class="empty-data__icon"></section>
+                    <section class="empty-data__title" v-if="!!emptyDataTitle">
+                        {{ emptyDataTitle }}
+                    </section>
                 </section>
-            </section>
+            </Transition>
         </section>
         <MISAPagination
             :position-dropdown="'top'"
@@ -38,10 +43,11 @@ const props = withDefaults(defineProps<TableProps>(), {
     hasFooter: true,
     data: () => [],
     total: 0,
-    loading: false
+    loading: false,
+    showOnly: false
 })
 
-const { border, hasFooter, id } = props
+const { border, hasFooter, id, showOnly } = props
 
 const emits = defineEmits<{
     clickRow: [id: string]
@@ -52,7 +58,7 @@ const emits = defineEmits<{
 const scrollTop = ref<number>(0)
 
 // State chỉ số hàng đang hover
-const rowIdHover = ref<string>('')
+const rowIdHover = defineModel<string>('rowIdHover', { local: true, default: '' })
 const rowIdFocus = defineModel<string>('rowIdFocus', { local: true, default: '' })
 
 const listRowIdSelected = defineModel<Array<string>>('listRowIdSelected', {
@@ -106,13 +112,11 @@ const clickRow = (event: MouseEvent) => {
         event.stopPropagation()
         return
     }
-    rowIdFocus.value = rowIdHover.value
-    emits('clickRow', rowIdFocus.value)
+    emits('clickRow', rowIdHover.value)
 }
 
 const dbclickRow = () => {
-    rowIdFocus.value = rowIdHover.value
-    emits('dbclickRow', rowIdFocus.value)
+    emits('dbclickRow', rowIdHover.value)
 }
 
 watch(pageLimit, () => {
@@ -136,12 +140,13 @@ watch(
 
 watch([listRowIdSelected, listRowIdSelected.value, () => listRowIdSelected.value.length], () => {
     if (listRowIdSelected.value.length === 0) checkedAll.value = false
-
-    checkedAll.value = data.value
-        .map((item) => item[id as keyof object])
-        .every((item) => {
-            return listRowIdSelected.value.includes(item as any)
-        })
+    else {
+        checkedAll.value = data.value
+            .map((item) => item[id as keyof object])
+            .every((item) => {
+                return listRowIdSelected.value.includes(item as any)
+            })
+    }
 })
 
 provide<TableInjection>('table', {
@@ -155,6 +160,7 @@ provide<TableInjection>('table', {
     pageNumber,
     checkedAll,
     rowIdHover,
+    showOnly,
     rowIdFocus,
     listRowIdSelected,
     updateListRowIdSelected,

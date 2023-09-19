@@ -99,6 +99,11 @@ export interface ResourceData {
         success_create: string
         success_delete: string
         success_update_data: string
+        empty_transfer_asset: string
+        empty_transfer_asset_detail: string
+        message_delete: string
+        no: string
+        message_delete_many: string
     }
 
     transfer_asset_info: {
@@ -127,7 +132,7 @@ export interface ResourceData {
         note: string
         choose_receive_department: string
         choose_fixed_asset: string
-        add_receive_department_before: string
+        add_receive_department_recent: string
         fixed_asset_transfer_information: string
         search_fixed_asset: string
         fixed_asset_code: string
@@ -138,6 +143,7 @@ export interface ResourceData {
         transfer_department_name: string
         reason: string
         functional: string
+        list_detail_empty: string
     }
 
     asset_transfer_popup_choose: {
@@ -156,6 +162,9 @@ export interface ResourceData {
         transfer_asset_no_choose: string
         choose_transfer_department: string
         transfer_department_check: string
+        cancel: string
+        no: string
+        message_cancel: string
     }
     popup: {
         title_button_cancel: string
