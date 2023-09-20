@@ -84,15 +84,15 @@ export default {
       isNarrow: false,
     };
   },
-  computed:{
+  computed: {
     // Thay đổi nội dung tooltip tương ứng với trường hợp thu hẹp hay mở rộng
-    content(){
-      if(this.isNarrow){
+    content() {
+      if (this.isNarrow) {
         return "Mở rộng";
-      }else{
+      } else {
         return "Thu gọn";
       }
-    }
+    },
   },
   methods: {
     /**

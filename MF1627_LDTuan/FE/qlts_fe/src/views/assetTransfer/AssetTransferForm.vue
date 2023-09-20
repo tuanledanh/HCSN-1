@@ -1,5 +1,10 @@
 <template>
-  <div class="popup" @keyup.esc="btnCancelTransferAsset">
+  <div
+    class="popup"
+    tabindex="0"
+    @keyup.esc="btnCancelTransferAsset"
+    @keydown.ctrl.s="btnSaveTransferAsset"
+  >
     <div class="popup__header">
       <span
         v-if="formMode === this.$_MISAEnum.FORM_MODE.ADD"
@@ -15,7 +20,7 @@
         bottom
         ref="exit"
         content="Thoát"
-        :tabindex="11"
+        :tabindex="12"
         @keydown="checkTabIndex($event, 'islast')"
         @click="btnCancelTransferAsset"
       ></MISAButton>
@@ -36,7 +41,7 @@
                 required
                 maxlength="12"
                 typeOfValue="code"
-                :tabindex="3"
+                :tabindex="4"
                 @keydown="checkTabIndex($event, 'isFirst')"
                 :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               ></MISAInput>
@@ -49,7 +54,7 @@
                 v-model="transferAsset.TransactionDate"
                 medium
                 required
-                :tabindex="4"
+                :tabindex="5"
                 :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               ></MISAInputDatePicker>
             </div>
@@ -61,7 +66,7 @@
                 v-model="transferAsset.TransferDate"
                 medium
                 required
-                :tabindex="5"
+                :tabindex="6"
                 :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               ></MISAInputDatePicker>
             </div>
@@ -72,7 +77,7 @@
                 v-model="transferAsset.Description"
                 medium
                 maxlength="200"
-                :tabindex="6"
+                :tabindex="7"
                 :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
               ></MISAInput>
             </div>
@@ -105,7 +110,11 @@
         <div v-if="isCreateReceiver" class="content--bot">
           <div v-if="receivers[0]" class="content--bot__row">
             <div class="content--bot__header row--bot">
-              <div>STT</div>
+              <div>
+                <MISATooltip top content="Số thứ tự">
+                  <span>STT</span></MISATooltip
+                >
+              </div>
               <div>Họ và tên</div>
               <div class="content__column">Đại diện</div>
               <div class="content__column">Chức vụ</div>
@@ -154,41 +163,59 @@
                 <div class="content__column">
                   <div class="combo-icon">
                     <div
+                      v-if="index !== 0"
                       :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
                     >
-                      <MISAIcon
-                        @click="moveUp(index)"
-                        pull_up_large
-                        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
-                      ></MISAIcon>
+                      <MISATooltip right content="Chuyển lên">
+                        <MISAIcon
+                          @click="moveUp(index)"
+                          pull_up_large
+                          :disabled="
+                            actionMode == this.$_MISAEnum.FORM_MODE.VIEW
+                          "
+                        ></MISAIcon>
+                      </MISATooltip>
                     </div>
                     <div
+                      v-if="index < receivers.length - 1"
                       :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
                     >
-                      <MISAIcon
-                        @click="moveDown(index)"
-                        drop_down_large
-                        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
-                      ></MISAIcon>
+                      <MISATooltip right content="Chuyển xuống">
+                        <MISAIcon
+                          @click="moveDown(index)"
+                          drop_down_large
+                          :disabled="
+                            actionMode == this.$_MISAEnum.FORM_MODE.VIEW
+                          "
+                        ></MISAIcon>
+                      </MISATooltip>
                     </div>
                     <div
                       @click="btnAddReceiver"
                       :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
                     >
-                      <MISAIcon
-                        add_box_thin
-                        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
-                      ></MISAIcon>
+                      <MISATooltip right content="Thêm mới">
+                        <MISAIcon
+                          add_box_thin
+                          :disabled="
+                            actionMode == this.$_MISAEnum.FORM_MODE.VIEW
+                          "
+                        ></MISAIcon>
+                      </MISATooltip>
                     </div>
                     <div
                       @click="btnDeleteReceiver(receiver)"
                       :class="[{ disabled: this.$_MISAEnum.FORM_MODE.VIEW }]"
                     >
-                      <MISAIcon
-                        v-if="index > 0"
-                        deleteIcon
-                        :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
-                      ></MISAIcon>
+                      <MISATooltip right content="Xóa">
+                        <MISAIcon
+                          v-if="index > 0"
+                          deleteIcon
+                          :disabled="
+                            actionMode == this.$_MISAEnum.FORM_MODE.VIEW
+                          "
+                        ></MISAIcon
+                      ></MISATooltip>
                     </div>
                   </div>
                 </div>
@@ -208,7 +235,9 @@
             medium
             placeholder="Tìm kiếm tài sản"
             maxlength="50"
-            :tabindex="7"
+            v-model="inputSearch"
+            @searchByCode="searchByCode"
+            :tabindex="8"
           ></MISAInput>
           <MISAButton
             v-if="
@@ -253,7 +282,7 @@
             large
             @click="btnShowFormChooseAsset"
             :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
-            :tabindex="8"
+            :tabindex="9"
             ref="ChooseAsset"
           ></MISAButton>
         </div>
@@ -285,7 +314,9 @@
             <div
               class="header cell display--center-center font-weight--700 border--right border--bottom"
             >
-              STT
+              <MISATooltip top content="Số thứ tự">
+                <span>STT</span></MISATooltip
+              >
             </div>
             <div
               class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
@@ -346,6 +377,7 @@
               ]"
               @click.exact.stop="callRowOnClick(asset)"
               @click.ctrl.stop="callRowOnCtrlClick(asset)"
+              @click.shift.stop="rowOnShiftClick(asset)"
             >
               <div
                 class="cell display--center-center border--right border--bottom"
@@ -460,14 +492,14 @@
           :numberColumnLeft="4"
           :numberColumnRight="3"
         ></MISACalculator>
-        <MISAPaging
+        <MISAPagingFE
           :totalRecords="totalRecords"
           :totalPages="totalPages"
           :currentPage="currentPage"
           :pageLimitList="pageLimitList"
           @filter="getPageLimit"
           @paging="getPageNumber"
-        ></MISAPaging>
+        ></MISAPagingFE>
       </div>
     </div>
     <div class="popup__footer">
@@ -476,14 +508,14 @@
         textButton="Hủy"
         @click="btnCancelTransferAsset"
         :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
-        :tabindex="10"
+        :tabindex="11"
       ></MISAButton>
       <MISAButton
         buttonMain
         textButton="Lưu"
         @click="btnSaveTransferAsset"
         :disabled="actionMode == this.$_MISAEnum.FORM_MODE.VIEW"
-        :tabindex="9"
+        :tabindex="10"
       ></MISAButton>
     </div>
   </div>
@@ -499,18 +531,24 @@
   <div v-if="isShowToastValueChange" class="blur">
     <MISAToast typeToast="warning" :content="toast_content_warning"
       ><MISAButton
+        buttonOutline
+        textButton="Đóng"
+        @click="btnCloseToastWarning"
+        :tabindex="1"
+        ref="button"
+      ></MISAButton>
+      <MISAButton
         buttonSub
         textButton="Hủy bỏ"
         @click="btnCloseForm"
-        focus
-        :tabindex="1"
-        ref="button"
+        :tabindex="2"
       ></MISAButton>
       <MISAButton
         buttonMain
         textButton="Lưu"
         @click="btnSaveTransferAsset"
-        :tabindex="2"
+        :tabindex="3"
+        focus
         @keydown="checkTabIndex($event, 'islast')"
       ></MISAButton
     ></MISAToast>
@@ -528,6 +566,7 @@
       ></MISAButton>
     </MISAToast>
   </div>
+  <MISALoading v-if="isLoading"></MISALoading>
 </template>
 <script>
 import { rowOnClick } from "../../helpers/table/selectRow";
@@ -593,6 +632,7 @@ export default {
       isShowFormChooseAsset: false,
       // Danh sách bản ghi đã tồn tại trong form này
       existFixedAsset: null,
+      isLoading: false,
 
       // ----------------------------- Paging -----------------------------
       // Số trang hiện tại
@@ -636,6 +676,9 @@ export default {
       //
       // Focus vào ô nhập liệu, ban đầu là mã chứng từ
       inputFocus: "TransferAssetCode",
+
+      // ----------------------------- SEARCH -----------------------------
+      inputSearch: null,
     };
   },
   computed: {
@@ -678,6 +721,11 @@ export default {
   },
   mounted() {
     this.$refs[this.inputFocus].focusInput();
+    window.addEventListener("keydown", this.disableCtrlS);
+  },
+  beforeUnmount() {
+    // Loại bỏ sự kiện keydown khi component bị hủy
+    window.removeEventListener("keydown", this.disableCtrlS);
   },
   created() {
     // Tải danh sách option giới hạn bản ghi mỗi trang
@@ -708,6 +756,7 @@ export default {
     pageLimit(value) {
       this.pageLimit = value;
       this.pageNumber = 1;
+      this.currentPage = 1;
       this.pagingAssetFE();
     },
 
@@ -721,8 +770,21 @@ export default {
       this.currentPage = value;
       this.pagingAssetFE();
     },
+
+    currentPage(value) {
+      this.pageNumber = value;
+      this.currentPage = value;
+    },
   },
   methods: {
+    disableCtrlS(event) {
+      // Kiểm tra nếu Ctrl (hoặc Command trên macOS) và phím S được nhấn cùng lúc
+      if ((event.ctrlKey || event.metaKey) && event.key === "s") {
+        // Ngăn chặn sự kiện mặc định (lưu trang web)
+        event.preventDefault();
+      }
+    },
+
     AssetDepreciation,
     formatMoney,
     formatMoneyToInt,
@@ -1275,6 +1337,7 @@ export default {
     },
 
     async loadTransferDataUpdate() {
+      this.isLoading = true;
       var oldTransferAsset = this.transferAssetToUpdate;
       // Vì mã code có thể chứa 1 số ký tự đặc biệt như # vì thường được sử dụng để đánh dấu một phần của URL được xử lý bởi JavaScript trên trình duyệt và không được gửi lên máy chủ
       // Vì vậy trước khi gửi phải mã hóa
@@ -1320,6 +1383,7 @@ export default {
 
           this.getNewestReceiver();
           this.pagingAssetFE();
+          this.isLoading = false;
         })
         .catch((res) => {
           this.$processErrorResponse(res);
@@ -1426,9 +1490,9 @@ export default {
 
     //------------------------------------------- ASSET -------------------------------------------
     // load data từ form chọn tài sản chứng từ
-    // TODO: làm thêm api lấy danh sách tài sản không chứa những tài sản đã chọn
     loadData(items) {
       // Tạo một đối tượng để ánh xạ FixedAssetId với TransferAssetDetailId trong deletedAssets
+      this.isLoading = false;
       if (
         items &&
         items.length > 0 &&
@@ -1465,9 +1529,12 @@ export default {
       if (!this.assets || this.assets.length <= 0) {
         this.assets = items;
       } else {
-        this.assets = this.assets.concat(items);
+        this.assets.unshift(...items);
       }
+      this.pageNumber = 1;
+      this.currentPage = 1;
       this.pagingAssetFE();
+      this.isLoading = false;
     },
 
     loadOldData() {
@@ -1476,7 +1543,20 @@ export default {
     },
 
     pagingAssetFE() {
-      const pagingAsset = JSON.parse(JSON.stringify(this.assets));
+      let pagingAsset = JSON.parse(JSON.stringify(this.assets));
+
+      if (
+        this.inputSearch &&
+        this.inputSearch !== null &&
+        this.inputSearch !== ""
+      ) {
+        pagingAsset = pagingAsset.filter((asset) => {
+          return asset.FixedAssetCode.toLowerCase().includes(
+            this.inputSearch.toLowerCase()
+          );
+        });
+      }
+
       this.totalRecords = pagingAsset.length;
       this.totalPages = Math.ceil(this.totalRecords / this.pageLimit);
       const start = (this.currentPage - 1) * this.pageLimit;
@@ -1505,6 +1585,7 @@ export default {
      */
     getPageNumber(pageNumber) {
       this.pageNumber = pageNumber;
+      this.currentPage = pageNumber;
     },
 
     /**
@@ -1530,11 +1611,11 @@ export default {
 
       if (this.pagingAsset.length === 0) {
         this.currentPage = 1;
-        this.pagingAssetFE();
         if (this.pageNumber !== 1) {
           this.pageNumber = 1;
         }
       }
+      this.pagingAssetFE();
     },
 
     btnDeleteSelectedAsset(assetsToDelete) {
@@ -1611,6 +1692,21 @@ export default {
     callRowOnCtrlClick(asset) {
       if (this.formMode != this.$_MISAEnum.FORM_MODE.VIEW) {
         rowOnCtrlClick.call(this, asset, "assets");
+      }
+    },
+
+    rowOnShiftClick(asset) {
+      if (event.shiftKey) {
+        const index = this.pagingAsset.indexOf(asset);
+        let list = [];
+        let newestIndex = index + 1;
+        if (newestIndex <= this.lastIndex) {
+          list = this.pagingAsset.slice(newestIndex - 1, this.lastIndex + 1);
+        } else {
+          list = this.pagingAsset.slice(this.lastIndex, newestIndex);
+        }
+        this.selectedRows = [];
+        this.selectedRowsByCheckBox = list;
       }
     },
 
@@ -1762,7 +1858,8 @@ export default {
       }
 
       if (
-        this.transferAsset.TransferDate < this.transferAsset.TransactionDate
+        DateFormat(this.transferAsset.TransferDate) <
+        DateFormat(this.transferAsset.TransactionDate)
       ) {
         this.inputFocus = "TransferDate";
         this.isShowToastValidateBE = true;
@@ -1789,6 +1886,20 @@ export default {
           this.toast_content_warning =
             this.$_MISAResource.VN.Form.Warning.Transfer.TransferDate;
           break;
+      }
+    },
+
+    //------------------------------------------- VALIDATE -------------------------------------------
+    /**
+     * Thực hiện tìm kiếm khi nhấn enter
+     * @param {int} keyCode mã code của phím
+     * Author: LDTUAN (19/09/2023)
+     */
+    searchByCode(keyCode) {
+      if (keyCode == this.$_MISAEnum.KEYCODE.ENTER) {
+        this.pageNumber = 1;
+        this.currentPage = 1;
+        this.pagingAssetFE();
       }
     },
   },
@@ -1960,6 +2071,7 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   background-color: var(--background-color-default);
+  max-height: 474px;
 }
 
 /* ------------------------------------------- Table ------------------------------------------- */
@@ -1970,6 +2082,7 @@ export default {
   flex-direction: column;
   border-spacing: unset;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .table-bot {
@@ -2020,6 +2133,7 @@ export default {
 }
 .body-data {
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .disabled {

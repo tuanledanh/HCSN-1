@@ -121,9 +121,9 @@
               class="tr--body"
               v-for="asset in assets"
               :key="asset.FixedAssetId"
-              @click.exact="callRowOnClick(asset)"
-              @click.ctrl="rowOnCtrlClick(asset)"
-              @click.shift="rowOnShiftClick(asset)"
+              @click.exact.stop="callRowOnClick(asset)"
+              @click.ctrl.stop="rowOnCtrlClick(asset)"
+              @click.shift.stop="rowOnShiftClick(asset)"
               @dblclick="btnEditAsset(asset)"
               @contextmenu.prevent="btnClickRight($event, asset)"
               :class="{
@@ -344,7 +344,7 @@ import fileDownload from "js-file-download";
 import { truncateText } from "../../helpers/common/format/format";
 import MISAAssetForm from "./AssetForm.vue";
 
-import { rowOnClick } from "../../helpers/table/selectRow";
+//import { rowOnClick } from "../../helpers/table/selectRow";
 
 //import { saveAs } from "file-saver";
 export default {
@@ -530,6 +530,10 @@ export default {
       );
       this.currentPage = value;
     },
+    currentPage(value) {
+      this.pageNumber = value;
+      this.currentPage = value;
+    },
   },
   created() {
     // Tải danh sách bản ghi
@@ -662,6 +666,8 @@ export default {
         this.assetTypeFilter = item.Asset.FixedAssetCategoryId;
         this.inputAssetCategoryNameChange = item.FixedAssetCategoryName;
       }
+      this.currentPage = 1;
+      this.pageNumber = 1;
       this.loadDataAsset();
     },
 
@@ -695,7 +701,15 @@ export default {
     btnDeleteAssets() {
       this.isLoading = true;
       if (this.selectedRows.length > 0) {
-        const listIds = this.selectedRows.map((asset) => asset.FixedAssetId);
+        // Lấy danh sách các cặp [FixedAssetId, modifiedDate] từ selectedRows
+        const idDatePairs = this.selectedRows.map((asset) => [
+          asset.FixedAssetId,
+          asset.ModifiedDate,
+        ]);
+        // Sắp xếp theo trường "modified date"
+        idDatePairs.sort((a, b) => a[1] - b[1]);
+        // Lấy danh sách chỉ chứa FixedAssetId đã sắp xếp theo modified date
+        const listIds = idDatePairs.map((pair) => pair[0]);
         const requestData = listIds;
         this.$_MISAApi.FixedAsset.CheckTransfer(
           listIds,
@@ -705,7 +719,15 @@ export default {
             this.$_MISAApi.FixedAsset.DeleteMany(requestData, {
               headers: { "Content-Type": "application/json" },
             })
-              .then(() => this.loadDataAsset())
+              .then(() => {
+                this.loadDataAsset();
+                this.toast_content_success =
+                  this.$_MISAResource.VN.Form.DeleteSuccess;
+                this.isShowToastSuccess = true;
+                setTimeout(() => {
+                  this.isShowToastSuccess = false;
+                }, 3000);
+              })
               .then((this.isLoading = false))
               .catch((res) => {
                 this.$processErrorResponse(res);
@@ -744,13 +766,15 @@ export default {
       if (numberOfRecords == 1) {
         this.toast_content_delete =
           this.$_MISAResource.VN.Form.Warning.Delete.Single +
-          selectedRows[0].FixedAssetCode +
-          " - " +
-          selectedRows[0].FixedAssetName +
+          `<strong>${
+            selectedRows[0].FixedAssetCode +
+            " - " +
+            selectedRows[0].FixedAssetName
+          }</strong>` +
           "?";
       } else if (numberOfRecords > 1) {
         this.toast_content_delete =
-          formattedNumberOfRecords +
+          `<strong>${formattedNumberOfRecords}</strong>` +
           this.$_MISAResource.VN.Form.Warning.Delete.Multiple;
       } else {
         this.toast_content_delete =
@@ -880,6 +904,7 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     headCheckboxClick(event) {
+      this.selectedRows = [];
       if (event.target.checked) {
         for (const asset of this.assets) {
           const index = this.selectedRows.findIndex(
@@ -907,7 +932,18 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     callRowOnClick(asset) {
-      rowOnClick.call(this, asset);
+      const index = this.selectedRows.findIndex(
+        (selectedItem) => selectedItem.FixedAssetId === asset.FixedAssetId
+      );
+      if (index !== -1) {
+        this.selectedRows = [];
+      } else {
+        this.selectedRows = [];
+        this.selectedRows.push(asset);
+      }
+      if (this.selectedRows.length == 0) {
+        this.lastIndex = 0;
+      }
     },
 
     /**

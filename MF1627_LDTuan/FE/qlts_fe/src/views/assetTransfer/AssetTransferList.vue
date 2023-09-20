@@ -3,7 +3,9 @@
     <div class="content--top" ref="contentTop">
       <div v-if="selectedRowsByCheckBox.length == 0" class="top-left">
         <span class="font-weight--700">Điều Chuyển</span>
-        <MISAIcon loading @click="reLoad"></MISAIcon>
+        <MISATooltip top content="Tải lại dữ liệu">
+          <MISAIcon loading @click="reLoad"></MISAIcon
+        ></MISATooltip>
       </div>
       <div v-else class="top-left font-size-default">
         <span class="font-weight--400"
@@ -32,8 +34,12 @@
           @click="btnAddDocument"
           large
         ></MISAButton>
-        <MISAIcon chat></MISAIcon>
-        <MISAIcon question></MISAIcon>
+        <MISATooltip bottom content="Tư vấn">
+          <MISAIcon chat></MISAIcon
+        ></MISATooltip>
+        <MISATooltip bottom content="Hỏi đáp">
+          <MISAIcon question></MISAIcon
+        ></MISATooltip>
       </div>
     </div>
     <div
@@ -70,7 +76,9 @@
             <div
               class="header cell display--center-center font-weight--700 border--right border--bottom"
             >
-              STT
+              <MISATooltip top content="Số thứ tự">
+                <span>STT</span></MISATooltip
+              >
             </div>
             <div
               class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
@@ -130,6 +138,7 @@
               @dblclick="btnEditTransferAsset(transferAsset)"
               @click.exact.stop="callRowOnClick(transferAsset)"
               @click.ctrl.stop="callRowOnCtrlClick(transferAsset)"
+              @click.shift.stop="rowOnShiftClick(transferAsset)"
               @contextmenu.prevent="btnClickRight($event, transferAsset)"
             >
               <div
@@ -286,7 +295,9 @@
             <div
               class="header cell display--center-center font-weight--700 border--top border--right border--bottom"
             >
-              STT
+              <MISATooltip top content="Số thứ tự">
+                <span>STT</span></MISATooltip
+              >
             </div>
             <div
               class="header cell display--center-left font-weight--700 border--top border--right border--bottom padding--left-10"
@@ -416,7 +427,7 @@
   </div>
   <MISALoading v-if="isLoading"></MISALoading>
   <MISAContextMenu
-    :listItem="this.$_MISAResource.VN.ContextMenu.Transfer"
+    :listItem="this.$_MISAResource.VN.TransferContext"
     :isShowContextMenu="isShowContextMenu"
     :posX="mouseX"
     :posY="mouseY"
@@ -447,7 +458,7 @@
         textButton="Xóa"
         @click="btnDeleteMultiTransferAsset"
         :tabindex="1"
-        ref="cancelForm"
+        ref="button"
         focus
       ></MISAButton>
     </MISAToast>
@@ -466,7 +477,7 @@
         textButton="Xóa"
         @click="btnDeleteSingleTransferAsset"
         :tabindex="1"
-        ref="cancelForm"
+        ref="button"
         focus
       ></MISAButton>
     </MISAToast>
@@ -510,7 +521,7 @@
         focus
         ref="button"
         :tabindex="1"
-        @keydown="checkTabIndex($event, 'islast')"
+        @keydown="callCheckTabIndex($event, 'islast')"
       ></MISAButton>
     </MISAToast>
   </div>
@@ -666,13 +677,17 @@ export default {
       this.loadDataDetail();
     },
 
+    currentPageTransfer(value) {
+      this.pageNumberTransfer = value;
+      this.currentPageTransfer = value;
+    },
+
     /**
      * Phân trang lại với giới hạn trang mới
      * @param {int} value giới hạn bản ghi
      * Author: LDTUAN (02/08/2023)
      */
     pageLimitTransfer(value) {
-      console.log(this.selectedRowsByCheckBox);
       this.loadData(1, value);
     },
 
@@ -682,7 +697,6 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     pageNumberTransfer(value) {
-      console.log(this.selectedRowsByCheckBox);
       this.loadData(value, this.pageLimitTransfer);
       this.currentPageTransfer = value;
     },
@@ -707,6 +721,7 @@ export default {
       pageNumber = this.pageNumberTransfer,
       pageLimit = this.pageLimitTransfer
     ) {
+      const originalTransfer = JSON.parse(JSON.stringify(this.selectedRowsByCheckBox));
       this.isLoading = true;
       this.$_MISAApi.TransferAsset.Filter(pageNumber, pageLimit, null)
         .then((res) => {
@@ -743,6 +758,10 @@ export default {
               this.isSuccessAddOrUpdate = false;
             }, 3000);
           }
+
+          if(originalTransfer && originalTransfer.length > 0){
+            this.selectedRowsByCheckBox = originalTransfer;
+          }
         })
         .catch((res) => {
           this.$processErrorResponse(res);
@@ -762,6 +781,8 @@ export default {
           this.isShowToastAddSuccess = true;
           break;
       }
+      this.pageNumberTransfer = 1;
+      this.currentPageTransfer = 1;
       this.loadData();
     },
 
@@ -811,6 +832,12 @@ export default {
             this.isLoading = false;
             this.selectedRow = [];
             this.selectedRowsByCheckBox = [];
+            this.toast_content_success =
+              this.$_MISAResource.VN.Form.Warning.Transfer.Success.Delete;
+            this.isShowToastUpdateSuccess = true;
+            setTimeout(() => {
+              this.isShowToastUpdateSuccess = false;
+            }, 3000);
           })
           .catch((res) => {
             this.$processErrorResponse(res);
@@ -884,17 +911,35 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     callRowOnClick(transferAsset) {
+      this.isShowContextMenu = false;
       rowOnClick.call(this, transferAsset, "transferAssets");
       this.transferAssetCode = transferAsset.TransferAssetCode;
       this.loadDataDetail(this.transferAssetCode);
     },
 
     callRowOnClickByCheckBox(transferAsset) {
+      this.isShowContextMenu = false;
       rowOnClickByCheckBox.call(this, transferAsset, "transferAssets");
     },
 
     callRowOnCtrlClick(transferAsset) {
+      this.isShowContextMenu = false;
       rowOnCtrlClick.call(this, transferAsset, "transferAssets");
+    },
+
+    rowOnShiftClick(asset) {
+      if (event.shiftKey) {
+        const index = this.transferAssets.indexOf(asset);
+        let list = [];
+        let newestIndex = index + 1;
+        if (newestIndex <= this.lastIndex) {
+          list = this.transferAssets.slice(newestIndex - 1, this.lastIndex + 1);
+        } else {
+          list = this.transferAssets.slice(this.lastIndex, newestIndex);
+        }
+        this.selectedRows = [];
+        this.selectedRowsByCheckBox = list;
+      }
     },
 
     /**
@@ -1063,7 +1108,7 @@ export default {
 
     //------------------------------------------- Tab index -------------------------------------------
     callCheckTabIndex(event, index) {
-      this.buttonFocus = "cancelForm";
+      this.buttonFocus = "button";
       checkTabIndex.call(this, event, index);
     },
 
@@ -1130,7 +1175,7 @@ export default {
       this.transferAssetSingle = listIds;
       this.toast_content_delete_single =
         this.$_MISAResource.VN.Form.Warning.DeleteTransfer.Single +
-        transferAsset.TransferAssetCode +
+        `<strong>${transferAsset?.TransferAssetCode}</strong>` +
         " không?";
       this.isShowToastDeleteSingle = true;
     },

@@ -49,7 +49,7 @@ namespace API.Controllers
         [HttpPost("FilterForTransfer")]
         public async Task<IActionResult> FilterForTransfer([FromBody] FixedAssetForTransferDto dtos)
         {
-            var assetList = await _fixedAssetService.FilterFixedAssetForTransfer(dtos.PageNumber, dtos.PageLimit, dtos.FixedAssetDtos, dtos.TransferAssetDetailIds);
+            var assetList = await _fixedAssetService.FilterFixedAssetForTransfer(dtos.PageNumber, dtos.PageLimit, dtos.FilterName, dtos.FixedAssetDtos, dtos.TransferAssetDetailIds);
             return StatusCode(StatusCodes.Status200OK, assetList);
         }
 

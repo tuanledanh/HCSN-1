@@ -1,44 +1,55 @@
 <template>
-  <el-tooltip v-if="bottom_start"
-    class="box-item"
-    effect="dark"
-    :content="content"
-    placement="bottom-start"
-  >
-    <slot></slot>
-  </el-tooltip>
-  <el-tooltip v-if="bottom"
-    class="box-item"
-    effect="dark"
-    :content="content"
-    placement="bottom"
-  >
-    <slot></slot>
-  </el-tooltip>
-  <el-tooltip v-if="bottom_end"
-    class="box-item"
-    effect="dark"
-    :content="content"
-    placement="bottom-end"
-  >
-    <slot></slot>
-  </el-tooltip>
-  <el-tooltip v-if="top"
-    class="box-item"
-    effect="dark"
-    :content="content"
-    placement="top"
-  >
-    <slot></slot>
-  </el-tooltip>
-  <el-tooltip v-if="right"
-    class="box-item"
-    effect="dark"
-    :content="content"
-    placement="right"
-  >
-    <slot></slot>
-  </el-tooltip>
+  <div @mouseenter="showTooltip" @mouseleave="hideTooltip">
+    <el-tooltip
+      v-if="bottom_start"
+      class="box-item"
+      effect="dark"
+      :content="content"
+      placement="bottom-start"
+    >
+      <slot></slot>
+    </el-tooltip>
+    <el-tooltip
+      v-if="bottom"
+      class="box-item"
+      effect="dark"
+      :content="content"
+      placement="bottom"
+      :visible="visible"
+    >
+      <slot></slot>
+    </el-tooltip>
+    <el-tooltip
+      v-if="bottom_end"
+      class="box-item"
+      effect="dark"
+      :content="content"
+      placement="bottom-end"
+      :visible="visible"
+    >
+      <slot></slot>
+    </el-tooltip>
+    <el-tooltip
+      v-if="top"
+      class="box-item"
+      effect="dark"
+      :content="content"
+      placement="top"
+      :visible="visible"
+    >
+      <slot></slot>
+    </el-tooltip>
+    <el-tooltip
+      v-if="right"
+      class="box-item"
+      effect="dark"
+      :content="content"
+      placement="right"
+      :visible="visible"
+    >
+      <slot></slot>
+    </el-tooltip>
+  </div>
 </template>
 <script>
 export default {
@@ -73,6 +84,19 @@ export default {
     right: {
       type: Boolean,
       default: false,
+    },
+  },
+  data() {
+    return {
+      visible: false,
+    };
+  },
+  methods: {
+    showTooltip() {
+      this.visible = true;
+    },
+    hideTooltip() {
+      this.visible = false;
     },
   },
 };

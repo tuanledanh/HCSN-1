@@ -20,6 +20,7 @@ namespace Infrastructure.Repository
         }
         #endregion
 
+        #region Methods
         /// <summary>
         /// Lấy danh sách các bản ghi trong danh sách id
         /// </summary>
@@ -36,11 +37,18 @@ namespace Infrastructure.Repository
             var listEntities = await _unitOfWork.Connection.QueryAsync<Receiver>(sql, param, transaction: _unitOfWork.Transaction);
             return listEntities.ToList();
         }
+
+        /// <summary>
+        /// Lấy danh sách ban giao nhận mới nhất
+        /// </summary>
+        /// <returns>Danh sách ban giao nhận</returns>
+        /// Created by: ldtuan (09/09/2023)
         public async Task<List<Receiver>> GetNewestReceiver()
         {
             string procedureName = "Proc_GetNewestReceiver";
             var receivers = await _unitOfWork.Connection.QueryAsync<Receiver>(procedureName, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return receivers.ToList();
-        }
+        } 
+        #endregion
     }
 }

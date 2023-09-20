@@ -111,3 +111,35 @@ export function rowOnCtrlClick(asset, assetType) {
     }
   }
 }
+
+/**
+ * Chọn bản ghi bằng cách nhấn shift + click
+ * @param {object} asset bản ghi
+ * Author: LDTUAN (09/08/2023)
+ */
+// export function rowOnShiftClick(asset, assetType) {
+//   if (event.shiftKey) {
+//     let data = null;
+//     if (assetType === "assets") {
+//       data = this.assets;
+//     } else if (assetType === "transferAssets") {
+//       data = this.transferAssets;
+//     }
+
+//     const index = data.indexOf(asset);
+//     let list = [];
+//     let newestIndex = index + 1;
+//     if (newestIndex <= this.lastIndex) {
+//       list = data.slice(newestIndex - 1, this.lastIndex + 1);
+//     } else {
+//       list = data.slice(this.lastIndex, newestIndex);
+//     }
+
+//     if (assetType === "assets") {
+//       this.selectedRows = list;
+//     } else if (assetType === "transferAssets") {
+//       this.selectedRows = [];
+//       this.selectedRowsByCheckBox = list;
+//     }
+//   }
+// }

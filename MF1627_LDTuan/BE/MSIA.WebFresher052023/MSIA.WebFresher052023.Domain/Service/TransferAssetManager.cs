@@ -12,10 +12,14 @@ namespace MSIA.WebFresher052023.Domain.Service
 {
     public class TransferAssetManager : BaseManager<TransferAsset, TransferAssetModel>, ITransferAssetManager
     {
+        #region Fields
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IFixedAssetRepository _fixedAssetRepository;
         private readonly ITransferAssetRepository _transferAssetRepository;
         private readonly ITransferAssetDetailRepository _transferAssetDetailRepository;
+
+        #endregion
+        #region Constructor
         public TransferAssetManager(ITransferAssetRepository transferAssetRepository, ITransferAssetDetailRepository transferAssetDetailRepository, IDepartmentRepository departmentRepository, IFixedAssetRepository fixedAssetRepository) : base(transferAssetRepository)
         {
             _departmentRepository = departmentRepository;
@@ -23,7 +27,7 @@ namespace MSIA.WebFresher052023.Domain.Service
             _transferAssetRepository = transferAssetRepository;
             _transferAssetDetailRepository = transferAssetDetailRepository;
         }
-
+        #endregion
         /// <summary>
         /// Kiểm tra chứng từ và chi tiết chứng từ có tồn tại hay không
         /// </summary>
@@ -129,6 +133,14 @@ namespace MSIA.WebFresher052023.Domain.Service
             }
         }
 
+        /// <summary>
+        /// Lấy tài sản của chứng từ mà có chứng từ phát sinh mới nhất để hiển thị lên thông báo lỗi
+        /// </summary>
+        /// <param name="detailList">Danh sách chi tiết chứng từ</param>
+        /// <param name="newestTransfer">Chứng từ mới nhất</param>
+        /// <param name="fixedAssetList">Danh sách tài sản</param>
+        /// <param name="listAssetIds">Danh sách id tài sản</param>
+        /// Created by: ldtuan (09/09/2023)
         private async Task<FixedAsset> getFixedAsset(List<TransferAssetDetailModel> detailList, TransferAsset newestTransfer, List<FixedAsset> fixedAssetList ,List<Guid> listAssetIds)
         {
             // Lấy chi tiết chứng từ của chứng từ mới nhất này

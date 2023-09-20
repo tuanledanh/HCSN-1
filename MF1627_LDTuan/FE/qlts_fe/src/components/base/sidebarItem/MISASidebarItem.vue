@@ -5,7 +5,11 @@
     </template>
     <router-link
       :to="'/' + url"
-      :class="[{ 'sidebar-item': item }, { 'sidebar-top': top }]"
+      :class="[
+        { 'sidebar-item': item },
+        { 'sidebar-top': top },
+        { 'link-active': subItems?.some((item) => item.url === route) },
+      ]"
       @mouseenter="visible = narrow"
       @mouseleave="visible = false"
       @click="btnShowExpand"
@@ -43,17 +47,10 @@
       :key="subItem.url"
       class="sidebar-item sub-item"
     >
-      <MISAIcon
-        sidebar
-        :home="home"
-        :overview="overview"
-        :asset="asset"
-        :asset_HTDB="asset_HTDB"
-        :tool="tool"
-        :category="category"
-        :search_sidebar="search_sidebar"
-        :report="report"
-      ></MISAIcon>
+      <div :class="{ visible: subItem.url === route }">
+        <MISAIcon arrow></MISAIcon>
+      </div>
+
       <div class="sidebar-text">
         <span>{{ subItem.content }}</span>
       </div>
@@ -61,6 +58,7 @@
   </div>
 </template>
 <script>
+import { useRoute } from "vue-router";
 export default {
   name: "MISASidebarItem",
   props: {
@@ -162,6 +160,12 @@ export default {
       } else {
         this.openItem = this.openItemResume;
       }
+    },
+  },
+  computed: {
+    route() {
+      const inputString = useRoute().path;
+      return inputString.substring(1);
     },
   },
   methods: {

@@ -17,6 +17,7 @@
       { 'icon--combobox-delete': combobox_delete },
       { 'icon--filter': filter },
       { 'icon--navbar': navbar },
+      { 'icon--arrow': arrow },
     ]"
     @click="onPagingClick"
   >
@@ -128,6 +129,7 @@
         { 'icon-export-toast': export_toast },
         { 'icon-date-picker': date_picker },
         { 'icon-loading': loading },
+        { 'icon-arrow': arrow },
       ]"
     ></div>
   </div>
@@ -149,6 +151,11 @@ export default {
     },
     // Disable icon
     disabled: {
+      type: Boolean,
+      default: false,
+    },
+    // Mũi tên icon
+    arrow: {
       type: Boolean,
       default: false,
     },
@@ -561,8 +568,8 @@ export default {
 
 .icon-chat {
   background: url("../../../assets/icon/qlts-icon.svg") no-repeat -23px -68px;
-	width: 18px;
-	height: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 .icon-user {
@@ -576,6 +583,14 @@ export default {
   width: 7px;
   height: 5px;
   transform: scale(1.2);
+}
+
+.icon-arrow {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -375px -246px;
+	width: 18px;
+	height: 12px;
+  filter: invert(100%);
+  transform: rotate(180deg);
 }
 
 .icon-drop-down-large {
@@ -635,6 +650,14 @@ export default {
   height: 8px;
   filter: invert(100%);
   transform: scale(1.3);
+}
+
+.icon-add-black {
+  background: url("../../../assets/icon/qlts-icon.svg") no-repeat -204px -424px;
+  width: 8px;
+  height: 8px;
+  filter: invert(100%);
+  transform: scale(2);
 }
 
 .icon-export {
@@ -766,6 +789,10 @@ export default {
   width: 24px;
 }
 
+.input--search > div > .icon--input{
+  top: 0;
+}
+
 .icon--button {
   position: absolute;
   left: 12px;
@@ -855,5 +882,9 @@ export default {
   height: 18px;
   border: 1px solid black;
   border-radius: 4px;
+}
+
+.icon--arrow{
+  width: 40px;
 }
 </style>

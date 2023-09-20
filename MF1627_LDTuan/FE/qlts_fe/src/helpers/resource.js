@@ -33,6 +33,7 @@ const MISAResource = {
           Success: {
             Update: "Cập nhật chứng từ thành công",
             Add: "Thêm mới chứng từ thành công",
+            Delete: "Xóa chứng từ thành công",
           },
           Save: {
             UnChange: "Bạn chưa thay đổi dữ liệu nên không thể lưu",
@@ -64,6 +65,9 @@ const MISAResource = {
           Multiple:
             " chứng từ đã được chọn. Bạn có muốn xóa các chứng từ này khỏi danh sách?",
         },
+        DeleteChooseAsset:{
+          UnChange: "Bạn có muốn bỏ các tài sản đã chọn không?"
+        },
         SelectData: {
           TransferAsset: "Bạn chưa chọn tài sản điều chuyển",
           Department: {
@@ -83,6 +87,7 @@ const MISAResource = {
       },
       // Lưu thành công
       Success: "Lưu dữ liệu thành công",
+      DeleteSuccess: "Xóa tài sản thành công",
       // Kiểm trả dữ liệu nhập
       Validate: {
         FixedAssetCode: "mã tài sản",
@@ -129,17 +134,17 @@ const MISAResource = {
         text: "Xóa",
         index: 4,
       },
-      Transfer: {
-        Update: {
-          icon: "icon-edit",
-          text: "Cập nhật",
-          index: 1,
-        },
-        Delete: {
-          icon: "icon-delete-black",
-          text: "Xóa",
-          index: 2,
-        },
+    },
+    TransferContext: {
+      Update: {
+        icon: "icon-edit",
+        text: "Cập nhật",
+        index: 1,
+      },
+      Delete: {
+        icon: "icon-delete-black",
+        text: "Xóa",
+        index: 2,
       },
     },
     // Các link thành phần

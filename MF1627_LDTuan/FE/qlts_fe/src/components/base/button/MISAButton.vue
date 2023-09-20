@@ -358,6 +358,10 @@ export default {
   border-color: #1aa4c8;
 }
 
+.basic .button:hover {
+  background-color: #d1edf4 !important;
+}
+
 .button-combo .button--add-box {
   padding-left: 42px;
 }

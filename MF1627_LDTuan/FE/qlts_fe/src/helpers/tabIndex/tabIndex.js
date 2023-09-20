@@ -6,8 +6,13 @@
  */
 export function checkTabIndex(event, index) {
   var charCode = event.which ? event.which : event.keyCode;
-  if (index == "islast" && charCode == this.$_MISAEnum.KEYCODE.TAB) {
+  if (index == "islast" && charCode == this.$_MISAEnum.KEYCODE.TAB &&
+  this.toast_content_warning) {
     event.preventDefault();
     this.$refs[this.buttonFocus].focusButton();
+  }else if(index == "islast" && charCode == this.$_MISAEnum.KEYCODE.TAB &&
+  !this.toast_content_warning){
+    event.preventDefault();
+    this.$refs[this.inputFocus].focusButton();
   }
 }

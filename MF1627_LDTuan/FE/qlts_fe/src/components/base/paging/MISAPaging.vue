@@ -171,6 +171,10 @@ export default {
         this.$emit("paging", newValue);
       }
     },
+
+    currentPage(value){
+      this.pageNumber = value;
+    }
   },
   methods: {
     /**

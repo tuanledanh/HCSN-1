@@ -30,7 +30,7 @@ namespace Application.Interface
         /// <param name="dtos">Danh sách truyền vào để loại những bản ghi đó ra</param>
         /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
         /// Created by: ldtuan (05/09/2023)
-        Task<BaseFilterResponse<FixedAssetDto>> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, List<FixedAssetDto> dtos, List<Guid> transferAssetDetailIds);
+        Task<BaseFilterResponse<FixedAssetDto>> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, string filterName, List<FixedAssetDto> dtos, List<Guid> transferAssetDetailIds);
 
         /// <summary>
         /// Lấy dữ liệu tài sản dưới dạng dataTable

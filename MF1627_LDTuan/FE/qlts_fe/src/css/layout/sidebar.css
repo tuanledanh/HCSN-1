@@ -120,6 +120,11 @@
   opacity: 100%;
 }
 
+.link-active {
+  background-color: #1aa4c8;
+  opacity: 100%;
+}
+
 .sidebar--narrow .router-link-active {
   background-color: unset;
   padding: 0 11px;
@@ -146,4 +151,16 @@
 
 .sidebar-expand .icon{
   transition: var(--transition-02s);
+}
+
+.sub-item > div > .icon--arrow{
+  visibility: hidden;
+}
+
+.sub-item:hover > div > .icon{
+  visibility: visible;
+}
+
+.visible > .icon{
+  visibility: visible !important;
 }

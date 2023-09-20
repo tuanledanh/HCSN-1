@@ -34,6 +34,11 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             return affectedRow > 0;
         }
 
+        /// <summary>
+        /// Thêm mới nhiều bản ghi
+        /// </summary>
+        /// <param name="entities">Danh sách bản ghi cần thêm mới</param>
+        /// Created by: ldtuan (09/09/2023)
         public virtual async Task<bool> InsertMultiAsync(List<TEntity> entities)
         {
             string sql = GenerateInsertQuery();
@@ -57,6 +62,11 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             return affectedRow > 0;
         }
 
+        /// <summary>
+        /// Cập nhật nhiều bản ghi
+        /// </summary>
+        /// <param name="entities">Danh sách đối tượng cần cập nhật</param>
+        /// Created by: ldtuan (09/09/2023)
         public virtual async Task<bool> UpdateMultiAsync(List<TEntity> entities)
         {
             string sql = GenerateUpdateQuery();
@@ -122,7 +132,10 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             return param;
         }
 
-
+        /// <summary>
+        /// Tạo câu lệnh thêm nhiều
+        /// </summary>
+        /// <returns></returns>
         public string GenerateInsertQuery()
         {
             string columns = string.Join(", ", typeof(TEntity).GetProperties().Select(prop => ConvertPascalToSnakeCase(prop.Name)));
@@ -130,12 +143,21 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
             return $"Insert into {ConvertPascalToSnakeCase(TableName)} ({columns}) values ({values})";
         }
 
+        /// <summary>
+        /// Tạo câu query cập nhật nhiều
+        /// </summary>
+        /// Created by: ldtuan (09/09/2023)
         public string GenerateUpdateQuery()
         {
             string setClauses = string.Join(", ", typeof(TEntity).GetProperties().Select(prop => $"{ConvertPascalToSnakeCase(prop.Name)} = @{prop.Name}"));
             return $"Update {ConvertPascalToSnakeCase(TableName)} set {setClauses} where {ConvertPascalToSnakeCase(TableId)} = @{TableId}";
         }
 
+        /// <summary>
+        /// Chuyển chuỗi từ pascal sang snake case để phục vụ cho câu query
+        /// </summary>
+        /// <param name="input">Chuỗi cần chuyển</param>
+        /// Created by: ldtuan (09/09/2023)
         static string ConvertPascalToSnakeCase(string input)
         {
             if (string.IsNullOrEmpty(input))

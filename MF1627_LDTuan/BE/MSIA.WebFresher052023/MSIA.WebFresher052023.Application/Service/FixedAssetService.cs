@@ -75,7 +75,7 @@ namespace Application.Service
         /// <param name="dtos">Danh sách truyền vào để loại những bản ghi đó ra</param>
         /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
         /// Created by: ldtuan (05/09/2023)
-        public async Task<BaseFilterResponse<FixedAssetDto>> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, List<FixedAssetDto> dtos, List<Guid> transferAssetDetailIds)
+        public async Task<BaseFilterResponse<FixedAssetDto>> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, string filterName, List<FixedAssetDto> dtos, List<Guid> transferAssetDetailIds)
         {
             string ids = "";
             if (dtos != null && dtos.Count > 0)
@@ -92,8 +92,9 @@ namespace Application.Service
             List<FixedAssetModel> entities;
             pageNumber = pageNumber.HasValue && pageNumber.Value > 0 ? pageNumber : 1;
             pageLimit = pageLimit.HasValue && pageLimit.Value > 0 ? pageLimit : 20;
+            filterName = string.IsNullOrEmpty(filterName) ? "" : filterName;
 
-            var model = await _assetRepository.FilterFixedAssetForTransfer(pageNumber, pageLimit, ids, detailIds);
+            var model = await _assetRepository.FilterFixedAssetForTransfer(pageNumber, pageLimit, filterName, ids, detailIds);
             int totalRecords = model.TotalRecords;
             int totalPages = Convert.ToInt32(Math.Ceiling((double)totalRecords / (double)pageLimit));
             entities = model.FixedAssetModels;

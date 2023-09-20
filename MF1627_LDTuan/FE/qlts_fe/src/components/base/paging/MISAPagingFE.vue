@@ -31,7 +31,9 @@
             :totalPages="totalPages"
             :currentPage="currentPage"
             @paging="getPageNumber"
-            :disabled="pageNumber === 0 || totalPages === 0 || pageNumber == totalPages"
+            :disabled="
+              pageNumber === 0 || totalPages === 0 || pageNumber == totalPages
+            "
           ></MISAIcon>
         </div>
       </div>
@@ -146,6 +148,10 @@ export default {
       } else {
         this.$emit("paging", newValue);
       }
+    },
+
+    currentPage(value) {
+      this.pageNumber = value;
     },
   },
   methods: {

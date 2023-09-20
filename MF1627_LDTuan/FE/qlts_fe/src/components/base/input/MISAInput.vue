@@ -224,7 +224,7 @@ export default {
     },
   },
   methods: {
-    getBoundingClientRect(){
+    getBoundingClientRect() {
       return this.$refs.input.getBoundingClientRect();
     },
     /**

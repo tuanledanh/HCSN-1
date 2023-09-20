@@ -1,5 +1,10 @@
 <template>
-  <div class="popup--child" @keyup.esc="btnCloseForm" @keydown="saveShortCut" tabindex="0">
+  <div
+    class="popup--child"
+    @keyup.esc="btnCloseForm"
+    @keydown="saveShortCut"
+    tabindex="0"
+  >
     <div class="popup-container border-radius-4">
       <div class="popup__header--child border--top-right border--top-left">
         <span class="header__title font-weight--500"
@@ -12,7 +17,7 @@
           ref="exit"
           content="Thoát"
           @click="btnCloseForm"
-          :tabindex="17"
+          :tabindex="18"
           @keydown="checkTabIndex($event, 'islast')"
         ></MISAButton>
       </div>
@@ -23,9 +28,11 @@
               search
               normal
               medium
-              placeholder="Tìm kiếm tài sản"
+              placeholder="Tìm kiếm theo mã"
+              v-model="inputSearch"
+              @searchByCode="searchByCode"
               maxlength="50"
-              :tabindex="12"
+              :tabindex="13"
               ref="search"
               @focus="setInputFocus('search')"
             ></MISAInput>
@@ -71,7 +78,9 @@
               <div
                 class="header cell display--center-center font-weight--700 border--right border--bottom"
               >
-                STT
+              <MISATooltip top content="Số thứ tự">
+                <span>STT</span></MISATooltip
+              >
               </div>
               <div
                 class="header cell display--center-left font-weight--700 border--right border--bottom padding--left-10"
@@ -122,6 +131,7 @@
                 ]"
                 @click.exact.stop="callRowOnClick(asset)"
                 @click.ctrl.stop="callRowOnCtrlClick(asset)"
+                @click.shift.stop="rowOnShiftClick(asset)"
               >
                 <div
                   class="cell display--center-center border--right border--bottom"
@@ -231,13 +241,14 @@
                 required
                 placeholder="Bộ phận sử dụng"
                 @filter="getDepartmentFilter"
+                @deleteDepartment="deleteDepartment($event)"
                 :inputChange="inputChange"
                 isDisplay
                 self_adjust_size
                 medium
                 padding
                 input_35
-                :tabindex="13"
+                :tabindex="14"
               ></MISACombobox>
             </div>
             <div class="content__column">
@@ -247,7 +258,7 @@
                 v-model="Description"
                 medium
                 maxlength="255"
-                :tabindex="14"
+                :tabindex="15"
               ></MISAInput>
             </div>
           </div>
@@ -257,18 +268,20 @@
         <MISAButton
           buttonSub
           textButton="Hủy"
-          :tabindex="16"
+          :tabindex="17"
           @click="btnCloseForm"
         ></MISAButton>
         <MISAButton
           buttonMain
           textButton="Đồng ý"
           @click="btnSaveAsset"
-          :tabindex="15"
+          :tabindex="16"
         ></MISAButton>
       </div>
     </div>
   </div>
+
+  <MISALoading v-if="isLoading"></MISALoading>
 
   <!-- ======================================================= TOAST ======================================================= -->
   <div v-if="isShowToastValidate" class="blur">
@@ -283,6 +296,25 @@
         @keydown="checkTabIndex($event, 'islast')"
       ></MISAButton>
     </MISAToast>
+  </div>
+  <div v-if="isShowToastValidateChange" class="blur">
+    <MISAToast typeToast="warning" :content="toast_content_warning"
+      ><MISAButton
+        buttonSub
+        textButton="Đóng"
+        @click="btnCloseToastWarning"
+        focus
+        :tabindex="1"
+        ref="button"
+      ></MISAButton>
+      <MISAButton
+        buttonMain
+        textButton="Hủy"
+        @click="btnAbsCloseForm"
+        :tabindex="2"
+        @keydown="checkTabIndex($event, 'islast')"
+      ></MISAButton
+    ></MISAToast>
   </div>
 </template>
 <script>
@@ -322,6 +354,7 @@ export default {
       isCreateReceiver: false,
       // Lý do điều chuyển
       description: null,
+      isLoading: false,
 
       // ----------------------------- FORM -----------------------------
       isFormDisplay: false,
@@ -352,6 +385,7 @@ export default {
 
       // ----------------------------- TOAST -----------------------------
       isShowToastValidate: false,
+      isShowToastValidateChange: false,
       toast_content_warning: null,
 
       // ----------------------------- TAB INDEX -----------------------------
@@ -361,6 +395,10 @@ export default {
       // ----------------------------- COMBOBOX -----------------------------
       departmentFilter: null,
       inputChange: null,
+
+      // ----------------------------- SEARCH -----------------------------
+      // Nội dung tìm kiếm
+      inputSearch: "",
     };
   },
   watch: {
@@ -399,6 +437,7 @@ export default {
     truncateText,
 
     loadData(pageNumber = this.pageNumber, pageLimit = this.pageLimit) {
+      this.isLoading = true;
       let detailIds = null;
       if (this.deletedAssets) {
         detailIds = this.deletedAssets.map(
@@ -408,6 +447,7 @@ export default {
       let dataFilter = {
         PageNumber: pageNumber,
         PageLimit: pageLimit,
+        FilterName: this.inputSearch,
         FixedAssetDtos: this.existFixedAsset,
         TransferAssetDetailIds: detailIds,
       };
@@ -434,9 +474,12 @@ export default {
 
           this.totalPrice = formatMoney(totalPrice);
           this.totalResidualValue = formatMoney(totalResidualValue);
+          this.isLoading = false;
         })
         .catch((res) => {
-          console.log(res);
+          this.isShowToastValidate = true;
+          this.toast_content_warning = res.response.data.UserMessage;
+          this.isLoading = false;
         });
     },
 
@@ -474,7 +517,7 @@ export default {
      * Author: LDTUAN (02/08/2023)
      */
     callRowOnClick(asset) {
-      rowOnClick.call(this, asset);
+      rowOnClick.call(this, asset, "assets");
     },
 
     callRowOnClickByCheckBox(asset) {
@@ -483,6 +526,21 @@ export default {
 
     callRowOnCtrlClick(asset) {
       rowOnCtrlClick.call(this, asset, "assets");
+    },
+
+    rowOnShiftClick(asset){
+      if (event.shiftKey) {
+        const index = this.assets.indexOf(asset);
+        let list = [];
+        let newestIndex = index + 1;
+        if (newestIndex <= this.lastIndex) {
+          list = this.assets.slice(newestIndex - 1, this.lastIndex + 1);
+        } else {
+          list = this.assets.slice(this.lastIndex, newestIndex);
+        }
+        this.selectedRows = [];
+        this.selectedRowsByCheckBox = list;
+      }
     },
 
     btnUncheckedAll() {
@@ -551,7 +609,7 @@ export default {
             })
           );
           this.$emit("loadData", assetsWithNewDepartment);
-          this.btnCloseForm();
+          this.btnAbsCloseForm();
         }
       }
     },
@@ -579,14 +637,37 @@ export default {
       this.departmentFilter = item;
     },
 
+    /**
+     * Khi xóa text thì cập nhật lại id = null
+     * @param {object} asset tài sản
+     * @param {string} item phòng ban
+     * Author: LDTUAN (19/09/2023)
+     */
+    deleteDepartment(item) {
+      if (!item) {
+        this.departmentFilter = null;
+      }
+    },
+
     //------------------------------------------- TOAST -------------------------------------------
     btnCloseToastWarning() {
       this.isShowToastValidate = false;
+      this.isShowToastValidateChange = false;
       this.toast_content_warning = null;
       this.$refs[this.inputFocus].focusInput();
     },
 
     btnCloseForm() {
+      if(this.selectedRowsByCheckBox !== null && this.selectedRowsByCheckBox.length > 0){
+      this.isShowToastValidateChange = true;
+      this.toast_content_warning = this.$_MISAResource.VN.Form.Warning.DeleteChooseAsset.UnChange;
+        return;
+      }
+      this.$emit("onCloseForm");
+    },
+
+    btnAbsCloseForm(){
+      this.isShowToastValidateChange = false;
       this.$emit("onCloseForm");
     },
 
@@ -613,6 +694,19 @@ export default {
         event.preventDefault();
         this.inputFocus = "search";
         this.$refs[this.inputFocus].focusInput();
+      }
+    },
+
+    //------------------------------------------- SEARCH -------------------------------------------
+    /**
+     * Thực hiện tìm kiếm khi nhấn enter
+     * @param {int} keyCode mã code của phím
+     * Author: LDTUAN (19/09/2023)
+     */
+    searchByCode(keyCode) {
+      if (keyCode == this.$_MISAEnum.KEYCODE.ENTER) {
+        this.loadData();
+        this.currentPage = 1;
       }
     },
   },

@@ -18,6 +18,7 @@ namespace Infrastructure.Repository
         }
         #endregion
 
+        #region Methods
         /// <summary>
         /// Lấy danh sách các bản ghi trong danh sách id
         /// </summary>
@@ -36,9 +37,10 @@ namespace Infrastructure.Repository
             {
                 p_List = listId
             };
-            
+
             var entities = await _unitOfWork.Connection.QueryAsync<TransferAssetDetailModel>(procedureName, parameters, commandType: CommandType.StoredProcedure, transaction: _unitOfWork.Transaction);
             return entities.ToList();
-        }
+        } 
+        #endregion
     }
 }

@@ -56,12 +56,13 @@ namespace Infrastructure.Repository
         /// <param name="ids">Danh sách id truyền vào để loại những bản ghi có id đó ra</param>
         /// <returns>Danh sách loại tài sản đáp ứng đúng các điều kiện trên</returns>
         /// Created by: ldtuan (05/09/2023)
-        public async Task<FixedAssetForTransferModel> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, string ids, string detailIds)
+        public async Task<FixedAssetForTransferModel> FilterFixedAssetForTransfer(int? pageNumber, int? pageLimit, string filterName, string ids, string detailIds)
         {
             var procedureName = "Proc_FilterFixedAssetForTransfer";
             var parameters = new DynamicParameters();
             parameters.Add("p_PageNumber", pageNumber);
             parameters.Add("p_PageLimit", pageLimit);
+            parameters.Add("p_FilterName", filterName);
             parameters.Add("p_List", ids);
             parameters.Add("p_ListDetail", detailIds);
 

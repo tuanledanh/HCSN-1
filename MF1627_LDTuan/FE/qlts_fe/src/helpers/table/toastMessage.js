@@ -20,11 +20,11 @@ export function showToastDelete(
   if (numberOfRecords == 1) {
     this.toast_content_delete =
       messageDeleteSingle +
-      selectedRows[0].TransferAssetCode +
+      `<strong>${selectedRows[0].TransferAssetCode}</strong>` +
       " không ?";
   } else if (numberOfRecords > 1) {
     this.toast_content_delete =
-      formattedNumberOfRecords + messageDeleteMultiple;
+    `<strong>${formattedNumberOfRecords}</strong>` + messageDeleteMultiple;
   } else {
     this.toast_content_delete = messageDeleteZero;
   }

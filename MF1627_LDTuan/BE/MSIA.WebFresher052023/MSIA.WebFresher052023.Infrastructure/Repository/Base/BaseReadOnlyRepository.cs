@@ -31,6 +31,10 @@ namespace MSIA.WebFresher052023.Infrastructure.Repository.Base
 
         #region Methods
 
+        /// <summary>
+        /// Tạo mã code mới
+        /// </summary>
+        /// Created by: ldtuan (09/08/2023)
         public virtual async Task<string> GetNewCode()
         {
             var tableName = TableName;
