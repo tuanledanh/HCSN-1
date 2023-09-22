@@ -33,6 +33,13 @@ namespace API.Controllers
             var transferAssetList = await _transferAssetService.GetAllCustomAsync(pageNumber, pageLimit, filterName);
             return StatusCode(StatusCodes.Status200OK, transferAssetList);
         }
+
+        /// <summary>
+        /// Lấy chứng từ mới nhất của các tài sản trong chứng từ đích
+        /// </summary>
+        /// <param name="transferId">Id của chứng từ</param>
+        /// <returns>Ném ra thông báo lỗi nếu chứng từ mới nhất không phải là chứng từ đích, tức là tài sản bên trong có chứng từ phát sinh</returns>
+        /// Created by: ldtuan (12/09/2023)
         [HttpPost("GetNewest/{transferId}")]
         public async Task<IActionResult> GetNewestTransferAsset([FromRoute] Guid transferId)
         {

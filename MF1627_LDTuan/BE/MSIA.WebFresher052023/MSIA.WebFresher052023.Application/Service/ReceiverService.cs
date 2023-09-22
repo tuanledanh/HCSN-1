@@ -26,6 +26,12 @@ namespace Application.Service
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Thêm mới ban giao nhận
+        /// </summary>
+        /// <param name="receiverCreateDto">Thông tin cần thêm mới</param>
+        /// Created by: ldtuan (02/09/2023)
         public override async Task<bool> InsertAsync(ReceiverCreateDto receiverCreateDto)
         {
             await _receiverManager.CheckDuplicateCodeAsync(receiverCreateDto.ReceiverCode);
@@ -36,8 +42,13 @@ namespace Application.Service
             entity.SetKey(id);
             bool result = await _receiverRepository.InsertAsync(entity);
             return result;
-        } 
+        }
 
+        /// <summary>
+        /// Lấy ban giao nhận từ lần nhập trước
+        /// </summary>
+        /// <returns>Danh sách ban giao nhận mới nhất</returns>
+        /// Created by: ldtuan (02/09/2023)
         public async Task<List<ReceiverDto>?> GetNewestReceiver()
         {
             var receivers = await _receiverRepository.GetNewestReceiver();

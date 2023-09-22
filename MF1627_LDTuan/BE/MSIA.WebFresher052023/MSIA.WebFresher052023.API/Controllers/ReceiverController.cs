@@ -19,6 +19,11 @@ namespace API.Controllers
             _receiverService = receiverService;
         }
 
+        /// <summary>
+        /// Lấy ban giao nhận từ lần nhập trước
+        /// </summary>
+        /// <returns>Danh sách ban giao nhận mới nhất</returns>
+        /// Created by: ldtuan (02/09/2023)
         [HttpGet("getNewest")]
         public async Task<IActionResult> GetNewestReceiver()
         {

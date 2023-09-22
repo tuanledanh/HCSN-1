@@ -64,6 +64,12 @@ namespace Application.Service
             return transferAssetDto;
         }
 
+        /// <summary>
+        /// Lấy chứng từ mới nhất của các tài sản trong chứng từ đích
+        /// </summary>
+        /// <param name="transferId">Id của chứng từ</param>
+        /// <returns>Ném ra thông báo lỗi nếu chứng từ mới nhất không phải là chứng từ đích, tức là tài sản bên trong có chứng từ phát sinh</returns>
+        /// Created by: ldtuan (12/09/2023)
         public async Task GetNewestTransferAsset(Guid transferId)
         {
             var transferAsset = await _transferAssetRepository.GetAsync(transferId);
@@ -118,13 +124,21 @@ namespace Application.Service
                 var fixedAsset = await _fixedAssetRepository.GetAsync(duplicateFixedAsset.FirstOrDefault().FixedAssetId);
                 // Lấy danh sách chứng từ phát sinh của tài sản này
                 var generatedDocument = allTransferAssets
-                            .Where(transfer => transfer.FixedAssetId == fixedAsset.FixedAssetId && transfer.CreatedDate > transferAsset.CreatedDate)
-                            .OrderByDescending(transfer => transfer.CreatedDate)
+                            .Where(transfer => transfer.FixedAssetId == fixedAsset.FixedAssetId && transfer.TransferDate > transferAsset.TransferDate)
+                            .OrderByDescending(transfer => transfer.TransferDate)
                             .ToList();
                 throw new ValidateException(ErrorMessagesTransferAsset.AriseUpdate(fixedAsset.FixedAssetCode), ErrorMessagesTransferAsset.Infor(generatedDocument));
             }
         }
 
+        /// <summary>
+        /// Lấy toàn bộ chứng từ và phân trang
+        /// </summary>
+        /// <param name="pageNumber">Số trang</param>
+        /// <param name="pageLimit">Giới hạn số bản ghi mỗi trang</param>
+        /// <param name="filterName">Search theo mã</param>
+        /// <returns>Danh sách chứng từ</returns>
+        /// Created by: ldtuan (03/09/2023)
         public async Task<BaseFilterResponse<TransferAssetDto>> GetAllCustomAsync(int? pageNumber, int? pageLimit, string filterName)
         {
             List<TransferAssetModel> entities;
@@ -380,6 +394,12 @@ namespace Application.Service
             #endregion
         }
 
+        /// <summary>
+        /// Xóa nhiều chứng từ, cùng ban giao nhận và chi tiết chứng từ bên trong chứng từ
+        /// </summary>
+        /// <param name="ids">Id của các chứng từ</param>
+        /// <returns>True nếu xóa thành công, false nếu xóa thất bại</returns>
+        /// Created by: ldtuan (02/09/2023)
         public override async Task<bool> DeleteManyAsync(List<Guid> ids)
         {
             // 1.Check chứng từ có tồn tại trong db không, nếu tồn tại thì sắp xếp theo ngày tạo với thứ tự giảm dần
@@ -388,7 +408,7 @@ namespace Application.Service
             {
                 throw new DataException(ErrorMessages.Data);
             }
-            transferAssets = transferAssets.OrderByDescending(transfer => transfer.CreatedDate).ToList();
+            transferAssets = transferAssets.OrderByDescending(transfer => transfer.TransferDate).ToList();
 
 
             // 2.Từ các chứng từ trên, lấy được danh sách tài sản bên trong, từ đó tìm được toàn bộ chứng từ của các tài sản đó
@@ -404,7 +424,7 @@ namespace Application.Service
                 // 3.1.Danh sách tài sản trong từng chứng từ 1 của danh sách truyền từ FE về
                 var detailFE = allTransferAssets
                     .Where(transfer => transfer.TransferAssetId == transferAssets[i].TransferAssetId)
-                    .OrderByDescending(transfer => transfer.CreatedDate)
+                    .OrderByDescending(transfer => transfer.TransferDate)
                     .ToList();
 
                 // 3.2.So sánh created date của từng tài sản trong FE với trong DB
@@ -412,7 +432,7 @@ namespace Application.Service
                 {
                     var DB = allTransferAssets
                         .Where(transfer => transfer.FixedAssetId == detailFE[j].FixedAssetId)
-                        .OrderByDescending(transfer => transfer.CreatedDate)
+                        .OrderByDescending(transfer => transfer.TransferDate)
                         .FirstOrDefault();
                     if (DB != null && detailFE[j].CreatedDate != DB.CreatedDate)
                     {
@@ -421,8 +441,8 @@ namespace Application.Service
 
                         // 3.2.2.Lấy các chứng từ phát sinh ra
                         var generatedDocument = allTransferAssets
-                            .Where(transfer => transfer.FixedAssetId == detailFE[j].FixedAssetId && transfer.CreatedDate > detailFE[j].CreatedDate)
-                            .OrderByDescending(transfer => transfer.CreatedDate)
+                            .Where(transfer => transfer.FixedAssetId == detailFE[j].FixedAssetId && transfer.TransferDate > detailFE[j].TransferDate)
+                            .OrderByDescending(transfer => transfer.TransferDate)
                             .ToList();
 
                         throw new ValidateException(ErrorMessagesTransferAsset.Arise(fixedAsset.FixedAssetCode), ErrorMessagesTransferAsset.Infor(generatedDocument));

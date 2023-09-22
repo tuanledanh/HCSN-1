@@ -19,6 +19,11 @@ namespace MSIA.WebFresher052023.Application.Interface.Base
         /// Created by: ldtuan (17/07/2023)
         Task<bool> InsertAsync(TEntityCreateDto entityCreateDto);
 
+        /// <summary>
+        /// Thêm mới nhiều bản ghi
+        /// </summary>
+        /// <param name="entityCreateDtos">Thông tin cần thêm mới</param>
+        /// Created by: ldtuan (02/09/2023)
         Task<ApiResponse> InsertMultiAsync(List<TEntityCreateDto> entityCreateDtos);
 
         /// <summary>
@@ -30,6 +35,11 @@ namespace MSIA.WebFresher052023.Application.Interface.Base
         /// Created by: ldtuan (17/07/2023)
         Task<bool> UpdateAsync(Guid id, TEntityUpdateDto entityUpdateDto);
 
+        /// <summary>
+        /// Cập nhật nhiều bản ghi
+        /// </summary>
+        /// <param name="entityUpdateMultiDtos">Thông tin cần cập nhật</param>
+        /// Created by: ldtuan (02/09/2023)
         Task<ApiResponse> UpdateMultiAsync(List<TEntityUpdateMultiDto> entityUpdateMultiDtos);
 
         /// <summary>

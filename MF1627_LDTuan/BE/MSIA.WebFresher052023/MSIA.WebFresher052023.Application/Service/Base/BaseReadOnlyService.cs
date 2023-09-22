@@ -33,6 +33,10 @@ namespace MSIA.WebFresher052023.Application.Service.Base
 
         #region Methods
 
+        /// <summary>
+        /// Lấy mã code mới
+        /// </summary>
+        /// Created by: ldtuan (02/08/2023)
         public virtual async Task<string> GetNewCode()
         {
             var code = await _baseReadOnlyRepository.GetNewCode();
@@ -80,6 +84,11 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             return count;
         }
 
+        /// <summary>
+        /// Lấy danh sách bản ghi theo danh sách id truyền vào
+        /// </summary>
+        /// <param name="ids">Danh sách id cần lấy thông tin</param>
+        /// Created by: ldtuan (02/08/2023)
         public virtual async Task<List<TEntity>> GetListByIdsAsync(List<Guid> ids)
         {
             var list = await _baseReadOnlyRepository.GetListByIdsAsync(ids);

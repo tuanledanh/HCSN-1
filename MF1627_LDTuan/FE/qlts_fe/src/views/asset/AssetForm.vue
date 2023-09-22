@@ -380,21 +380,21 @@
       </MISAToast>
     </div>
     <div v-if="isShowToastValidateAriseTransfer" class="blur">
-    <MISAToast
-      typeToast="warning"
-      :content="toast_content_warning + '.'"
-      :moreInfo="moreInfo"
-      ><MISAButton
-        buttonSub
-        textButton="Đóng"
-        @click="btnCloseToastWarning"
-        focus
-        ref="button"
-        :tabindex="1"
-        @keydown="checkTabIndex($event, 'islast')"
-      ></MISAButton>
-    </MISAToast>
-  </div>
+      <MISAToast
+        typeToast="warning"
+        :content="toast_content_warning + '.'"
+        :moreInfo="moreInfo"
+        ><MISAButton
+          buttonSub
+          textButton="Đóng"
+          @click="btnCloseToastWarning"
+          focus
+          ref="button"
+          :tabindex="1"
+          @keydown="checkTabIndex($event, 'islast')"
+        ></MISAButton>
+      </MISAToast>
+    </div>
   </div>
 </template>
 <script>
@@ -598,7 +598,9 @@ export default {
             }
           }, 0);
           this.isLoading = false;
-          this.checkTransferAssetArise(assetOld.FixedAssetId);
+          if (this.formMode == this.$_MISAEnum.FORM_MODE.UPDATE) {
+            this.checkTransferAssetArise(assetOld.FixedAssetId);
+          }
         })
         .catch((res) => {
           this.$processErrorResponse(res);

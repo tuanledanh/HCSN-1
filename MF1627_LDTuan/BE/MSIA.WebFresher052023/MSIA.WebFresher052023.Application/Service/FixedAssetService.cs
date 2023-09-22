@@ -142,6 +142,11 @@ namespace Application.Service
             }
         }
 
+        /// <summary>
+        /// Thêm mới nhiều tài sản cùng lúc
+        /// </summary>
+        /// <param name="fixedAssetCreateDtos">Danh sách nội dung cần thêm mới</param>
+        /// Created by: ldtuan (02/09/2023)
         public override async Task<ApiResponse> InsertMultiAsync(List<FixedAssetCreateDto> fixedAssetCreateDtos)
         {
             // Sửa chỗ check mã trùng của 1 list, viết sql ném vào where code in @listCode
@@ -220,6 +225,11 @@ namespace Application.Service
             }
         }
 
+        /// <summary>
+        /// Cập nhật nhiều tài sản cùng lúc
+        /// </summary>
+        /// <param name="fixedAssetUpdateMultipleDtos">Danh sách thông tin cần cập nhật</param>
+        /// Created by: ldtuan (02/09/2023)
         public override async Task<ApiResponse> UpdateMultiAsync(List<FixedAssetUpdateMultiDto> fixedAssetUpdateMultipleDtos)
         {
             var ids = fixedAssetUpdateMultipleDtos.Select(f => f.FixedAssetId).ToList();

@@ -721,7 +721,9 @@ export default {
       pageNumber = this.pageNumberTransfer,
       pageLimit = this.pageLimitTransfer
     ) {
-      const originalTransfer = JSON.parse(JSON.stringify(this.selectedRowsByCheckBox));
+      const originalTransfer = JSON.parse(
+        JSON.stringify(this.selectedRowsByCheckBox)
+      );
       this.isLoading = true;
       this.$_MISAApi.TransferAsset.Filter(pageNumber, pageLimit, null)
         .then((res) => {
@@ -759,7 +761,7 @@ export default {
             }, 3000);
           }
 
-          if(originalTransfer && originalTransfer.length > 0){
+          if (originalTransfer && originalTransfer.length > 0) {
             this.selectedRowsByCheckBox = originalTransfer;
           }
         })
@@ -827,11 +829,13 @@ export default {
         this.$_MISAApi.TransferAsset.DeleteMany(requestData, {
           headers: { "Content-Type": "application/json" },
         })
-          .then(() => this.loadData())
           .then(() => {
-            this.isLoading = false;
             this.selectedRow = [];
             this.selectedRowsByCheckBox = [];
+            this.loadData();
+          })
+          .then(() => {
+            this.isLoading = false;
             this.toast_content_success =
               this.$_MISAResource.VN.Form.Warning.Transfer.Success.Delete;
             this.isShowToastUpdateSuccess = true;

@@ -29,6 +29,12 @@ namespace Application.Service
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Thêm mới chi tiết chứng từ
+        /// </summary>
+        /// <param name="transferAssetDetailCreateDto">Thông tin cần thêm mới</param>
+        /// Created by: ldtuan (02/09/2023)
         public override async Task<bool> InsertAsync(TransferAssetDetailCreateDto transferAssetDetailCreateDto)
         {
             var entity = _mapper.Map<TransferAssetDetail>(transferAssetDetailCreateDto);

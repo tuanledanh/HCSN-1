@@ -45,6 +45,11 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             return result;
         }
 
+        /// <summary>
+        /// Thêm mới nhiều bản ghi
+        /// </summary>
+        /// <param name="entityCreateDtos">Thông tin cần thêm mới</param>
+        /// Created by: ldtuan (02/09/2023)
         public virtual async Task<ApiResponse> InsertMultiAsync(List<TEntityCreateDto> entityCreateDtos)
         {
             var listModels = _mapper.Map<List<TModel>>(entityCreateDtos);
@@ -112,6 +117,11 @@ namespace MSIA.WebFresher052023.Application.Service.Base
             return result;
         }
 
+        /// <summary>
+        /// Cập nhật nhiều bản ghi
+        /// </summary>
+        /// <param name="entityUpdateMultiDtos">Thông tin cần cập nhật</param>
+        /// Created by: ldtuan (02/09/2023)
         public virtual Task<ApiResponse> UpdateMultiAsync(List<TEntityUpdateMultiDto> entityUpdateMultiDtos)
         {
             throw new NotImplementedException();

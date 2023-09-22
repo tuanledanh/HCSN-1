@@ -79,6 +79,13 @@ namespace API.Controllers
             }
         }
 
+        /// <summary>
+        /// Kiểm tra tài sản có phát sinh chứng từ không
+        /// </summary>
+        /// <param name="assetIds">Danh sách id tài sản</param>
+        /// <param name="action">Hành động như xóa hay cập nhật</param>
+        /// <returns>Ném ra 1 ngoại lệ nếu có chứng từ phát sinh</returns>
+        /// Created by: ldtuan (17/09/2023)
         [HttpPost("CheckTransfer")]
         public async Task<IActionResult> CheckExistTransferAsync([FromBody] List<Guid> assetIds, [FromQuery] ActionMode action)
         {
@@ -86,6 +93,11 @@ namespace API.Controllers
             return StatusCode(StatusCodes.Status200OK);
         }
 
+        /// <summary>
+        /// Thêm mới nhiều bản ghi
+        /// </summary>
+        /// <param name="fixedAssetCreateDtos">Thông tin cần thêm mới</param>
+        /// Created by: ldtuan (02/09/2023)
         [HttpPost("insertMulti")]
         public async Task<ActionResult> InsertMulti([FromBody] List<FixedAssetCreateDto> fixedAssetCreateDtos)
         {
@@ -93,6 +105,11 @@ namespace API.Controllers
             return StatusCode(StatusCodes.Status200OK, result);
         }
 
+        /// <summary>
+        /// Cập nhật nhiều bản ghi
+        /// </summary>
+        /// <param name="fixedAssetUpdateMultipleDtos">Thông tin cần cập nhật</param>
+        /// Created by: ldtuan (02/09/2023)
         [HttpPut("updateMulti")]
         public async Task<ActionResult> UpdateMulti([FromBody] List<FixedAssetUpdateMultiDto> fixedAssetUpdateMultipleDtos)
         {
